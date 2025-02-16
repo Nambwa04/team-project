@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Organizations</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <ul>
+            <li><a href="admin.html">Dashboard</a></li>
+            <li><a href="victims.html">Manage Victims</a></li>
+            <li><a href="Responders.html">Manage Responders</a></li>
+            <li><a href="Organizations.html" class="active">Manage Organizations</a></li>
+            <li><a href="Resources.html">Educational Resources</a></li>
+            <li><a href="Settings.html">Settings</a></li>
+            <li><a href="Logout.html">Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <header class="Organization-header">
+            <h1>Manage Organizations</h1>
+            <br>
+            <label for="search">Search:</label>
+            <input type="text" id="searchOrganization" placeholder="Search by Name or ID">
+            <select id="categoryFilter">
+                <option value="">Filter by Category</option>
+                <option value="Healthcare">Healthcare</option>
+                <option value="Legal">Legal</option>
+                <option value="Counseling">Counseling</option>
+                <option value="Shelter">Shelter</option>
+            </select>
+            <button class="add-btn">Add Organization</button>
+        </header>
+
+        <table id="organizationsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Contact</th>
+                    <th>Category</th>
+                    <th>Location</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Safe Haven</td>
+                    <td>+254 712345678</td>
+                    <td>Shelter</td>
+                    <td>Nairobi</td>
+                    <td>
+                        <button class="edit-btn">Edit</button>
+                        <button class="delete-btn">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

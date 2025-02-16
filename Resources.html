@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Educational Resources</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <ul>
+            <li><a href="admin.html">Dashboard</a></li>
+            <li><a href="victims.html">Manage Victims</a></li>
+            <li><a href="Responders.html">Manage Responders</a></li>
+            <li><a href="Organizations.html">Manage Organizations</a></li>
+            <li><a href="Resources.html" class="active">Educational Resources</a></li>
+            <li><a href="Settings.html">Settings</a></li>
+            <li><a href="Logout.html">Logout</a></li>
+        </ul>
+    </div>
+
+
+    <div class="content">
+        <header>
+            <h1>Educational Resources</h1>
+            <input type="text" id="searchResource" placeholder="Search by Title, Author, Publisher or Type">
+            <button id="openResourceModal" class="add-btn">Add Resource</button>
+        </header>
+
+        <table id="resourcesTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th>Link</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>GBV Awareness Guide</td>
+                    <td>PDF</td>
+                    <td><a href="#">View</a></td>
+                    <td>
+                        <button class="edit-btn">Edit</button>
+                        <button class="delete-btn">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Adding Resource Modal -->
+    <div id="resourceModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeResourceModal">&times;</span>
+            <h2>Add Educational Resource</h2>
+            <label for="resourceTitle">Title:</label>
+            <input type="text" id="resourceTitle">
+
+            <label for="resourceType">Type:</label>
+            <select id="resourceType">
+                <option value="PDF">PDF</option>
+                <option value="Video">Video</option>
+                <option value="Article">Article</option>
+            </select>
+
+            <label for="resourceLink">Link:</label>
+            <input type="text" id="resourceLink">
+
+            <button id="saveResource">Save Resource</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

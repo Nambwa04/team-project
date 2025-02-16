@@ -1,0 +1,916 @@
+body{
+    margin:0;
+    font-family: 'Times New Roman', Times, serif;
+}
+.Loginbody {
+    display: flex;
+    justify-content: center;
+    align-items:center;
+    height: 100vh;
+    margin: 0;
+    background: #1a252f;
+}
+
+
+.Login-container {
+    font-size: 13px;
+    width: 350px;
+    padding: 20px;
+    background: #2c3e50;
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 1s ease-in-out;
+    text-align: left;
+    -webkit-animation: fadeIn 1s ease-in-out;
+}
+
+/* Form Styling */
+.Login-container form {
+    display:inline-table;
+    flex-direction: column;
+    align-items: center; /* Aligns input fields centrally */
+}
+
+/*Input and select*/
+.Login-container label {
+    align-self: flex-start;
+    margin: 10px 0 10px;
+}
+
+.Login-container input,
+.Login-container select{
+    width: 100%;
+    margin-top: 3px;
+    padding-top: 10px;
+    padding-left: 5px;
+    padding-bottom: 10px;
+    border: 1px solid black;
+    border-radius: 5px;
+    background: transparent;
+    outline: none;
+}
+
+/* Dropdown styling to match inputs */
+.Login-container select {
+    appearance: none; /* Removes default browser styling */
+    background-color: transparent;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 18px;
+    padding-right: 30px;
+}
+
+/* Button Styling */
+.Login-container button {
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px;
+    border: none;
+    background: #f1c40f;
+    color: black;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 18px;
+}
+
+.Login-container button:hover {
+    background: #e1b80f;
+}
+
+.Login-container #sign-up-redirect{
+    color: white;
+    text-decoration: none;
+}
+
+/* Fade-in Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* frontpage starts here*/
+.frontpage {
+    font-family: 'Times New Roman', Times, serif;
+    text-align: center;
+    background-color: #f8f8f8;
+    height: 100vh;
+    /* width: 100vw; */
+    margin: 0;
+    padding: 0;
+    /* box-sizing: border-box; */
+}
+
+/* Header */
+#header {
+    position:relative;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    z-index: 1000;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+/* Navigation */
+#navbar {
+    display: none;/*Initially hidden*/
+    flex-direction: column;
+    position: absolute;
+    top: 70px;
+    right: 80px;
+    left: 80%;
+    width: 20%;
+    background: transparent;
+    text-align: center;
+    transition: 0.3s;
+}
+
+#navbar ul {
+    list-style: none;
+    padding: 0;
+}
+
+#navbar ul li {
+    margin: 15px 0;
+}
+
+#navbar ul li a {
+    text-decoration: none;
+    color: green;
+    font-size: 18px;
+    transition: color 0.3s;
+}
+
+#navbar ul li a:hover {
+    color: blue;
+}
+
+/* Hamburger Menu */
+.hamburger {
+    display: block;
+    font-size: 30px;
+    cursor: pointer;
+    background-color:transparent;
+}
+
+/* Show navigation when active */
+#navbar.active {
+    display: flex;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background: yellow;
+    color: black;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.btn:hover {
+    background: orange;
+}
+
+.effects {
+    text-align: left;
+}
+
+/* Sections */
+.section {
+    padding: 60px 20px;
+    background-color: white;
+    margin: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Footer */
+#footer {
+    text-align: center;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    width: 100%;
+    opacity: 0;
+    visibility: hidden; /*initially hidden*/
+    margin-top: 40px;
+}
+/*End of frontpage.html*/
+
+
+/*admin.html*/
+.admin {
+    font-family: 'Times New Roman', Times, serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    background: #f5f5f5;
+}
+
+/* Sidebar Navigation */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background: #1E1E2E;
+    color: white;
+    position: fixed;
+    left: 0;
+    top: 0;
+    overflow-y: auto;
+    padding-top: 20px;
+    transition: all 0.3s;
+}
+
+.sidebar h2 {
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    padding: 15px;
+    transition: background 0.3s;
+}
+
+.sidebar ul li:hover {
+    background: #252537;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+    color: white;
+    display: block;
+    font-size: 18px;
+}
+
+.sidebar ul li a:hover {
+    color: #f1c40f;
+}
+/*END OF admin.html*/
+
+
+/*Organizations.html*/
+.Organization-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    background: #f8f8f8;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.Organization-header h1 {
+    font-size: 24px;
+    margin: 0;
+    flex: 1 1 100%;
+    text-align: center;
+}
+
+.Organization-header label {
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.Organization-header input,
+.Organization-header select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    width: 200px;
+}
+
+.Organization-header select {
+    width: 220px;
+}
+
+.Organization-header .add-btn {
+    background: green;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.Organization-header .add-btn:hover {
+    background: darkgreen;
+}
+
+/* Responsive Styling */
+@media screen and (max-width: 768px) {
+    .Organization-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .Organization-header h1 {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    .Organization-header input,
+    .Organization-header select {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .Organization-header .add-btn {
+        width: 100%;
+    }
+}
+/*End of Organization.html*/
+
+
+/* victims.html */
+.victims {
+    font-family: 'Times New Roman', Times, serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    background: #f5f5f5;
+}
+
+.content {
+    margin-left: 250px;
+    padding: 20px;
+    width: calc(100% - 250px); /* Subtracts sidebar width from total width */
+    /*width: 100%;*/
+    min-height: 100vh; /* Ensures it stretches to fit full screen height */
+    transition: margin-left 0.3s;
+    box-sizing: border-box; /* Prevents extra padding from increasing size */
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Dashboard Cards */
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    font-size: 20px;
+}
+
+.card h3 {
+    margin-bottom: 10px;
+}
+
+/* Dark Mode */
+body.dark-mode {
+    background: #181818;
+    color: white;
+}
+
+body.dark-mode .content {
+    background: #222;
+}
+
+body.dark-mode .card {
+    background: #333;
+    color: white;
+}
+
+.toggle-btn {
+    padding: 10px;
+    background: #f1c40f;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+.toggle-btn:hover {
+    background: #e1b80f;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background: #f4f4f4;
+    font-weight: bold;
+}
+
+tr:hover {
+    background: #f9f9f9;
+}
+
+td button {
+    margin-right: 8px;
+    padding: 6px 12px;
+    border: none;
+    cursor: pointer;
+    border-radius: 14px;
+}
+
+.edit-btn{
+    background: #4CAF50;
+    color: white;
+}
+
+.delete-btn {
+    background: red;
+    color: white;
+}
+
+.edit-btn:hover {
+    background-color: #f44336;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #d32f2f;
+}
+
+/* Dark Mode for Table */
+body.dark-mode table {
+    background: #333;
+    color: white;
+}
+
+body.dark-mode th {
+    background: #444;
+}
+
+body.dark-mode tr:hover {
+    background: #555;
+}
+
+/* Responders.html*/
+.respondersidebar {
+    width: 250px;
+    height: 100vh;
+    background: #1E1E2E;
+    color: white;
+    position: fixed;
+    left: 0;
+    top: 0;
+    overflow-y: auto;
+    padding-top: 20px;
+    transition: all 0.3s ease-in-out;
+}
+
+.respondersidebar h2 {
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+.respondersidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.respondersidebar ul li {
+    padding: 15px;
+    transition: background 0.3s;
+}
+
+.respondersidebar ul li:hover {
+    background: #252537;
+}
+
+.respondersidebar ul li a {
+    text-decoration: none;
+    color: white;
+    display: block;
+    font-size: 18px;
+}
+
+.respondersidebar ul li a.active {
+    color: #f1c40f;
+}
+
+
+/* Header */
+.responderheader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+/* Search & Filter 
+input[type="text"], select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 200px;
+}*/
+
+.add-btn {
+    background: green;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.add-btn:hover {
+    background: darkgreen;
+}
+
+/* small screens sidebar collapse*/
+@media (max-width: 768px) {
+    .sidebar {
+        width: 60px; /* Collapses sidebar */
+    }
+    
+    .content {
+        margin-left: 60px; /* Adjusts content width */
+        width: calc(100% - 60px);
+    }
+}
+
+/*Logout.html*/
+
+.logout-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: #f8f8f8;
+}
+
+.logout-container {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    width: 350px;
+}
+
+.logout-container h2 {
+    margin-bottom: 15px;
+}
+
+.logout-container p {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.logout-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.logout-btn, .cancel-btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 48%;
+}
+
+.logout-btn {
+    background: red;
+    color: white;
+}
+
+.logout-btn:hover {
+    background: darkred;
+}
+
+.cancel-btn {
+    background: gray;
+    color: white;
+}
+
+.cancel-btn:hover {
+    background: darkgray;
+}
+
+
+/*End of Logout.html*/
+
+/*Settings.html*/
+.settings-section {
+    background: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.settings-section h2 {
+    margin-bottom: 10px;
+}
+
+.settings-section label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: bold;
+}
+
+.settings-section input[type="text"],
+.settings-section input[type="email"],
+.settings-section input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.settings-section button {
+    margin-top: 15px;
+    padding: 10px 15px;
+    background: green;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.settings-section button:hover {
+    background: darkgreen;
+}
+
+/* Light Mode (Default) */
+.settings-body {
+    background: white;
+    color: black;
+    transition: background 0.3s, color 0.3s;
+}
+
+.settings-section {
+    background: white;
+    color: black;
+    transition: background 0.3s, color 0.3s;
+}
+
+/* Dark Mode */
+.dark-mode {
+    background: #1E1E1E;
+    color: white;
+}
+
+.dark-mode .settings-section {
+    background: #2C2C2C;
+    color: white;
+    box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
+}
+
+/* Input Fields */
+.settings-section input[type="text"],
+.settings-section input[type="email"],
+.settings-section input[type="password"] {
+    background: white;
+    color: black;
+    border: 1px solid #ccc;
+}
+
+.dark-mode .settings-section input[type="text"],
+.dark-mode .settings-section input[type="email"],
+.dark-mode .settings-section input[type="password"] {
+    background: #333;
+    color: white;
+    border: 1px solid #555;
+}
+
+/* Buttons */
+.settings-section button {
+    background: green;
+    color: white;
+}
+
+.settings-section button:hover {
+    background: darkgreen;
+}
+
+.dark-mode .settings-section button {
+    background: #4CAF50;
+}
+
+.dark-mode .settings-section button:hover {
+    background: #357a38;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    content: "";
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    background: yellow;
+    border-radius: 50%;
+    top: 4px;
+    left: 4px;
+    transition: 0.3s;
+}
+
+input:checked + .slider {
+    background-color: black;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+
+
+/* Modal Background 
+/* APPLIES TO ALL FILES WITH MODAL
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black 
+    justify-content: center;
+    align-items: center;
+}
+
+/* Modal Content 
+.modal-content {
+    background: white;
+    padding: 20px;
+    width: 350px; /* Unified width 
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Modal Header 
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* Close Button 
+.close {
+    font-size: 20px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    cursor: pointer;
+    color: red;
+}
+
+.close:hover {
+    color: darkred;
+}
+
+/* Modal Input Fields 
+.modal-content input,
+.modal-content select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+/* Buttons 
+.modal-btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+/* Save Button 
+.save-btn {
+    background: #f1c40f;
+    color: black;
+}
+
+.save-btn:hover {
+    background: #e1b80f;
+}
+
+/* Cancel Button 
+.cancel-btn {
+    background: red;
+    color: white;
+}
+
+.modal-btn:hover {
+    opacity: 0.8;
+}
+
+/* Responsive Sidebar 
+@media screen and (max-width: 768px) {
+    .sidebar {
+        width: 60px;
+    }
+
+    .content {
+        margin-left: 60px;
+    }
+
+    .sidebar h2 {
+        display: none;
+    }
+
+    .sidebar ul li {
+        text-align: center;
+    }
+
+    .sidebar ul li a {
+        font-size: 16px;
+    }
+}
+*/
+
