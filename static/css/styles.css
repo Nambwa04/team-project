@@ -1,0 +1,139 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+
+/* registration form */
+.register-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form{
+    margin-bottom: 20px;
+    
+}
+
+.register-form-control {
+    margin-bottom: 15px;
+    position: relative;
+    
+}
+
+.register-form-control label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.register-form-control input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.register-form-control input:focus {
+    border-color: #007bff;
+}
+
+.register-form-control small {
+    color: red;
+    position: absolute;
+    bottom: -15px;
+    left: 0;
+    display: block;
+    font-size: 10px;
+    visibility: hidden;
+}
+
+.register-form-control.error input {
+    border-color: red;
+}
+
+.register-form-control.error small {
+    visibility: visible;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* login form */
+
+.login-container{
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+}
+
+.login-form-control {
+    margin-bottom: 10px;
+    position: relative;
+    
+}
+
+.login-form-control label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.login-form-control input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.login-form-control input:focus {
+    border-color: #007bff;
+}
+
+.login-form-control small {
+    color: red;
+    position: absolute;
+    bottom: -15px;
+    left: 0;
+    display: block;
+    font-size: 10px;
+    visibility: hidden;
+}
+
+.login-form-control.error input {
+    border-color: red;
+}
+
+.login-form-control.error small {
+    visibility: visible;
+}
