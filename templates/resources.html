@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<div class="content">
+    <header>
+        <h1>Educational Resources</h1>
+        <input type="text" id="searchResource" placeholder="Search by Title, Author, Publisher or Type">
+        <button id="openResourceModal" class="add-btn">Add Resource</button>
+    </header>
+
+    <table id="resourcesTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Link</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>GBV Awareness Guide</td>
+                <td>PDF</td>
+                <td><a href="#">View</a></td>
+                <td>
+                    <button class="edit-btn">Edit</button>
+                    <button class="delete-btn">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Adding Resource Modal -->
+<div id="resourceModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeResourceModal">&times;</span>
+        <h2>Add Educational Resource</h2>
+        <label for="resourceTitle">Title:</label>
+        <input type="text" id="resourceTitle">
+
+        <label for="resourceType">Type:</label>
+        <select id="resourceType">
+            <option value="PDF">PDF</option>
+            <option value="Video">Video</option>
+            <option value="Article">Article</option>
+        </select>
+
+        <label for="resourceLink">Link:</label>
+        <input type="text" id="resourceLink">
+
+        <button id="saveResource">Save Resource</button>
+    </div>
+</div>
+
+
+{% endblock %}
