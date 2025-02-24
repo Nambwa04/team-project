@@ -5,31 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <title>User Login</title>
-    {% block head %}{% endblock %}
+    
 </head>
 <body>
-    <nav>
-        <ul>
-            <li><a href="#report">Report</a></li>
-            <li><a href="#profile">Profile</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#educational-Resources">Educational Resources</a></li>
-            <li><a href="#contact">Contact</a></li>
-            <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
-        </ul>
-        <div class="auth-links">
-            <a href="{{ url_for('auth.register') }}">Register</a>
-            <a href="{{ url_for('auth.login') }}">Log in</a>
-        </div>
-    </nav>
-    </nav>
-    <main>
+    <!-- <nav>
+        <a href="{{ url_for('auth.register') }}">Register</a>
+        <a href="{{ url_for('auth.login') }}">log in</a>
+    </nav> -->
+    
 
         {% block content %}
         
         {% endblock %}
 
-    </main>
+    
     
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
     {% block scripts %}

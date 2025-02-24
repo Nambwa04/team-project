@@ -1,8 +1,7 @@
 {% extends "base.html" %}
 
-
 {% block content %}
-<div class="sidebar">
+<div class="admin-sidebar">
     <h2>Admin Panel</h2>
     <ul>
         <li><a href="admin.html">Dashboard</a></li>
@@ -15,10 +14,9 @@
     </ul>
 </div>
 
-<div class="content">
-    <header class="Organization-header">
+<div class="organization-content">
+    <header class="organization-header">
         <h1>Manage Organizations</h1>
-        <br>
         <label for="search">Search:</label>
         <input type="text" id="searchOrganization" placeholder="Search by Name or ID">
         <select id="categoryFilter">
@@ -31,7 +29,7 @@
         <button class="add-btn">Add Organization</button>
     </header>
 
-    <table id="organizationsTable">
+    <table class="organization-table">
         <thead>
             <tr>
                 <th>ID</th>
