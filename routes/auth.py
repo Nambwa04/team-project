@@ -5,6 +5,7 @@ auth_bp = Blueprint("auth", __name__)
 
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
+    print(request.form)  # Debugging: Check if data is received
     if request.method == "POST":
         # Get form data
         username = request.form["username"]
@@ -66,7 +67,7 @@ def dashboard():
     }
 
     # Pass initial_data to the template
-    return render_template("admin.html", user=user, initial_data=initial_data)
+    return render_template("responders.html", user=user, initial_data=initial_data)
 
 @auth_bp.route("/logout")
 def logout():
