@@ -1,0 +1,23 @@
+# Ignore Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual Environment
+venv/
+
+# Environment Variables and Secrets
+.env
+config.py
+
+# Logs and Temp Files
+*.log
+*.tmp
+
+# IDE Specific Files
+.vscode/
+.idea/
+
+# OS-specific
+.DS_Store
+Thumbs.db
