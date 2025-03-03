@@ -1,61 +1,121 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-
 <div class="content">
-    <header>
-        <h1>Educational Resources</h1>
-        <input type="text" id="searchResource" placeholder="Search by Title, Author, Publisher or Type">
-        <button id="openResourceModal" class="add-btn">Add Resource</button>
-    </header>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+          <div id="flash-messages">
+           {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+      {% endif %}
+  {% endwith %}
+  <header>
+    <h1>Educational Resources</h1>
+    <form id="searchForm" action="{{ url_for('resource.search_resource') }}" method="GET">
+      <input type="text" id="searchResource" name="search_query" placeholder="Search by ID or Title">
+      <select name="type">
+        <option value="">Filter by Type</option>
+        <option value="PDF">PDF</option>
+        <option value="Video">Video</option>
+        <option value="Article">Article</option>
+      </select>
+      <button type="submit">Search</button>
+    </form>
+    <button id="openResourceModal" class="add-btn">Add Resource</button>
+  </header>
 
-    <table id="resourcesTable">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Type</th>
-                <th>Link</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>1</td>
-                <td>GBV Awareness Guide</td>
-                <td>PDF</td>
-                <td><a href="#">View</a></td>
-                <td>
-                    <button class="edit-btn">Edit</button>
-                    <button class="delete-btn">Delete</button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+  <table id="resourcesTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Type</th>
+        <th>Link</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for resource in resources %}
+      <tr>
+        <td>{{ resource._id }}</td>
+        <td>{{ resource.title }}</td>
+        <td>{{ resource.type }}</td>
+        <td>
+          <a href="{{ resource.link }}" target="_blank">View</a>
+        </td>
+        <td>
+          <button class="edit-btn"
+                  data-id="{{ resource._id }}"
+                  data-title="{{ resource.title }}"
+                  data-type="{{ resource.type }}"
+                  data-link="{{ resource.link }}">
+            Edit
+          </button>
+          <form action="{{ url_for('resource.delete_resource', resource_id=resource._id) }}"
+                method="POST"
+                style="display:inline;"
+                onsubmit="return confirm('Are you sure you want to delete this resource?');">
+            <button type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
-<!-- Adding Resource Modal -->
-<div id="resourceModal" class="modal">
+  <!-- Add Resource Modal -->
+  <div id="resourceModal" class="modal" style="display:none;">
     <div class="modal-content">
-        <span class="close" id="closeResourceModal">&times;</span>
-        <h2>Add Educational Resource</h2>
+      <span class="close" id="closeResourceModal">&times;</span>
+      <h2>Add Educational Resource</h2>
+      <form action="{{ url_for('resource.add_resource') }}" method="POST">
         <label for="resourceTitle">Title:</label>
-        <input type="text" id="resourceTitle">
+        <input type="text" id="resourceTitle" name="title" required>
 
         <label for="resourceType">Type:</label>
-        <select id="resourceType">
-            <option value="PDF">PDF</option>
-            <option value="Video">Video</option>
-            <option value="Article">Article</option>
+        <select id="resourceType" name="type" required>
+          <option value="PDF">PDF</option>
+          <option value="Video">Video</option>
+          <option value="Article">Article</option>
         </select>
 
         <label for="resourceLink">Link:</label>
-        <input type="text" id="resourceLink">
+        <input type="text" id="resourceLink" name="link" required>
 
-        <button id="saveResource">Save Resource</button>
+        <button type="submit" id="saveResource">Save Resource</button>
+      </form>
     </div>
+  </div>
+
+  <!-- Edit Resource Modal (Hidden by default) -->
+  <div id="editResourceModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" id="closeEditResourceModal">&times;</span>
+      <h2>Edit Educational Resource</h2>
+      <form id="editResourceForm" method="POST" action="">
+        <input type="hidden" id="edit_resource_id" name="resource_id">
+        <label for="edit_resource_title">Title:</label>
+        <input type="text" id="edit_resource_title" name="title" required>
+
+        <label for="edit_resource_type">Type:</label>
+        <select id="edit_resource_type" name="type" required>
+          <option value="PDF">PDF</option>
+          <option value="Video">Video</option>
+          <option value="Article">Article</option>
+        </select>
+
+        <label for="edit_resource_link">Link:</label>
+        <input type="text" id="edit_resource_link" name="link" required>
+
+        <button type="submit">Update Resource</button>
+      </form>
+    </div>
+  </div>
 </div>
 
+<!-- Include your JavaScript file for modal handling -->
+<script src="{{ url_for('static', filename='js/resource.js') }}"></script>
 
 {% endblock %}

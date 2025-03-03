@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, redirect, url_for, flash
+from flask import Blueprint, request, render_template, redirect, url_for, flash
 from models.resource import ResourceModel
 from models.user import mongo
 from bson.objectid import ObjectId
@@ -11,7 +11,7 @@ def manage_resources():
     resources = resource_model.get_all_resources()
     for resource in resources:
         resource['_id'] = str(resource['_id'])
-    return jsonify({'success': True, 'resources': resources}), 200
+    return render_template('resources.html', resources=resources)
 
 @resource_bp.route('/add_resource', methods=['POST'])
 def add_resource():
@@ -33,23 +33,28 @@ def add_resource():
 
     return redirect(url_for('resource.manage_resources'))
 
-@resource_bp.route('/edit_resource/<resource_id>', methods=['PUT'])
+@resource_bp.route('/edit_resource/<resource_id>', methods=['POST']) #Why POST and not PUT?
 def edit_resource(resource_id):
+    updated_resource = {
+        'title': request.form.get('title'),
+        'type': request.form.get('type'),
+        'link': request.form.get('link')
+    }
+
+    if not all(updated_resource.values()):
+        flash('All fields are required!', 'error')
+        return redirect(url_for('resource.manage_resources'))
+
     try:
-        updated_resource = request.json
-
-        if not all(updated_resource.values()):
-            return jsonify({'success': False, 'message': 'All fields are required!'}), 400
-
         result = resource_model.update_resource(resource_id, updated_resource)
-
         if result.modified_count:
-            return jsonify({'success': True, 'message': 'Resource updated successfully'}), 200
+            flash('Resource updated successfully', 'success')
         else:
-            return jsonify({'success': False, 'message': 'No changes made or resource not found'}), 404
-
+            flash('No changes made or resource not found', 'error')
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        flash(f'Error: {str(e)}', 'error')
+
+    return redirect(url_for('resource.manage_resources'))
 
 @resource_bp.route('/delete_resource/<resource_id>', methods=['POST'])
 def delete_resource(resource_id):
@@ -57,9 +62,33 @@ def delete_resource(resource_id):
         result = resource_model.delete_resource(resource_id)
 
         if result.deleted_count:
-            return jsonify({'success': True, 'message': 'Resource deleted successfully'}), 200
+            flash('Resource deleted successfully', 'success')
         else:
-            return jsonify({'success': False, 'message': 'Resource not found'}), 404
-
+            flash('Resource not found', 'error')
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        flash(f'Error: {str(e)}', 'error')
+    return redirect(url_for('resource.manage_resources'))
+
+@resource_bp.route('/search_resource', methods=['GET'])
+def search_resource():
+    search_query = request.args.get('search_query', '').strip()
+    resource_type = request.args.get('type', '').strip()
+
+    # If no search query and no filter, redirect back to manage_resources
+    if not search_query and not resource_type:
+        return redirect(url_for('resource.manage_resources'))
+
+    # Determine search criteria
+    if search_query and resource_type:
+        resources = resource_model.search_resources(search_query, resource_type)
+    elif search_query:
+        resources = resource_model.search_resources(search_query)
+    elif resource_type:
+        # If only filter by type is provided
+        resources = list(resource_model.collection.find({"type": resource_type}))
+    
+    # Convert ObjectId to string for template rendering
+    for resource in resources:
+        resource['_id'] = str(resource['_id'])
+    
+    return render_template('resources.html', resources=resources)

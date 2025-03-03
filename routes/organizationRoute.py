@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, redirect, url_for, flash
+from flask import Blueprint, request, jsonify, redirect, url_for, flash, render_template
 from models.organization import OrganizationModel
 from models.user import mongo
 from bson import ObjectId
@@ -7,20 +7,19 @@ from bson import ObjectId
 organization_bp = Blueprint('organization', __name__)
 organization_model = OrganizationModel(mongo)
 
-@organization_bp.route('/organizations', methods=['GET'])
-def get_organizations():
-    """Retrieve all organizations as JSON."""
+# Define routes
+@organization_bp.route('/manage_organizations', methods=['GET'])
+def manage_organizations():
     organizations = organization_model.get_all_organizations()
 
     # Convert ObjectId to string for JSON serialization
     for org in organizations:
         org['_id'] = str(org['_id'])
 
-    return jsonify({'success': True, 'organizations': organizations}), 200
+    return render_template('organizations.html', organizations=organizations)
 
 @organization_bp.route('/add_organization', methods=['POST'])
 def add_organization():
-    """Add a new organization."""
     organization = {
         'name': request.form.get('name'),
         'contact': request.form.get('contact'),
@@ -29,58 +28,80 @@ def add_organization():
     }
 
     if not all(organization.values()):
-        return jsonify({"success": False, "message": "All fields are required!"}), 400
+        flash("All fields are required!", "error")  
+        return redirect(url_for('organization.manage_organizations'))
 
     try:
         organization_model.add_organization(organization)
-        return jsonify({"success": True, "message": "Organization added successfully!"}), 201
+        flash("Organization added successfully!", "success")  
+        return redirect(url_for('organization.manage_organizations'))
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+        flash(f"Error: {str(e)}", "error")  
+        return redirect(url_for('organization.manage_organizations'))
 
-@organization_bp.route('/organization/<organization_id>', methods=['PUT'])
+@organization_bp.route('/organization/<organization_id>', methods=['POST'])
 def edit_organization(organization_id):
-    """Update an existing organization."""
     try:
-        updated_data = request.json
+        updated_data = {
+            'name': request.form.get('name'),
+            'contact': request.form.get('contact'),
+            'category': request.form.get('category'),
+            'location': request.form.get('location')
+        }
         if not all(updated_data.values()):
-            return jsonify({"success": False, "message": "All fields are required!"}), 400
+            flash("All fields are required!", "error")
+            return redirect(url_for('organization.manage_organizations'))
 
         result = organization_model.update_organization(organization_id, updated_data)
 
         if result.modified_count:
-            return jsonify({"success": True, "message": "Organization updated successfully"}), 200
+            flash("Organization updated successfully", "success")
         else:
-            return jsonify({"success": False, "message": "No changes made or organization not found"}), 404
+            flash("No changes made or organization not found", "error")
+        return redirect(url_for('organization.manage_organizations'))
 
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+        flash(f"Error: {str(e)}", "error")
+        return redirect(url_for('organization.manage_organizations'))
 
-@organization_bp.route('/organization/<organization_id>', methods=['DELETE'])
+
+@organization_bp.route('/organization/<organization_id>/delete', methods=['POST'])
 def delete_organization(organization_id):
-    """Delete an organization."""
     try:
         result = organization_model.delete_organization(organization_id)
 
         if result.deleted_count:
-            return jsonify({"success": True, "message": "Organization deleted successfully"}), 200
+            flash("Organization deleted successfully", "success")
         else:
-            return jsonify({"success": False, "message": "Organization not found"}), 404
-
+            flash("Organization not found", "error")
+        return redirect(url_for('organization.manage_organizations'))
+        
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+        flash(f"Error: {str(e)}", "error")
+        return redirect(url_for('organization.manage_organizations'))
+
 
 @organization_bp.route('/search_organization', methods=['GET'])
 def search_organization():
-    """Search for organizations."""
     search_query = request.args.get('search_query', '').strip()
+    category = request.args.get('category', '').strip()
 
-    if not search_query:
-        return jsonify({"success": False, "message": "Search query is required"}), 400
+    if not search_query and not category:
+        return redirect(url_for('organization.manage_organizations'))
 
-    organizations = organization_model.search_organizations(search_query)
+    organizations = []
+    if search_query and category:
+        # Search by both query and category
+        organizations = organization_model.search_organizations_by_query_and_category(search_query, category)
+    elif search_query:
+        # Search by query only
+        organizations = organization_model.search_organizations(search_query)
+    elif category:
+        # Filter by category only
+        organizations = organization_model.filter_by_category(category)
 
-    # Convert ObjectId to string for JSON serialization
+    # Convert ObjectId to string for template rendering
     for org in organizations:
         org['_id'] = str(org['_id'])
 
-    return jsonify({"success": True, "organizations": organizations}), 200
+    return render_template('organizations.html', organizations=organizations)

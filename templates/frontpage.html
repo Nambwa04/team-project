@@ -5,7 +5,7 @@
 <section id="hero">
     <h1>Stop Gender-based Violence</h1>
     <p>Spreading awareness, assisting survivors, and driving change to end GBV</p>
-    <a href="#report" class="btn">Report a Case</a>
+    <a href="{{ url_for('report.report_form') }}" class="btn">Report a Case</a>
 </section>
 
 <section id="about" class="section-about"></section>
@@ -31,13 +31,13 @@
 <section id="help" class="section-help"></section>
     <h2>How You Can Help</h2>
     <p>You can help end GBV by spreading awareness, supporting survivors, and reporting cases of abuse.</p>
-    <a href="#contact" class="btn">Be part of the change</a>
+    <a href="" class="btn">Be part of the change</a>
 </section>
 
 <section id="report" class="section-report"></section>
     <h2>Report</h2>
     <p>If you know someone at risk or a survivor in need of support, report confidentially.</p>
-    <a href="#" class="btn">Report Now</a>
+    <a href="{{ url_for('report.report_form') }}" class="btn">Report Now</a>
 </section>
 
 {% endblock %}

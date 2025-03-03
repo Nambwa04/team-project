@@ -16,6 +16,10 @@ from routes.responderRoute import responder_bp
 from routes.organizationRoute import organization_bp
 from routes.victimRoute import victim_bp
 from routes.resourceRoutes import resource_bp
+from routes.reportRoute import report_bp
+from routes.profileRoute import profile_bp
+from routes.adminRoute import admin_bp
+from routes.settingsRoute import settings_bp
 
 from services.realtime import realtime_service #import the realtime_service
 realtime_service.init_app(app) #initialize the realtime_service
@@ -27,6 +31,10 @@ app.register_blueprint(responder_bp)
 app.register_blueprint(organization_bp)
 app.register_blueprint(victim_bp)
 app.register_blueprint(resource_bp)
+app.register_blueprint(report_bp)
+app.register_blueprint(profile_bp)
+app.register_blueprint(admin_bp)
+app.register_blueprint(settings_bp)
 
 @app.route('/')
 def landing():
