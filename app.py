@@ -6,6 +6,7 @@ app.config.from_object(Config)
 
 #initialize mongo and bcrypt
 from models.user import mongo, bcrypt
+from models.user import mongo, bcrypt
 mongo.init_app(app)
 bcrypt.init_app(app)
 

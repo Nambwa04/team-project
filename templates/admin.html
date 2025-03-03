@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<div class="sidebar">
+<div class="admin-sidebar">
     <h2>Admin Panel</h2>
     <ul>
         <li><a href="{{ url_for('admin.dashboard') }}" class="active"> Dashboard</a></li>
@@ -16,25 +16,25 @@
     </ul>
 </div>
 
-<div class="content">
-    <header>
+<div class="admin-content">
+    <header class="admin-header">
         <h1>Welcome, Admin</h1>
     </header>
 
-    <div class="dashboard-cards">
-        <div class="card">
+    <div class="admin-dashboard-cards">
+        <div class="admin-card">
             <h3>Total Victims</h3>
             <p>{{ total_victims }}</p>
         </div>
-        <div class="card">
+        <div class="admin-card">
             <h3>Responders</h3>
             <p>{{ total_responders }}</p>
         </div>
-        <div class="card">
+        <div class="admin-card">
             <h3>Organizations</h3>
             <p>{{ total_organizations }}</p>
         </div>
-        <div class="card">
+        <div class="admin-card">
             <h3>Resources</h3>
             <p>{{ total_resources }}</p>
         </div>
