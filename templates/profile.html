@@ -1,18 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-
     <!-- Main Content -->
     <main class="profile-container">
         <h1>User Profile</h1>
 
         <section class="profile-card">
-            <img src="default-profile.jpg" alt="User Avatar" id="profilePic">
-            <h2 id="userName">John Doe</h2>
-            <p>Email: <span id="userEmail">johndoe@example.com</span></p>
-            <p>Phone: <span id="userPhone">+123456789</span></p>
-            <p>Role: <span id="userRole">Admin</span></p>
+            <!-- Display user's profile picture if available, otherwise default image -->
+            <img src="{{ user.profile_pic if user.profile_pic else url_for('static', filename='images/default-profile.jpg') }}" alt="User Avatar" id="profilePic">
+            <h2 id="userName">{{ user.name }}</h2>
+            <p>Email: <span id="userEmail">{{ user.email }}</span></p>
+            <p>Phone: <span id="userPhone">{{ user.phone }}</span></p>
+            <p>Role: <span id="userRole">{{ user.role }}</span></p>
 
             <button id="editProfileBtn">Edit Profile</button>
             <button id="logoutBtn">Logout</button>
@@ -23,15 +22,16 @@
             <div class="modal-content">
                 <span class="close-modal">&times;</span>
                 <h2>Edit Profile</h2>
-                <form id="editProfileForm">
+                <!-- Include form action to update profile data -->
+                <form id="editProfileForm" action="{{ url_for('profile.update_profile') }}" method="POST">
                     <label for="editName">Name:</label>
-                    <input type="text" id="editName" placeholder="Enter new name">
+                    <input type="text" id="editName" name="name" value="{{ user.name }}" placeholder="Enter new name">
 
                     <label for="editEmail">Email:</label>
-                    <input type="email" id="editEmail" placeholder="Enter new email">
+                    <input type="email" id="editEmail" name="email" value="{{ user.email }}" placeholder="Enter new email">
 
                     <label for="editPhone">Phone:</label>
-                    <input type="text" id="editPhone" placeholder="Enter new phone number">
+                    <input type="text" id="editPhone" name="phone" value="{{ user.phone }}" placeholder="Enter new phone number">
 
                     <button type="submit">Save Changes</button>
                 </form>
@@ -39,6 +39,4 @@
         </div>
 
     </main>
-
-
 {% endblock %}

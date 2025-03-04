@@ -5,13 +5,14 @@
 <div class="admin-sidebar">
     <h2>Admin Panel</h2>
     <ul>
-        <li><a href="admin.html" class="active">Dashboard</a></li>
-        <li><a href="victims.html">Manage Victims</a></li>
-        <li><a href="responders.html">Manage Responders</a></li>
-        <li><a href="organizations.html">Manage Organizations</a></li>
-        <li><a href="resources.html">Educational Resources</a></li>
-        <li><a href="settings.html">Settings</a></li>
-        <li><a href="logout.html">Logout</a></li>
+        <li><a href="{{ url_for('admin.dashboard') }}" class="active"> Dashboard</a></li>
+        <li><a href="{{ url_for('victim.manage_victims') }}"> Manage Victims</a></li>
+        <li><a href="{{ url_for('responder.manage_responders') }}"> Manage Responders</a></li>
+        <li><a href="{{ url_for('organization.manage_organizations') }}"> Manage Organizations</a></li>
+        <li><a href="{{ url_for('resource.manage_resources') }}"> Educational Resources</a></li>
+        <li><a href="{{ url_for('settings.settings') }}"> Settings</a></li>
+        <li><a href="{{ url_for('auth.logout') }}"> Logout</a></li>
+        <li><a href="{{ url_for('report.report_form') }}">Reports</a></li>
     </ul>
 </div>
 
@@ -23,19 +24,19 @@
     <div class="admin-dashboard-cards">
         <div class="admin-card">
             <h3>Total Victims</h3>
-            <p>120</p>
+            <p>{{ total_victims }}</p>
         </div>
         <div class="admin-card">
             <h3>Responders</h3>
-            <p>35</p>
+            <p>{{ total_responders }}</p>
         </div>
         <div class="admin-card">
             <h3>Organizations</h3>
-            <p>10</p>
+            <p>{{ total_organizations }}</p>
         </div>
         <div class="admin-card">
             <h3>Resources</h3>
-            <p>50</p>
+            <p>{{ total_resources }}</p>
         </div>
     </div>
 </div>
