@@ -32,7 +32,8 @@ class VictimModel:
     def search_victims(self, search_query):
         from bson.objectid import ObjectId
         query_conditions = [
-            {"name": {"$regex": search_query, "$options": "i"}}
+            {"username": {"$regex": search_query, "$options": "i"}},
+            {"email": {"$regex": search_query, "$options": "i"}}
         ]
         if ObjectId.is_valid(search_query):
             query_conditions.append({"_id": ObjectId(search_query)})

@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}User Profile{% endblock %}
+
 {% block content %}
     <!-- Main Content -->
     <main class="profile-container">
@@ -8,13 +10,25 @@
         <section class="profile-card">
             <!-- Display user's profile picture if available, otherwise default image -->
             <img src="{{ user.profile_pic if user.profile_pic else url_for('static', filename='images/default-profile.jpg') }}" alt="User Avatar" id="profilePic">
-            <h2 id="userName">{{ user.name }}</h2>
-            <p>Email: <span id="userEmail">{{ user.email }}</span></p>
-            <p>Phone: <span id="userPhone">{{ user.phone }}</span></p>
+            <h2 id="userName">{{ profile.username }}</h2>
+            <p>Email: <span id="userEmail">{{ profile.email }}</span></p>
+            <p>Phone: <span id="userPhone">{{ profile.phone }}</span></p>
+            <p>Location: <span id="userLocation">{{ profile.location }}</span></p>
+            <p>Gender:<span id="userGender">{{ profile.gender }}</span></p>
             <p>Role: <span id="userRole">{{ user.role }}</span></p>
 
             <button id="editProfileBtn">Edit Profile</button>
             <button id="logoutBtn">Logout</button>
+
+            <div class="profile-section">
+                <p>Username: {{ profile.username }}</p>
+                <p>Email: {{ profile.email }}</p>
+                <p>Phone: {{ profile.phone }}</p>
+                <p>Location: {{ profile.location }}</p>
+                <p>Gender: {{ profile.gender }}</p>
+                <p>Case Description: {{ profile.case_description }}</p>
+            </div>
+            
         </section>
 
         <!-- Edit Profile Modal -->
@@ -23,7 +37,7 @@
                 <span class="close-modal">&times;</span>
                 <h2>Edit Profile</h2>
                 <!-- Include form action to update profile data -->
-                <form id="editProfileForm" action="{{ url_for('profile.update_profile') }}" method="POST">
+                <form id="editProfileForm" action="{{ url_for('victimProfile.update_profile') }}" method="POST">
                     <label for="editName">Name:</label>
                     <input type="text" id="editName" name="name" value="{{ user.name }}" placeholder="Enter new name">
 
@@ -32,6 +46,15 @@
 
                     <label for="editPhone">Phone:</label>
                     <input type="text" id="editPhone" name="phone" value="{{ user.phone }}" placeholder="Enter new phone number">
+
+                    <label for="editLocation">Location:</label>
+                    <input type="text" id="editLocation" name="location" value="{{ user.location }}" placeholder="Enter new location">
+
+                    <label for="editGender">Gender</label>
+                    <select id="editGender" name="gender" value="{{ user.gender }}">
+
+                    <label for="editCaseDescription">Case Description:</label>
+                    <textarea id="editCaseDescription" name="case_description" placeholder="Enter new case description">{{ user.case_description }}</textarea>
 
                     <button type="submit">Save Changes</button>
                 </form>

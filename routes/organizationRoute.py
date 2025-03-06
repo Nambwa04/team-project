@@ -1,74 +1,104 @@
 from flask import Blueprint, request, jsonify, redirect, url_for, flash, render_template
-from models.organization import OrganizationModel
-from models.user import mongo
+from models.user import mongo, User, bcrypt
 from bson import ObjectId
+from models.decorators import role_required
+from services.organizationService import OrganizationService
+from models.organization import OrganizationModel
 
 # Create Blueprint
 organization_bp = Blueprint('organization', __name__)
 organization_model = OrganizationModel(mongo)
 
+organizationService = OrganizationService()
+
 # Define routes
 @organization_bp.route('/manage_organizations', methods=['GET'])
+@role_required('admin')
 def manage_organizations():
-    organizations = organization_model.get_all_organizations()
+    organizations = organizationService.get_all_organizations()
 
     # Convert ObjectId to string for JSON serialization
+    processed = []
     for org in organizations:
         org['_id'] = str(org['_id'])
+        if org.get('user_data'):
+            org.update(org['user_data'][0])
+            del org['user_data']
+        processed.append(org)
 
-    return render_template('organizations.html', organizations=organizations)
+    return render_template('organizations.html', organizations=processed)
 
 @organization_bp.route('/add_organization', methods=['POST'])
 def add_organization():
-    organization = {
-        'name': request.form.get('name'),
-        'contact': request.form.get('contact'),
-        'category': request.form.get('category'),
-        'location': request.form.get('location')
-    }
+    username = request.form.get('username')
+    email = request.form.get('email')
+    phone = request.form.get('phone')
+    category = request.form.get('category')
+    location = request.form.get('location')
 
-    if not all(organization.values()):
-        flash("All fields are required!", "error")  
+    # Validate required fields
+    required_fields = [username, email, phone, category, location]
+    if not all(required_fields):
+        flash('All fields are required!', 'error')
+        return redirect(url_for('organization.manage_organizations'))
+
+    # Check for existing email or username
+    if User.find_by_email(email):
+        flash('Email already exists!', 'error')
+        return redirect(url_for('organization.manage_organizations'))
+    if User.find_by_username(username):
+        flash('Username already exists!', 'error')
         return redirect(url_for('organization.manage_organizations'))
 
     try:
-        organization_model.add_organization(organization)
-        flash("Organization added successfully!", "success")  
-        return redirect(url_for('organization.manage_organizations'))
+        # Create user with default password
+        default_password = "org1234"  # Set a default password
+        user_id = User.register_user(username, email, default_password, role='organization').inserted_id
+
+        # Create organization profile linked to the user
+        organization_data = {
+            'user_id': user_id,
+            'username': username,
+            'email': email,
+            'phone': phone,
+            'category': category,
+            'location': location,
+        }
+        organization_model.add_organization(organization_data)  # Insert into organization collection
+
+        flash('Organization added. User can login with email and default password.', 'success')
     except Exception as e:
-        flash(f"Error: {str(e)}", "error")  
-        return redirect(url_for('organization.manage_organizations'))
+        flash(f'Error: {str(e)}', 'error')
+    
+    return redirect(url_for('organization.manage_organizations'))
 
 @organization_bp.route('/organization/<organization_id>', methods=['POST'])
 def edit_organization(organization_id):
+    updated_organization = {
+        'username': request.form.get('username'),
+        'email': request.form.get('email'),
+        'phone': request.form.get('phone'),
+        'category': request.form.get('category'),
+        'location': request.form.get('location')
+    }
+    if not all(updated_organization.values()):
+        flash('All fields are required!', 'error')
+        return redirect(url_for('organization.manage_organizations'))
     try:
-        updated_data = {
-            'name': request.form.get('name'),
-            'contact': request.form.get('contact'),
-            'category': request.form.get('category'),
-            'location': request.form.get('location')
-        }
-        if not all(updated_data.values()):
-            flash("All fields are required!", "error")
-            return redirect(url_for('organization.manage_organizations'))
-
-        result = organization_model.update_organization(organization_id, updated_data)
-
+        result = organization_model.update_organization(organization_id, updated_organization)
         if result.modified_count:
-            flash("Organization updated successfully", "success")
+            flash('Organization updated successfully', 'success')
         else:
-            flash("No changes made or organization not found", "error")
-        return redirect(url_for('organization.manage_organizations'))
-
+            flash('No changes made or organization not found', 'error')
     except Exception as e:
-        flash(f"Error: {str(e)}", "error")
-        return redirect(url_for('organization.manage_organizations'))
+        flash(f'Error updating organization: {str(e)}', 'error')
+    return redirect(url_for('organization.manage_organizations'))
 
 
 @organization_bp.route('/organization/<organization_id>/delete', methods=['POST'])
 def delete_organization(organization_id):
     try:
-        result = organization_model.delete_organization(organization_id)
+        result = organizationService.delete_organization(organization_id)
 
         if result.deleted_count:
             flash("Organization deleted successfully", "success")
@@ -92,13 +122,13 @@ def search_organization():
     organizations = []
     if search_query and category:
         # Search by both query and category
-        organizations = organization_model.search_organizations_by_query_and_category(search_query, category)
+        organizations = organizationService.search_organizations_by_query_and_category(search_query, category)
     elif search_query:
         # Search by query only
-        organizations = organization_model.search_organizations(search_query)
+        organizations = organizationService.search_organizations(search_query)
     elif category:
         # Filter by category only
-        organizations = organization_model.filter_by_category(category)
+        organizations = organizationService.filter_by_category(category)
 
     # Convert ObjectId to string for template rendering
     for org in organizations:
