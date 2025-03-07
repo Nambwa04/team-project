@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 
+{% block title %}Admin Panel{% endblock %}
+
 {% block content %}
 
 <div class="admin-sidebar">
     <h2>Admin Panel</h2>
     <ul>
-        <li><a href="{{ url_for('admin.dashboard') }}" class="active"> Dashboard</a></li>
+        <li><a href="{{ url_for('auth.dashboard') }}" class="active"> Dashboard</a></li>
         <li><a href="{{ url_for('victim.manage_victims') }}"> Manage Victims</a></li>
         <li><a href="{{ url_for('responder.manage_responders') }}"> Manage Responders</a></li>
         <li><a href="{{ url_for('organization.manage_organizations') }}"> Manage Organizations</a></li>

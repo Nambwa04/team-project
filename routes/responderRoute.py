@@ -2,12 +2,14 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash
 from models.responders import ResponderModel
 from models.user import mongo
 from bson.objectid import ObjectId
+from models.decorators import role_required
 
 # Create Blueprint
 responder_bp = Blueprint('responder', __name__)
 responder_model = ResponderModel(mongo)
 
 @responder_bp.route('/manage_responders', methods=['GET'])
+@role_required('admin')
 def manage_responders():
     responders = responder_model.get_all_responders()
 

@@ -33,7 +33,7 @@ class OrganizationModel:
     def search_organizations(self, search_query):
         from bson.objectid import ObjectId
         query_conditions = [
-            {"name": {"$regex": search_query, "$options": "i"}},
+            {"username": {"$regex": search_query, "$options": "i"}},
             {"category": {"$regex": search_query, "$options": "i"}}
         ]
         

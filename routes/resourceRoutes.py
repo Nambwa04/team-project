@@ -2,11 +2,13 @@ from flask import Blueprint, request, render_template, redirect, url_for, flash
 from models.resource import ResourceModel
 from models.user import mongo
 from bson.objectid import ObjectId
+from models.decorators import role_required
 
 resource_bp = Blueprint('resource', __name__)
 resource_model = ResourceModel(mongo)
 
 @resource_bp.route('/manage_resources')
+@role_required('admin')
 def manage_resources():
     resources = resource_model.get_all_resources()
     for resource in resources:

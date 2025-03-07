@@ -1,41 +1,41 @@
-from flask_pymongo import PyMongo
 from flask_bcrypt import Bcrypt
-from bson.objectid import ObjectId
+from . import mongo
 
-# Initialize PyMongo instance
-mongo = PyMongo()
-
-# Function to initialize the app with PyMongo
-def init_app(app):
-    mongo.init_app(app)
-
-# Initialize Bcrypt instance for password hashing
 bcrypt = Bcrypt()
 
-# Class representing a User
 class User:
-    @staticmethod
-    def register_user(username, email, password):
-        hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
-        return mongo.db.users.insert_one(
-            {
-                "username": username,
-                "email": email,
-                "password": hashed_password
-            }
-        )
-    
-    @staticmethod
-    def find_by_email(email):
-        return mongo.db.users.find_one({"email": email})
-    
-    @staticmethod
-    def find_by_id(user_id):
-        return mongo.db.users.find_one({"_id": ObjectId(user_id)})
-    
-    @staticmethod
-    def update_user(user_id, update_data):
-        return mongo.db.users.update_one(
-            {"_id": ObjectId(user_id)},
-            {"$set": update_data}
+    collection = None  # Placeholder for MongoDB collection
+
+    @classmethod
+    def init_user(cls):
+        cls.collection = mongo.db.users  # Initialize collection
+
+    @classmethod
+    def register_user(cls, username, email, password, role='victim'):
+        hashed_pw = bcrypt.generate_password_hash(password).decode('utf-8')
+        return cls.collection.insert_one({
+            'username': username,
+            'email': email,
+            'password': hashed_pw,
+            'role': role
+        })
+
+    @classmethod
+    def find_by_username(cls, username):
+        return cls.collection.find_one({"username": username})
+
+    @classmethod
+    def find_by_email(cls, email):
+        return cls.collection.find_one({"email": email})
+
+    @classmethod
+    def is_admin(user):
+        return user.get("role") == "admin"
+
+    @classmethod
+    def update_password(cls, user_id, new_password):
+        hashed_pw = bcrypt.generate_password_hash(new_password).decode('utf-8')
+        return cls.collection.update_one(
+            {"_id": user_id},
+            {"$set": {"password": hashed_pw}}
         )
