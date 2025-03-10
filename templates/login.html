@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="login-container">
+        <h1>LOG IN</h1>
+        <form action="{{ url_for('auth.login') }}" id="loginForm" class="form" method="POST">
+            <div class="login-form-control">
+                <label for="email">Email</label><br>
+                <input type="email" id="email" name="email" placeholder="Enter email">
+                <small>Error message</small>
+            </div>
+            <div class="login-form-control">
+                <label for="password">Password</label><br>
+                <input type="password" id="password" name="password" placeholder="Enter password">
+                <small>Error message</small>
+            </div>
+            <button type="submit">Log in</button>
+            <div>
+                <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register</a></p>
+            </div>
+    </div>
+{% endblock %}

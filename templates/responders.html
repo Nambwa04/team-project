@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div id="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <header class="Responder-header">
+        <h1>Manage Responders</h1>
+        <form id="searchResponderForm" action="{{ url_for('responder.search_responder') }}" method="GET">
+            <label for="searchResponder">Search:</label>
+            <input type="text" id="searchResponder" name="search_query" placeholder="Search by Name or ID">
+            
+            <label for="areaFilter">Filter by Assigned Area:</label>
+            <select id="areaFilter" name="area">
+                <option value="">All Areas</option>
+                <option value="Nairobi">Nairobi</option>
+                <option value="Mombasa">Mombasa</option>
+                <option value="Kisumu">Kisumu</option>
+            </select>
+            
+            <button type="submit">Search</button>
+        </form>
+        <button class="add-btn" id="showAddResponderForm">Add Responder</button>
+    </header>
+
+    <!-- Add Responder Form -->
+    <div id="addResponderFormContainer" style="display: none;">
+        <form id="addResponderForm" action="{{ url_for('responder.add_responder') }}" method="POST">
+            <h3>Add New Responder</h3>
+            <div>
+                <label for="Name">Name:</label>
+                <input type="text" id="Name" name="Name" required>
+            </div>
+            <div>
+                <label for="Contact">Contact:</label>
+                <input type="text" id="Contact" name="Contact" required>
+            </div>
+            <div>
+                <label for="Assigned_Area">Assigned Area:</label>
+                <select id="Assigned_Area" name="Assigned_Area" required>
+                    <option value="">Select Area</option>
+                    <option value="Nairobi">Nairobi</option>
+                    <option value="Mombasa">Mombasa</option>
+                    <option value="Kisumu">Kisumu</option>
+                </select>
+            </div>
+            <button type="submit">Save</button>
+            <button type="button" id="cancelAddResponder">Cancel</button>
+        </form>
+    </div>
+
+    <!-- Responders Table -->
+    <table id="respondersTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>Assigned Area</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for responder in responders %}
+            <tr>
+                <td>{{ responder._id }}</td>
+                <td>{{ responder.Name }}</td>
+                <td>{{ responder.Contact }}</td>
+                <td>{{ responder.Assigned_Area }}</td>
+                <td>
+                    <button class="edit-btn" data-id="{{ responder._id }}">Edit</button>
+                    <form action="{{ url_for('responder.delete_responder', responder_id=responder._id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this responder?');">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Edit Responder Form -->
+    <div id="editResponderFormContainer" style="display: none;">
+        <form id="editResponderForm" method="POST">
+            <h3>Edit Responder</h3>
+            <!-- Hidden field for ObjectId (for backend reference) -->
+            <input type="hidden" id="edit_responder_id" name="responder_id">
+            <div>
+                <label for="edit_Name">Name:</label>
+                <input type="text" id="edit_Name" name="Name" required>
+            </div>
+            <div>
+                <label for="edit_Contact">Contact:</label>
+                <input type="text" id="edit_Contact" name="Contact" required>
+            </div>
+            <div>
+                <label for="edit_Assigned_Area">Assigned Area:</label>
+                <select id="edit_Assigned_Area" name="Assigned_Area" required>
+                    <option value="">Select Area</option>
+                    <option value="Nairobi">Nairobi</option>
+                    <option value="Mombasa">Mombasa</option>
+                    <option value="Kisumu">Kisumu</option>
+                </select>
+            </div>
+            <button type="submit">Update</button>
+            <button type="button" id="cancelEditResponder">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/responder.js') }}"></script>
+
+{% endblock %}

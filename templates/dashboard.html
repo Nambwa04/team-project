@@ -1,0 +1,61 @@
+{% extends "base.html" %}  <!-- Ensure this is at the very top -->
+
+{% block content %}
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>Welcome {{ username }}!</h1>
+            <a href="{{ url_for('auth.logout') }}" class="dashboard-logout-btn">Logout</a>
+        </div>
+
+        <!-- Dashboard content -->
+        <div class="dashboard-content">
+            <h2 class="dashboard-subtitle">Ladies and gentlemen</h2>
+            <h1 class="dashboard-title">THE DASHBOARD</h1>
+
+            <!-- Add your chart container -->
+            <div class="chart-container">
+                <canvas id="dataChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Hidden div for initial data -->
+        <div id="initial-data" data-values="{{ initial_data|tojson|safe }}"></div>
+    </div>
+
+    <!-- Required scripts for real-time updates -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script src="{{ url_for('static', filename='js/realtime.js') }}"></script>
+
+    <!-- Optional: Add some basic styling -->
+    <style>
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .logout-btn {
+            padding: 8px 16px;
+            background-color: #f44336;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        
+        .chart-container {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+        }
+    </style>
+{% endblock %}

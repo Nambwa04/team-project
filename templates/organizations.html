@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="admin-sidebar">
+    <h2>Admin Panel</h2>
+    <ul>
+        <li><a href="{{ url_for('auth.dashboard') }}">Dashboard</a></li>
+        <li><a href="{{ url_for('victim.add_victim') }}">Manage Victims</a></li>
+        <li><a href="{{ url_for('responder.add_responder') }}">Manage Responders</a></li>
+        <li><a href="{{ url_for('organization.add_organization') }}" class="active">Manage Organizations</a></li>
+        <li><a href="{{ url_for('resource.add_resource') }}">Educational Resources</a></li>
+        <li><a href="{{ url_for('landing') }}">Settings</a></li>
+        <li><a href="">Logout</a></li>
+    </ul>
+</div>
+
+<<<<<<< HEAD
+<div class="content">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div id="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <header class="Organization-header">
+        <h1>Manage Organizations</h1>
+        <br>
+        <form id="searchForm" action="{{ url_for('organization.search_organization') }}" method="GET">
+            <label for="search">Search:</label>
+            <input type="text" id="searchOrganization" name="search_query" placeholder="Search by Name or ID">
+            <select id="categoryFilter" name="category">
+                <option value="">Filter by Category</option>
+                <option value="Healthcare">Healthcare</option>
+                <option value="Legal">Legal</option>
+                <option value="Counseling">Counseling</option>
+                <option value="Shelter">Shelter</option>
+            </select>
+            <button type="submit">Search</button>
+        </form>
+        <button class="add-btn" id="showAddForm">Add Organization</button>
+    </header>
+
+    <!--Add Organization form-->
+    <div id="addOrgFormContainer" style="display:none;">
+        <form id="addOrgForm" action="{{ url_for('organization.add_organization') }}" method="POST">
+            <h3>Add New Organization</h3>
+            <div>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div>
+                <label for="contact">Contact:</label>
+                <input type="text" id="contact" name="contact" required>
+            </div>
+            <div>
+                <label for="category">Category:</label>
+                <select id="category" name="category" required>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Legal">Legal</option>
+                    <option value="Counseling">Counseling</option>
+                    <option value="Shelter">Shelter</option>
+                </select>
+            </div>
+            <div>
+                <label for="location">Location:</label>
+                <input type="text" id="location" name="location" required>
+            </div>
+            <button type="submit">Save</button>
+            <button type="button" id="cancelAdd">Cancel</button>
+        </form>
+    </div>
+
+    <table id="organizationsTable">
+=======
+<div class="organization-content">
+    <header class="organization-header">
+        <h1>Manage Organizations</h1>
+        <label for="search">Search:</label>
+        <input type="text" id="searchOrganization" placeholder="Search by Name or ID">
+        <select id="categoryFilter">
+            <option value="">Filter by Category</option>
+            <option value="Healthcare">Healthcare</option>
+            <option value="Legal">Legal</option>
+            <option value="Counseling">Counseling</option>
+            <option value="Shelter">Shelter</option>
+        </select>
+        <button class="add-btn">Add Organization</button>
+    </header>
+
+    <table class="organization-table">
+>>>>>>> 8d89dc2375ce153667f3a89d63de3121f9158239
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>Category</th>
+                <th>Location</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for org in organizations %}
+            <tr>
+                <td>{{ org._id }}</td>
+                <td>{{ org.name }}</td>
+                <td>{{ org.contact }}</td>
+                <td>{{ org.category }}</td>
+                <td>{{ org.location }}</td>
+                <td>
+                    <button class="edit-btn" data-id="{{ org._id}}">Edit</button>
+                    <form action="{{ url_for('organization.delete_organization', organization_id=org._id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this organization?');">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!--Edit organization form-->
+    <div id="editOrgFormContainer" style="display:none;">
+        <form id="editOrgForm" method="POST">
+            <h3>Edit Organization</h3>
+            <input type="hidden" id="edit_id" name="id">
+            <div>
+                <label for="edit_name">Name:</label>
+                <input type="text" id="edit_name" name="name" required>
+            </div>
+            <div>
+                <label for="edit_contact">Contact:</label>
+                <input type="text" id="edit_contact" name="contact" required>
+            </div>
+            <div>
+                <label for="edit_category">Category:</label>
+                <select id="edit_category" name="category" required>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Legal">Legal</option>
+                    <option value="Counseling">Counseling</option>
+                    <option value="Shelter">Shelter</option>
+                </select>
+            </div>
+            <div>
+                <label for="edit_location">Location:</label>
+                <input type="text" id="edit_location" name="location" required>
+            </div>
+            <button type="submit">Update</button>
+            <button type="button" id="cancelEdit">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/organization.js') }}"></script>
+
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <header>
+        <h1>Manage Victims</h1>
+        <form id="searchVictimForm" action="{{ url_for('victim.search_victim') }}" method="GET">
+            <label for="searchVictim">Search:</label>
+            <input type="text" id="searchVictim" name="search_query" placeholder="Search by Name or ID">
+            <label for="genderFilter">Gender:</label>
+            <select id="genderFilter" name="gender">
+                <option value="">All</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+            <button type="submit">Search</button>
+        </form>
+        <button class="add-btn" id="showAddVictimForm">Add Victim</button>
+    </header>
+
+    <!-- Add Victim Form -->
+    <div id="addVictimFormContainer" style="display: none;">
+        <form id="addVictimForm" action="{{ url_for('victim.add_victim') }}" method="POST">
+            <h3>Add New Victim</h3>
+            <div>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div>
+                <label for="gender">Gender:</label>
+                <select id="gender" name="gender" required>
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+            <div>
+                <label for="location">Location:</label>
+                <input type="text" id="location" name="location" required>
+            </div>
+            <button type="submit">Save</button>
+            <button type="button" id="cancelAddVictim">Cancel</button>
+        </form>
+    </div>
+
+    <!-- Victims Table -->
+    <table id="victimsTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Gender</th>
+                <th>Location</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for victim in victims %}
+            <tr>
+                <td>{{ victim._id }}</td>
+                <td>{{ victim.name }}</td>
+                <td>{{ victim.gender }}</td>
+                <td>{{ victim.location }}</td>
+                <td>
+                    <button class="edit-btn" data-id="{{ victim._id }}">Edit</button>
+                    <form action="{{ url_for('victim.delete_victim', victim_id=victim._id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this victim?');">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Edit Victim Form -->
+    <div id="editVictimFormContainer" style="display: none;">
+        <form id="editVictimForm" method="POST">
+            <h3>Edit Victim</h3>
+            <!-- Hidden field for MongoDB ObjectId -->
+            <input type="hidden" id="edit_victim_id" name="victim_id">
+            <div>
+                <label for="edit_name">Name:</label>
+                <input type="text" id="edit_name" name="name" required>
+            </div>
+            <div>
+                <label for="edit_gender">Gender:</label>
+                <select id="edit_gender" name="gender" required>
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+            <div>
+                <label for="edit_location">Location:</label>
+                <input type="text" id="edit_location" name="location" required>
+            </div>
+            <button type="submit">Update</button>
+            <button type="button" id="cancelEditVictim">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<!-- Dark Mode Toggle -->
+<!-- <div class="settings-section">
+    <h2>Appearance</h2>
+    <label class="toggle-switch">
+        <input type="checkbox" class="toggle-btn">
+        <span class="slider round"></span>
+    </label>
+</div> -->
+
+<script src="{{ url_for('static', filename='js/victim.js') }}"></script>
+
+{% endblock %}
