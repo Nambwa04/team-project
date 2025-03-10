@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Root variables for colors */
+        :root {
+            --primary-color: #1abc9c;
+            --dark-bg: #2c3e50;
+            --light-bg: #ecf0f1;
+            --text-color: #333;
+        }
+
+        /* Reset styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Body styling */
+        body {
+            background-color: var(--light-bg);
+            display: flex;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            background-color: var(--dark-bg);
+            padding: 20px;
+            color: white;
+            position: fixed;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin: 10px 0;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: white;
+            padding: 12px;
+            display: block;
+            border-radius: 8px;
+            transition: 0.3s ease;
+        }
+
+        .sidebar ul li a:hover, .sidebar ul li a.active {
+            background: var(--primary-color);
+        }
+
+        /* Main Content */
+        .profile-container {
+            margin-left: 280px;
+            padding: 40px;
+            width: calc(100% - 280px);
+            position: relative;
+        }
+
+        .profile-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            max-width: 600px;
+            margin: auto;
+            position: relative;
+        }
+
+        /* Profile Picture - Positioned at Top Right */
+        .profile-pic-container {
+            position: absolute;
+            top: -30px; /* Adjust this to move up */
+            right: -30px; /* Adjust this to move right */
+            width: 120px;
+        }
+
+        .profile-card img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid var(--primary-color);
+            cursor: pointer;
+        }
+
+        .upload-icon {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: var(--primary-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        /* Hidden File Input */
+        #fileInput {
+            display: none;
+        }
+
+        /* About Section */
+        .about-section {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .about-section h3 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .report-btn {
+            margin-top: 15px;
+            padding: 12px;
+            width: 100%;
+            border: none;
+            background-color: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: 0.3s ease;
+        }
+
+        .report-btn:hover {
+            background-color: #16a085;
+        }
+
+        /* Modal Styling */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 350px;
+            text-align: center;
+        }
+
+        .close-modal {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .modal button {
+            width: 100%;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2>Dashboard</h2>
+        <ul>
+            <li><a href="dashboard.html">Home</a></li>
+            <li><a href="userprofile.html" class="active">Profile</a></li>
+            <li><a href="settings.html">Settings</a></li>
+            <li><a href="logout.html">Logout</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="profile-container">
+        <h1>User Profile</h1>
+
+        <section class="profile-card">
+            <!-- Profile Picture Upload (Now at Top Right) -->
+            <div class="profile-pic-container">
+                <img src="default-profile.jpg" alt="User Avatar" id="profilePic">
+                <div class="upload-icon" onclick="document.getElementById('fileInput').click()">📷</div>
+            </div>
+
+            <!-- User Info -->
+            <h2 id="userName">John Doe</h2>
+            <p>Email: <span id="userEmail">johndoe@example.com</span></p>
+            <p>Phone: <span id="userPhone">+123456789</span></p>
+            <p>Role: <span id="userRole">Admin</span></p>
+
+            <!-- About Section -->
+            <div class="about-section">
+                <h3>About</h3>
+                <p id="userAbout">Passionate about social justice and gender equality.</p>
+
+                <h3>Location</h3>
+                <p id="userLocation">Nairobi, Kenya</p>
+            </div>
+
+            <!-- Report Button -->
+            <button class="report-btn">Report an Incident</button>
+
+ <!---->      <button class="btn" id="editProfileBtn">Edit Profile</button>
+        </section>
+
+        <!-- File Input for Uploading -->
+        <input type="file" id="fileInput" accept="image/*">
+    </main>
+
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Edit Profile</h2>
+            <form id="editProfileForm">
+                <input type="text" id="editName" placeholder="Enter new name">
+                <input type="email" id="editEmail" placeholder="Enter new email">
+                <input type="text" id="editPhone" placeholder="Enter new phone number">
+                <button type="submit" class="btn">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Get elements from the DOM
+        const profilePic = document.getElementById("profilePic"); // Profile picture element
+        const fileInput = document.getElementById("fileInput"); // File input element
+
+        // Listen for file selection
+        fileInput.addEventListener("change", function(event) {
+            // Get the selected file
+            const file = event.target.files[0];
+
+            // Check if a file is selected
+            if (file) {
+                // Create a FileReader to read the image
+                const reader = new FileReader();
+
+                // When the image is loaded, set it as the profile picture
+                reader.onload = function(e) {
+                    profilePic.src = e.target.result; // Set new image source
+                    // Save the image in local storage
+                    localStorage.setItem("profileImage", e.target.result);
+                };
+
+                // Read the file as a Data URL
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Load saved profile picture on page load
+        window.addEventListener("load", function() {
+            // Check if a saved image exists in local storage
+            const savedImage = localStorage.getItem("profileImage");
+
+            // If an image is saved, display it
+            if (savedImage) {
+                profilePic.src = savedImage;
+            }
+        });
+        
+        // Edit profile
+        const modal = document.getElementById("editProfileModal");
+        const editBtn = document.getElementById("editProfileBtn");
+        const closeModal = document.querySelector(".close-modal");
+
+        editBtn.onclick = () => modal.style.display = "flex";
+        closeModal.onclick = () => modal.style.display = "none";
+        window.onclick = (event) => { if (event.target === modal) modal.style.display = "none"; };
+
+        document.getElementById("editProfileForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            document.getElementById("userName").innerText = document.getElementById("editName").value;
+            document.getElementById("userEmail").innerText = document.getElementById("editEmail").value;
+            document.getElementById("userPhone").innerText = document.getElementById("editPhone").value;
+            modal.style.display = "none";
+        });
+
+    </script>
+
+</body>
+</html>
