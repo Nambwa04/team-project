@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Organizations</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+
+    <div class="sidebar">
+        <ul>
+            <li>
+                <a href="#">
+                    <span class="sidetag">Admin</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="admin.html">
+                    <span class="ICon">
+                        <ion-icon name="home-outline"></ion-icon>
+                    </span>
+                    <span class="sidetag">Dashboard</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="victims.html">
+                    <span class="ICon">
+                        <ion-icon name="people-outline"></ion-icon></span>
+                    <span class="sidetag">Victims</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="Responders.html">
+                    <span class="ICon">
+                        <ion-icon name="alert-circle-outline"></ion-icon></span>
+                    <span class="sidetag">Responders</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="Organizations.html">
+                    <span class="ICon">
+                        <ion-icon name="briefcase-outline"></ion-icon></span>
+                    <span class="sidetag">Organizations</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="Resources.html">
+                    <span class="ICon">
+                        <ion-icon name="library-outline"></ion-icon></span>
+                    <span class="sidetag">Resources</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="Messages.html">
+                    <span class="ICon">
+                        <ion-icon name="chatbox-outline"></ion-icon></span>
+                    <span class="sidetag">Messages</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="Logout.html">
+                    <span class="ICon">
+                        <ion-icon name="log-out-outline"></ion-icon></span>
+                    <span class="sidetag">Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <!-- nime maliza sidebar-->
+
+    <div class="content">
+
+        <header class="Organization-header">
+
+            <!--menu for sidebar/hamburger yake-->
+            <div class="toggle">
+                <ion-icon name="menu-outline"></ion-icon>
+            </div>
+            <!--Nime maliza menu for sidebar/hamburger yake-->
+
+            <h1>Manage Resources</h1>
+
+            <div class="search">
+                <label>
+                    <input type="text" id="searchResources" placeholder="Search Name">
+                        <div>
+                            <button class="searchbtn"><ion-icon name="search-outline"></ion-icon></button>
+                        </div>
+                </label>
+            </div>
+
+            <div class="categoryFilter">
+                <select id="categoryFilter">
+                    <option value="">Filter</option>
+                    <option value="Healthcare">PDF</option>
+                    <option value="Legal">Word(Docs)</option>
+                </select>
+            </div>
+
+            <button class="add-btn">Add Resources</button>
+        </header>
+
+        <table class="organizationsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th>Link</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>GBV Awareness Guide</td>
+                        <td>PDF</td>
+                        <td><a href="#">View</a></td>
+                        <td class="actions">
+                            <button class="edit-btn">Edit</button>
+                            <button class="delete-btn">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+        </table>
+    </div>
+
+    <script src="static/script.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+</body>
+</html>
