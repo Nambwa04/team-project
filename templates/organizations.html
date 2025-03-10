@@ -32,7 +32,7 @@
         <br>
         <form id="searchForm" action="{{ url_for('organization.search_organization') }}" method="GET">
             <label for="search">Search:</label>
-            <input type="text" id="searchOrganization" name="search_query" placeholder="Search by Name or ID">
+            <input type="text" id="searchOrganization" name="search_query" placeholder="Search by Name or ID or Email">
             <select id="categoryFilter" name="category">
                 <option value="">Filter by Category</option>
                 <option value="Healthcare">Healthcare</option>
@@ -52,6 +52,10 @@
             <div>
                 <label for="name">Name:</label>
                 <input type="text" id="name" name="name" required>
+            </div>
+            <div>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
             </div>
             <div>
                 <label for="contact">Contact:</label>
@@ -80,6 +84,7 @@
             <tr>
                 <th>ID</th>
                 <th>Name</th>
+                <th>Email</th>
                 <th>Contact</th>
                 <th>Category</th>
                 <th>Location</th>
@@ -89,14 +94,15 @@
         <tbody>
             {% for org in organizations %}
             <tr>
-                <td>{{ org._id }}</td>
-                <td>{{ org.name }}</td>
+                <td>{{ loop.index }}</td>
+                <td>{{ org.username }}</td>
+                <td>{{ org.email }}</td>
                 <td>{{ org.contact }}</td>
                 <td>{{ org.category }}</td>
                 <td>{{ org.location }}</td>
                 <td>
                     <button class="edit-btn" data-id="{{ org._id}}">Edit</button>
-                    <form action="{{ url_for('organization.delete_organization', organization_id=org._id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this organization?');">
+                    <form action="/organization/{{ org._id }}/delete    " method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this organization?');">
                         <button type="submit">Delete</button>
                     </form>
                 </td>
@@ -113,6 +119,10 @@
             <div>
                 <label for="edit_name">Name:</label>
                 <input type="text" id="edit_name" name="name" required>
+            </div>
+            <div>
+                <label for="edit_email">Email:</label>
+                <input type="email" id="edit_email" name="email" required>
             </div>
             <div>
                 <label for="edit_contact">Contact:</label>

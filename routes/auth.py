@@ -39,6 +39,8 @@ def register():
                 "case_description": "Unknown"
             })
 
+            print(request.form)  # Debugging line
+
             flash("Account created successfully", "success")
             return redirect(url_for("auth.login"))
 

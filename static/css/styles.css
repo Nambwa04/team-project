@@ -1,5 +1,7 @@
 * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
@@ -16,20 +18,22 @@ body {
     padding: 0;
 }
 
-/* registration form */
+/* Container Styling */
 .register-container {
     background-color: #fff;
-    padding: 20px;
-    border-radius: 5px;
+    padding: 25px;
+    border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 400px;
 }
 
+/* Heading */
 h1 {
     text-align: center;
     margin-bottom: 20px;
 }
 
+/* Form Styling */
 .form {
     margin-bottom: 20px;
 }
@@ -37,35 +41,42 @@ h1 {
 .register-form-control {
     margin-bottom: 15px;
     position: relative;
+    text-align: left;
 }
 
 .register-form-control label {
     display: block;
     margin-bottom: 5px;
+    font-weight: bold;
 }
 
-.register-form-control input {
+.register-form-control input,
+.register-form-control select {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    font-size: 14px;
 }
 
-.register-form-control input:focus {
+.register-form-control input:focus,
+.register-form-control select:focus {
     border-color: #007bff;
+    outline: none;
 }
 
+/* Error Messages */
 .register-form-control small {
     color: red;
     position: absolute;
     bottom: -15px;
     left: 0;
-    display: block;
     font-size: 10px;
     visibility: hidden;
 }
 
-.register-form-control.error input {
+.register-form-control.error input,
+.register-form-control.error select {
     border-color: red;
 }
 
@@ -73,6 +84,7 @@ h1 {
     visibility: visible;
 }
 
+/* Button Styling */
 button {
     width: 100%;
     padding: 10px;
@@ -86,6 +98,24 @@ button {
 
 button:hover {
     background-color: #0056b3;
+}
+
+/* Flash Messages */
+.alert {
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.alert-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.alert-danger {
+    background-color: #dc3545;
+    color: white;
 }
 
 /* login form */

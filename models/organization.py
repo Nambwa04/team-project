@@ -34,7 +34,10 @@ class OrganizationModel:
         from bson.objectid import ObjectId
         query_conditions = [
             {"username": {"$regex": search_query, "$options": "i"}},
-            {"category": {"$regex": search_query, "$options": "i"}}
+            {"category": {"$regex": search_query, "$options": "i"}},
+            {"email": {"$regex": search_query, "$options": "i"}},
+            {"contact": {"$regex": search_query, "$options": "i"}},
+            {"location": {"$regex": search_query, "$options": "i"}}
         ]
         
         # If search_query is a valid ObjectId, add a condition to search by _id
@@ -46,17 +49,25 @@ class OrganizationModel:
     # Filter organizations by category
     def filter_by_category(self, category):
         return list(self.collection.find({"category": category}))
+    
+    def filter_by_location(self, location):
+        return list(self.collection.find({"location": location}))
 
     # Search organizations by name or category and filter by category
-    def search_organizations_by_query_and_category(self, search_query, category):
-        return list(self.collection.find({
+    def search_organizations_by_query_and_category(self, search_query, category, location=None):
+        query = {
             "$and": [
                 {"$or": [
                     {"name": {"$regex": search_query, "$options": "i"}}
                 ]},
                 {"category": category}
             ]
-        }))
+        }
+        
+        if location:
+            query["$and"].append({"location": location})
+        
+        return list(self.collection.find(query))
 
     # Count the total number of organizations in the database
     def count_organizations(self):

@@ -4,6 +4,7 @@ from bson import ObjectId
 from models.decorators import role_required
 from services.organizationService import OrganizationService
 from models.organization import OrganizationModel
+from utils import generate_default_password, send_reset_email
 
 # Create Blueprint
 organization_bp = Blueprint('organization', __name__)
@@ -32,12 +33,12 @@ def manage_organizations():
 def add_organization():
     username = request.form.get('username')
     email = request.form.get('email')
-    phone = request.form.get('phone')
+    contact = request.form.get('contact')
     category = request.form.get('category')
     location = request.form.get('location')
 
     # Validate required fields
-    required_fields = [username, email, phone, category, location]
+    required_fields = [username, email, contact, category, location]
     if not all(required_fields):
         flash('All fields are required!', 'error')
         return redirect(url_for('organization.manage_organizations'))
@@ -51,8 +52,8 @@ def add_organization():
         return redirect(url_for('organization.manage_organizations'))
 
     try:
+        default_password = generate_default_password()
         # Create user with default password
-        default_password = "org1234"  # Set a default password
         user_id = User.register_user(username, email, default_password, role='organization').inserted_id
 
         # Create organization profile linked to the user
@@ -60,11 +61,13 @@ def add_organization():
             'user_id': user_id,
             'username': username,
             'email': email,
-            'phone': phone,
+            'contact': contact,
             'category': category,
             'location': location,
         }
         organization_model.add_organization(organization_data)  # Insert into organization collection
+
+        send_password_email(email, default_password)  # Send email with default password
 
         flash('Organization added. User can login with email and default password.', 'success')
     except Exception as e:
@@ -77,7 +80,7 @@ def edit_organization(organization_id):
     updated_organization = {
         'username': request.form.get('username'),
         'email': request.form.get('email'),
-        'phone': request.form.get('phone'),
+        'contact': request.form.get('contact'),
         'category': request.form.get('category'),
         'location': request.form.get('location')
     }
@@ -129,6 +132,10 @@ def search_organization():
     elif category:
         # Filter by category only
         organizations = organizationService.filter_by_category(category)
+    else:
+        # Filter by location only
+        location = request.args.get('location', '').strip()
+        organizations = organizationService.filter_by_location(location)
 
     # Convert ObjectId to string for template rendering
     for org in organizations:
