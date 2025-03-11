@@ -1,57 +1,132 @@
 {% extends "base.html" %}
 
-{% block title %} Manage Organizations {% endblock %}
+{% block title %}Manage Organizations{% endblock %}
 
 {% block content %}
-<div class="admin-sidebar">
-    <h2>Admin Panel</h2>
+<div class="sidebar">
     <ul>
-        <li><a href="{{ url_for('auth.dashboard') }}">Dashboard</a></li>
-        <li><a href="{{ url_for('victim.add_victim') }}">Manage Victims</a></li>
-        <li><a href="{{ url_for('responder.add_responder') }}">Manage Responders</a></li>
-        <li><a href="{{ url_for('organization.add_organization') }}" class="active">Manage Organizations</a></li>
-        <li><a href="{{ url_for('resource.add_resource') }}">Educational Resources</a></li>
-        <li><a href="{{ url_for('landing') }}">Settings</a></li>
-        <li><a href="">Logout</a></li>
+        <li>
+            <a href="#">
+                <span class="sidetag">Admin</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('admin.dashboard') }}">
+                <span class="ICon">
+                    <ion-icon name="home-outline"></ion-icon></span>                            
+                <span class="sidetag">Dashboard</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('victim.manage_victims') }}">
+                <span class="ICon">
+                    <ion-icon name="people-outline"></ion-icon></span>
+                <span class="sidetag">Victims</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('responder.manage_responders') }}">
+                <span class="ICon">
+                    <ion-icon name="alert-circle-outline"></ion-icon></span>
+                <span class="sidetag">Responders</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('organization.manage_organizations') }}">
+                <span class="ICon">
+                    <ion-icon name="briefcase-outline"></ion.icon></span>
+                <span class="sidetag">Organizations</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('resource.manage_resources') }}">
+                <span class="ICon">
+                    <ion-icon name="library-outline"></ion-icon></span>
+                <span class="sidetag">Resources</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('auth.logout') }}">
+                <span class="ICon">
+                    <ion-icon name="log-out-outline"></ion-icon></span>
+                <span class="sidetag">Logout</span>
+            </a>
+        </li>
     </ul>
 </div>
 
 <div class="content">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div id="flash-messages">
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
-
     <header class="Organization-header">
+        <!--menu for sidebar/hamburger yake-->
+        <div class="toggle">
+            <ion-icon name="menu-outline"></ion-icon>
+        </div>
+        <!--Nime maliza menu for sidebar/hamburger yake-->
+
         <h1>Manage Organizations</h1>
-        <br>
-        <form id="searchForm" action="{{ url_for('organization.search_organization') }}" method="GET">
-            <label for="search">Search:</label>
-            <input type="text" id="searchOrganization" name="search_query" placeholder="Search by Name or ID or Email">
-            <select id="categoryFilter" name="category">
-                <option value="">Filter by Category</option>
-                <option value="Healthcare">Healthcare</option>
-                <option value="Legal">Legal</option>
-                <option value="Counseling">Counseling</option>
-                <option value="Shelter">Shelter</option>
+
+        <div class="search">
+            <label>
+                <input type="text" id="searchOrganization" name="search_query" placeholder="Search by Name or ID or Email">
+                <div>
+                    <button class="searchbtn"><ion-icon name="search-outline"></ion-icon></button>
+                </div>
+            </label>
+        </div>
+
+        <div class="categoryFilter">
+            <select id="areaFilter" name="area">
+                <option value="">Filter Area</option>
+                <option value="Nairobi">Nairobi</option>
+                <option value="Mombasa">Mombasa</option>
+                <option value="Kisumu">Kisumu</option>
             </select>
-            <button type="submit">Search</button>
-        </form>
-        <button class="add-btn" id="showAddForm">Add Organization</button>
+        </div>
+
+        <button class="add-btn" id="showAddOrganizationForm">Add Organization</button>
     </header>
 
-    <!--Add Organization form-->
-    <div id="addOrgFormContainer" style="display:none;">
-        <form id="addOrgForm" action="{{ url_for('organization.add_organization') }}" method="POST">
+    <table class="organizationsTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>Assigned Area</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for organization in organizations %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ organization.username }}</td>
+                <td>{{ organization.contact }}</td>
+                <td>{{ organization.location }}</td>
+                <td class="actions">
+                    <button class="edit-btn" data-id="{{ organization._id }}" data-username="{{ organization.username }}" data-email="{{ organization.email }}" data-contact="{{ organization.contact }}" data-category="{{ organization.category }}" data-location="{{ organization.location }}">Edit</button>
+                    <form action="{{ url_for('organization.delete_organization', organization_id=organization._id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this organization?');">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Add Organization Form -->
+    <div id="addOrganizationFormContainer" class="form-container" style="display: none;">
+        <form id="addOrganizationForm" action="{{ url_for('organization.add_organization') }}" method="POST">
             <h3>Add New Organization</h3>
             <div>
-                <label for="name">Name:</label>
-                <input type="text" id="name" name="name" required>
+                <label for="username">Name:</label>
+                <input type="text" id="username" name="username" required>
             </div>
             <div>
                 <label for="email">Email:</label>
@@ -63,90 +138,61 @@
             </div>
             <div>
                 <label for="category">Category:</label>
-                <select id="category" name="category" required>
-                    <option value="Healthcare">Healthcare</option>
-                    <option value="Legal">Legal</option>
-                    <option value="Counseling">Counseling</option>
-                    <option value="Shelter">Shelter</option>
-                </select>
+                <input type="text" id="category" name="category" required>
             </div>
             <div>
                 <label for="location">Location:</label>
-                <input type="text" id="location" name="location" required>
+                <select id="location" name="location" required>
+                    <option value="">Select Area</option>
+                    <option value="Nairobi">Nairobi</option>
+                    <option value="Mombasa">Mombasa</option>
+                    <option value="Kisumu">Kisumu</option>
+                </select>
             </div>
             <button type="submit">Save</button>
-            <button type="button" id="cancelAdd">Cancel</button>
+            <button type="button" id="cancelAddOrganization">Cancel</button>
         </form>
     </div>
 
-    <table id="organizationsTable">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Contact</th>
-                <th>Category</th>
-                <th>Location</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for org in organizations %}
-            <tr>
-                <td>{{ loop.index }}</td>
-                <td>{{ org.username }}</td>
-                <td>{{ org.email }}</td>
-                <td>{{ org.contact }}</td>
-                <td>{{ org.category }}</td>
-                <td>{{ org.location }}</td>
-                <td>
-                    <button class="edit-btn" data-id="{{ org._id}}">Edit</button>
-                    <form action="/organization/{{ org._id }}/delete    " method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this organization?');">
-                        <button type="submit">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <!--Edit organization form-->
-    <div id="editOrgFormContainer" style="display:none;">
-        <form id="editOrgForm" method="POST">
+    <!-- Edit Organization Form -->
+    <div id="editOrganizationFormContainer" class="form-container" style="display: none;">
+        <form id="editOrganizationForm" method="POST">
             <h3>Edit Organization</h3>
-            <input type="hidden" id="edit_id" name="id">
+            <!-- Hidden field for MongoDB ObjectId -->
+            <input type="hidden" id="edit_organization_id" name="organization_id">
             <div>
-                <label for="edit_name">Name:</label>
-                <input type="text" id="edit_name" name="name" required>
+                <label for="edit_username">Name:</label>
+                <input type="text" id="edit_username" name="username">
             </div>
             <div>
                 <label for="edit_email">Email:</label>
-                <input type="email" id="edit_email" name="email" required>
+                <input type="email" id="edit_email" name="email">
             </div>
             <div>
                 <label for="edit_contact">Contact:</label>
-                <input type="text" id="edit_contact" name="contact" required>
+                <input type="text" id="edit_contact" name="contact">
             </div>
             <div>
                 <label for="edit_category">Category:</label>
-                <select id="edit_category" name="category" required>
-                    <option value="Healthcare">Healthcare</option>
-                    <option value="Legal">Legal</option>
-                    <option value="Counseling">Counseling</option>
-                    <option value="Shelter">Shelter</option>
-                </select>
+                <input type="text" id="edit_category" name="category">
             </div>
             <div>
                 <label for="edit_location">Location:</label>
-                <input type="text" id="edit_location" name="location" required>
+                <select id="edit_location" name="location">
+                    <option value="">Select Area</option>
+                    <option value="Nairobi">Nairobi</option>
+                    <option value="Mombasa">Mombasa</option>
+                    <option value="Kisumu">Kisumu</option>
+                </select>
             </div>
             <button type="submit">Update</button>
-            <button type="button" id="cancelEdit">Cancel</button>
+            <button type="button" id="cancelEditOrganization">Cancel</button>
         </form>
     </div>
 </div>
 
 <script src="{{ url_for('static', filename='js/organization.js') }}"></script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 
 {% endblock %}

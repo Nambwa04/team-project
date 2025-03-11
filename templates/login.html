@@ -3,24 +3,37 @@
 {% block title %}Log in{% endblock %}
 
 {% block content %}
-    <div class="login-container">
-        <h1>LOG IN</h1>
-        <form action="{{ url_for('auth.login') }}" id="loginForm" class="form" method="POST">
-            <div class="login-form-control">
-                <label for="email">Email</label><br>
-                <input type="email" id="email" name="email" placeholder="Enter email">
-                <small>Error message</small>
+<div class="Login-body">
+    <div class="Login-container">
+        <form action="{{ url_for('auth.login') }}" method="POST">
+
+            <h2>Login</h2>
+
+            <div class="datafield">
+                <ion-icon name="mail-outline"></ion-icon>
+                <input type="email" id="email" name="email" required>
+                <label for="email">Email:</label>
             </div>
-            <div class="login-form-control">
-                <label for="password">Password</label><br>
-                <input type="password" id="password" name="password" placeholder="Enter password">
-                <small>Error message</small>
+
+            <div class="datafield">
+                <ion-icon name="lock-closed-outline"></ion-icon>
+                <input type="password" id="password" name="password" required>
+                <label for="password">Password:</label>
             </div>
-            <button type="submit">Log in</button>
+
+            <div class="recover">
+                <label for=""><input type="checkbox">Remember Me</label>
+                <label><a href="{{ url_for('auth.forgot_password') }}">Forget Password</a></label>
+            </div>
+            
             <div>
-                <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register</a></p>
-                <p>Forgot password?<a href="{{ url_for('auth.forgot_password')}}">Send reset link</a></p>
+                <button type="submit" class="Login-btn">Login</button>
             </div>
+
+            <div class="Register">
+                <p>First time here? <a href="{{ url_for('auth.register') }}" id="sign-up-redirect">Sign up</a></p>
+            </div>
+
             {% with messages = get_flashed_messages() %}
                 {% if messages %}
                     <ul>
@@ -30,5 +43,14 @@
                     </ul>
                 {% endif %}
             {% endwith %}
+
+        </form>
     </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 {% endblock %}

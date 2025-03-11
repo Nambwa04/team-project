@@ -32,13 +32,14 @@ def dashboard():
                            total_responders=total_responders,
                            total_organizations=total_organizations,
                            total_resources=total_resources)
+
 from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
 from models.admin import AdminModel
 from models.user import mongo
 from bson.objectid import ObjectId
 
 # Create Blueprint
-admin_bp = Blueprint('admin', __name__)
+# admin_bp = Blueprint('admin', __name__)
 admin_model = AdminModel(mongo)
 
 @admin_bp.route('/manage_admins')

@@ -1,51 +1,56 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Responder JS loaded');
 
-    // Show and hide Add Responder Form
-    const addResponderBtn = document.getElementById('showAddResponderForm');
-    const addResponderContainer = document.getElementById('addResponderFormContainer');
-    const cancelAddResponderBtn = document.getElementById('cancelAddResponder');
+    // Add Responder Form toggling
+    const showAddResponderFormButton = document.getElementById('showAddResponderForm');
+    const addResponderFormContainer = document.getElementById('addResponderFormContainer');
+    const cancelAddResponderButton = document.getElementById('cancelAddResponder');
+    const editResponderFormContainer = document.getElementById('editResponderFormContainer');
+    const cancelEditResponderButton = document.getElementById('cancelEditResponder');
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    document.body.appendChild(overlay);
 
-    if (!addResponderBtn || !addResponderContainer || !cancelAddResponderBtn) {
-        console.error('Missing one or more required elements:', {
-            addResponderBtn,
-            addResponderContainer,
-            cancelAddResponderBtn
+    if (showAddResponderFormButton && addResponderFormContainer && cancelAddResponderButton) {
+        showAddResponderFormButton.addEventListener('click', function() {
+            addResponderFormContainer.style.display = 'block';
+            overlay.style.display = 'block';
         });
-        return;
+        cancelAddResponderButton.addEventListener('click', function() {
+            addResponderFormContainer.style.display = 'none';
+            overlay.style.display = 'none';
+        });
+        overlay.addEventListener('click', function() {
+            addResponderFormContainer.style.display = 'none';
+            editResponderFormContainer.style.display = 'none';
+            overlay.style.display = 'none';
+        });
+    } else {
+        console.error("Missing add responder elements");
     }
 
-    addResponderBtn.addEventListener('click', function() {
-        console.log('Add Responder button clicked');
-        addResponderContainer.style.display = 'block';
-    });
-
-    cancelAddResponderBtn.addEventListener('click', function() {
-        console.log('Cancel Add Responder button clicked');
-        addResponderContainer.style.display = 'none';
-    });
-
-    // Attach event listener to each edit button
+    // Edit Responder Form handling
     document.querySelectorAll('.edit-btn').forEach(button => {
         button.addEventListener('click', function() {
             const responderId = this.getAttribute('data-id');
-            const row = this.closest('tr');
-            
+            const name = this.getAttribute('data-name');
+            const contact = this.getAttribute('data-contact');
+            const assignedArea = this.getAttribute('data-assigned_area');
+
             document.getElementById('edit_responder_id').value = responderId;
-            document.getElementById('edit_Name').value = row.cells[1].textContent;
-            document.getElementById('edit_Contact').value = row.cells[2].textContent;
-            document.getElementById('edit_Assigned_Area').value = row.cells[3].textContent;
-            
-            // Show the edit form
-            document.getElementById('editResponderFormContainer').style.display = 'block';
-            
-            // Update the form action to the correct endpoint
-            document.getElementById('editResponderForm').action = '/edit_responder/' + responderId;
+            document.getElementById('edit_name').value = name;
+            document.getElementById('edit_contact').value = contact;
+            document.getElementById('edit_assigned_area').value = assignedArea;
+
+            document.getElementById('editResponderForm').action = `/responder/edit_responder/${responderId}`;
+
+            editResponderFormContainer.style.display = 'block';
+            overlay.style.display = 'block';
         });
     });
 
-    document.getElementById('cancelEditResponder').addEventListener('click', function() {
-        document.getElementById('editResponderFormContainer').style.display = 'none';
+    cancelEditResponderButton.addEventListener('click', function() {
+        editResponderFormContainer.style.display = 'none';
+        overlay.style.display = 'none';
     });
-;
 });

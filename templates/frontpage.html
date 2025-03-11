@@ -3,61 +3,14 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
 
 
-<div class="frontpage-hero"></div>
+
+<div class="frontpage-hero">
     <h1>Stop Gender-based Violence</h1>
     <p>Spreading awareness, assisting survivors, and driving change to end GBV</p>
     <a href="{{ url_for('report.report_form') }}" class="btn">Report a Case</a>
-</section>
+</div>
 
 <div class="frontpage-about"></div>
     <h2>What is GBV?</h2>
@@ -68,14 +21,21 @@
     <h2>Educational Resources</h2>
     <p>Explore GBV, its root causes, and prevention strategies.</p>
 </div>
+<div>
+    <button ><a href="{{ url_for('auth.register') }}">register</a></button>
+</div>
+
+<div>
+    <button ><a href="{{ url_for('auth.login') }}">Login</button>
+</div>
 
 <div class="frontpage-effects"></div>
     <h2>Effects of GBV</h2>
     <ul class="frontpage-effects-list">
-        <li>Physical and Mental Health Issues – Survivors may suffer injuries, chronic pain, anxiety, depression, PTSD, and even suicide risk.</li>
+        <li>Physical and Mental Health Issues – Survivors may suffer injuries, chronic pain, anxiety, depression, PTSD (Post-Traumatic Stress Disorder), and even suicide risk.</li>
         <li>Economic Impact – GBV can lead to loss of income, job instability, and financial dependence due to physical or emotional trauma.</li>
         <li>Social Consequences – Survivors may face stigma, isolation, or strained relationships with family and friends.</li>
-        <li>Intergenerational Effects – Children exposed to GBV are more likely to experience emotional distress, perform poorly in school, or perpetuate the cycle of violence.</li>
+        <li>Intergenerational Effects – Children exposed to GBV are more likely to experience emotional distress, perform poorly in school, or perpetuate the cycle of violence (effects that span across generations).</li>
     </ul>
 </div>
 

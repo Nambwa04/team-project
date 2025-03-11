@@ -1,34 +1,60 @@
-// Show/hide add form
-document.getElementById('showAddForm').addEventListener('click', function() {
-    document.getElementById('addOrgFormContainer').style.display = 'block';
-});
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Organization JS loaded');
 
-document.getElementById('cancelAdd').addEventListener('click', function() {
-    document.getElementById('addOrgFormContainer').style.display = 'none';
-});
+    // Add Organization Form toggling
+    const showAddOrganizationFormButton = document.getElementById('showAddOrganizationForm');
+    const addOrganizationFormContainer = document.getElementById('addOrganizationFormContainer');
+    const cancelAddOrganizationButton = document.getElementById('cancelAddOrganization');
+    const editOrganizationFormContainer = document.getElementById('editOrganizationFormContainer');
+    const cancelEditOrganizationButton = document.getElementById('cancelEditOrganization');
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    document.body.appendChild(overlay);
 
-// Handle edit button clicks
-document.querySelectorAll('.edit-btn').forEach(button => {
-    button.addEventListener('click', function() {
-        const orgId = this.getAttribute('data-id');
-        const row = this.closest('tr');
-        
-        // Fill the edit form with current values
-        document.getElementById('edit_id').value = orgId;
-        document.getElementById('edit_name').value = row.cells[1].textContent;
-        document.getElementById('edit_contact').value = row.cells[2].textContent;
-        document.getElementById('edit_category').value = row.cells[3].textContent;
-        document.getElementById('edit_location').value = row.cells[4].textContent;
-        
-        // Show the edit form
-        document.getElementById('editOrgFormContainer').style.display = 'block';
-        
-        // Update the form action
-        document.getElementById('editOrgFormContainer').style.display = 'block';
-        document.getElementById('editOrgForm').action = `/organization/${orgId}`;
+    if (showAddOrganizationFormButton && addOrganizationFormContainer && cancelAddOrganizationButton) {
+        showAddOrganizationFormButton.addEventListener('click', function() {
+            addOrganizationFormContainer.style.display = 'block';
+            overlay.style.display = 'block';
+        });
+        cancelAddOrganizationButton.addEventListener('click', function() {
+            addOrganizationFormContainer.style.display = 'none';
+            overlay.style.display = 'none';
+        });
+        overlay.addEventListener('click', function() {
+            addOrganizationFormContainer.style.display = 'none';
+            editOrganizationFormContainer.style.display = 'none';
+            overlay.style.display = 'none';
+        });
+    } else {
+        console.error("Missing add organization elements");
+    }
+
+    // Edit Organization Form handling
+    document.querySelectorAll('.edit-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const organizationId = this.getAttribute('data-id');
+            const username = this.getAttribute('data-username');
+            const email = this.getAttribute('data-email');
+            const contact = this.getAttribute('data-contact');
+            const category = this.getAttribute('data-category');
+            const location = this.getAttribute('data-location');
+
+            document.getElementById('edit_organization_id').value = organizationId;
+            document.getElementById('edit_username').value = username;
+            document.getElementById('edit_email').value = email;
+            document.getElementById('edit_contact').value = contact;
+            document.getElementById('edit_category').value = category;
+            document.getElementById('edit_location').value = location;
+
+            document.getElementById('editOrganizationForm').action = `/organization/edit_organization/${organizationId}`;
+
+            editOrganizationFormContainer.style.display = 'block';
+            overlay.style.display = 'block';
+        });
     });
-});
 
-document.getElementById('cancelEdit').addEventListener('click', function() {
-    document.getElementById('editOrgFormContainer').style.display = 'none';
+    cancelEditOrganizationButton.addEventListener('click', function() {
+        editOrganizationFormContainer.style.display = 'none';
+        overlay.style.display = 'none';
+    });
 });

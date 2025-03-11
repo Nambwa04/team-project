@@ -3,64 +3,96 @@
 {% block title %}Manage Responders{% endblock %}
 
 {% block content %}
-<div class="content">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div id="flash-messages">
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
+<div class="sidebar">
+    <ul>
+        <li>
+            <a href="#">
+                <span class="sidetag">Admin</span>
+            </a>
+        </li>
 
-    <header class="Responder-header">
+        <li>
+            <a href="{{ url_for('admin.dashboard') }}">
+                <span class="ICon">
+                    <ion-icon name="home-outline"></ion-icon></span>                            
+                <span class="sidetag">Dashboard</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('victim.manage_victims') }}">
+                <span class="ICon">
+                    <ion-icon name="people-outline"></ion-icon></span>
+                <span class="sidetag">Victims</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('responder.manage_responders') }}">
+                <span class="ICon">
+                    <ion-icon name="alert-circle-outline"></ion-icon></span>
+                <span class="sidetag">Responders</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('organization.manage_organizations') }}">
+                <span class="ICon">
+                    <ion-icon name="briefcase-outline"></ion-icon></span>
+                <span class="sidetag">Organizations</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('resource.manage_resources') }}">
+                <span class="ICon">
+                    <ion-icon name="library-outline"></ion-icon></span>
+                <span class="sidetag">Resources</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('auth.logout') }}">
+                <span class="ICon">
+                    <ion-icon name="log-out-outline"></ion-icon></span>
+                <span class="sidetag">Logout</span>
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div class="content">
+    <header class="Organization-header">
+        <!--menu for sidebar/hamburger yake-->
+        <div class="toggle">
+            <ion-icon name="menu-outline"></ion-icon>
+        </div>
+        <!--Nime maliza menu for sidebar/hamburger yake-->
+
         <h1>Manage Responders</h1>
-        <form id="searchResponderForm" action="{{ url_for('responder.search_responder') }}" method="GET">
-            <label for="searchResponder">Search:</label>
-            <input type="text" id="searchResponder" name="search_query" placeholder="Search by Name or ID">
-            
-            <label for="areaFilter">Filter by Assigned Area:</label>
+
+        <div class="search">
+            <label>
+                <input type="text" id="searchResponder" name="search_query" placeholder="Search by Name or ID or Email">
+                <div>
+                    <button class="searchbtn"><ion-icon name="search-outline"></ion-icon></button>
+                </div>
+            </label>
+        </div>
+
+        <div class="categoryFilter">
             <select id="areaFilter" name="area">
-                <option value="">All Areas</option>
+                <option value="">Filter Area</option>
                 <option value="Nairobi">Nairobi</option>
                 <option value="Mombasa">Mombasa</option>
                 <option value="Kisumu">Kisumu</option>
             </select>
-            
-            <button type="submit">Search</button>
-        </form>
+        </div>
+
         <button class="add-btn" id="showAddResponderForm">Add Responder</button>
     </header>
 
-    <!-- Add Responder Form -->
-    <div id="addResponderFormContainer" style="display: none;">
-        <form id="addResponderForm" action="{{ url_for('responder.add_responder') }}" method="POST">
-            <h3>Add New Responder</h3>
-            <div>
-                <label for="Name">Name:</label>
-                <input type="text" id="Name" name="Name" required>
-            </div>
-            <div>
-                <label for="Contact">Contact:</label>
-                <input type="text" id="Contact" name="Contact" required>
-            </div>
-            <div>
-                <label for="Assigned_Area">Assigned Area:</label>
-                <select id="Assigned_Area" name="Assigned_Area" required>
-                    <option value="">Select Area</option>
-                    <option value="Nairobi">Nairobi</option>
-                    <option value="Mombasa">Mombasa</option>
-                    <option value="Kisumu">Kisumu</option>
-                </select>
-            </div>
-            <button type="submit">Save</button>
-            <button type="button" id="cancelAddResponder">Cancel</button>
-        </form>
-    </div>
-
-    <!-- Responders Table -->
-    <table id="respondersTable">
+    <table class="organizationsTable">
         <thead>
             <tr>
                 <th>ID</th>
@@ -73,12 +105,12 @@
         <tbody>
             {% for responder in responders %}
             <tr>
-                <td>{{ responder._id }}</td>
-                <td>{{ responder.Name }}</td>
-                <td>{{ responder.Contact }}</td>
-                <td>{{ responder.Assigned_Area }}</td>
-                <td>
-                    <button class="edit-btn" data-id="{{ responder._id }}">Edit</button>
+                <td>{{ loop.index }}</td>
+                <td>{{ responder.name }}</td>
+                <td>{{ responder.contact }}</td>
+                <td>{{ responder.assigned_area }}</td>
+                <td class="actions">
+                    <button class="edit-btn" data-id="{{ responder._id }}" data-name="{{ responder.name }}" data-contact="{{ responder.contact }}" data-assigned_area="{{ responder.assigned_area }}">Edit</button>
                     <form action="{{ url_for('responder.delete_responder', responder_id=responder._id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this responder?');">
                         <button type="submit">Delete</button>
                     </form>
@@ -88,23 +120,49 @@
         </tbody>
     </table>
 
+    <!-- Add Responder Form -->
+    <div id="addResponderFormContainer" class="form-container" style="display: none;">
+        <form id="addResponderForm" action="{{ url_for('responder.add_responder') }}" method="POST">
+            <h3>Add New Responder</h3>
+            <div>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div>
+                <label for="contact">Contact:</label>
+                <input type="text" id="contact" name="contact" required>
+            </div>
+            <div>
+                <label for="assigned_area">Assigned Area:</label>
+                <select id="assigned_area" name="assigned_area" required>
+                    <option value="">Select Area</option>
+                    <option value="Nairobi">Nairobi</option>
+                    <option value="Mombasa">Mombasa</option>
+                    <option value="Kisumu">Kisumu</option>
+                </select>
+            </div>
+            <button type="submit">Save</button>
+            <button type="button" id="cancelAddResponder">Cancel</button>
+        </form>
+    </div>
+
     <!-- Edit Responder Form -->
-    <div id="editResponderFormContainer" style="display: none;">
+    <div id="editResponderFormContainer" class="form-container" style="display: none;">
         <form id="editResponderForm" method="POST">
             <h3>Edit Responder</h3>
-            <!-- Hidden field for ObjectId (for backend reference) -->
+            <!-- Hidden field for MongoDB ObjectId -->
             <input type="hidden" id="edit_responder_id" name="responder_id">
             <div>
-                <label for="edit_Name">Name:</label>
-                <input type="text" id="edit_Name" name="Name" required>
+                <label for="edit_name">Name:</label>
+                <input type="text" id="edit_name" name="name">
             </div>
             <div>
-                <label for="edit_Contact">Contact:</label>
-                <input type="text" id="edit_Contact" name="Contact" required>
+                <label for="edit_contact">Contact:</label>
+                <input type="text" id="edit_contact" name="contact">
             </div>
             <div>
-                <label for="edit_Assigned_Area">Assigned Area:</label>
-                <select id="edit_Assigned_Area" name="Assigned_Area" required>
+                <label for="edit_assigned_area">Assigned Area:</label>
+                <select id="edit_assigned_area" name="assigned_area">
                     <option value="">Select Area</option>
                     <option value="Nairobi">Nairobi</option>
                     <option value="Mombasa">Mombasa</option>
@@ -118,5 +176,7 @@
 </div>
 
 <script src="{{ url_for('static', filename='js/responder.js') }}"></script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 
 {% endblock %}

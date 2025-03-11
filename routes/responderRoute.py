@@ -20,11 +20,12 @@ def manage_responders():
     return render_template('responders.html', responders=responders)
 
 @responder_bp.route('/add_responder', methods=['POST'])
+@role_required('admin')
 def add_responder():
     responder = {
-        'Name': request.form.get('Name'),
-        'Contact': request.form.get('Contact'),
-        'Assigned_Area': request.form.get('Assigned_Area')
+        'name': request.form.get('name'),
+        'contact': request.form.get('contact'),
+        'assigned_area': request.form.get('assigned_area')
     }
 
     # Validate input
@@ -41,26 +42,41 @@ def add_responder():
     return redirect(url_for('responder.manage_responders'))
 
 @responder_bp.route('/edit_responder/<responder_id>', methods=['POST'])
+@role_required('admin')
 def edit_responder(responder_id):
     try:
-        updated_responder = {
-            'Name': request.form.get('Name'),
-            'Contact': request.form.get('Contact'),
-            'Assigned_Area': request.form.get('Assigned_Area')
-        }
-
-        if not all(updated_responder.values()):
-            flash('All fields are required!', 'error')
+        # Extract form data
+        name = request.form.get('name')
+        contact = request.form.get('contact')
+        assigned_area = request.form.get('assigned_area')
+        
+        # Validate the data
+        if not all([name, contact, assigned_area]):
+            flash("All fields are required", "error")
             return redirect(url_for('responder.manage_responders'))
-
-        responder_model.update_responder(responder_id, updated_responder)
-        flash('Responder updated successfully', 'success')
+        
+        # Update the responder
+        update_data = {
+            'name': name,
+            'contact': contact,
+            'assigned_area': assigned_area
+        }
+        
+        result = responder_model.update_responder(responder_id, update_data)
+        
+        if result.modified_count > 0:
+            flash("Responder updated successfully", "success")
+        else:
+            flash("No changes were made", "info")
+            
     except Exception as e:
-        flash(f'Error updating responder: {str(e)}', 'error')
-
+        print(f"Error updating responder: {str(e)}")
+        flash(f"Error: {str(e)}", "error")
+        
     return redirect(url_for('responder.manage_responders'))
 
 @responder_bp.route('/delete_responder/<responder_id>', methods=['POST'])
+@role_required('admin')
 def delete_responder(responder_id):
     try:
         responder_model.delete_responder(responder_id)
@@ -71,6 +87,7 @@ def delete_responder(responder_id):
     return redirect(url_for('responder.manage_responders'))
 
 @responder_bp.route('/search_responder', methods=['GET'])
+@role_required('admin')
 def search_responder():
     search_query = request.args.get('search_query', '').strip()
     area_filter = request.args.get('area', '').strip()
@@ -83,7 +100,7 @@ def search_responder():
     
     # Apply filter for Assigned Area if provided
     if area_filter:
-        responders = [r for r in responders if r.get('Assigned_Area') == area_filter]
+        responders = [r for r in responders if r.get('assigned_area') == area_filter]
     
     for responder in responders:
         responder['_id'] = str(responder['_id'])

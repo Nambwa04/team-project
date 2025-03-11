@@ -3,44 +3,134 @@
 {% block title %}Admin Panel{% endblock %}
 
 {% block content %}
-
-<div class="admin-sidebar">
-    <h2>Admin Panel</h2>
+<div class="sidebar">
     <ul>
-        <li><a href="{{ url_for('auth.dashboard') }}" class="active"> Dashboard</a></li>
-        <li><a href="{{ url_for('victim.manage_victims') }}"> Manage Victims</a></li>
-        <li><a href="{{ url_for('responder.manage_responders') }}"> Manage Responders</a></li>
-        <li><a href="{{ url_for('organization.manage_organizations') }}"> Manage Organizations</a></li>
-        <li><a href="{{ url_for('resource.manage_resources') }}"> Educational Resources</a></li>
-        <li><a href="{{ url_for('settings.settings') }}"> Settings</a></li>
-        <li><a href="{{ url_for('auth.logout') }}"> Logout</a></li>
-        <li><a href="{{ url_for('report.report_form') }}">Reports</a></li>
+        <li>
+            <a href="#">
+                <span class="sidetag">Admin</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('admin.dashboard') }}">
+                <span class="ICon">
+                    <ion-icon name="home-outline"></ion-icon></span>                            
+                <span class="sidetag">Dashboard</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('victim.manage_victims') }}">
+                <span class="ICon">
+                    <ion-icon name="people-outline"></ion-icon></span>
+                <span class="sidetag">Victims</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('responder.manage_responders') }}">
+                <span class="ICon">
+                    <ion-icon name="alert-circle-outline"></ion-icon></span>
+                <span class="sidetag">Responders</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('organization.manage_organizations') }}">
+                <span class="ICon">
+                    <ion-icon name="briefcase-outline"></ion-icon></span>
+                <span class="sidetag">Organizations</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('resource.manage_resources') }}">
+                <span class="ICon">
+                    <ion-icon name="library-outline"></ion-icon></span>
+                <span class="sidetag">Resources</span>
+            </a>
+        </li>
+
+        <!-- <li>
+            <a href="{{ url_for('settings.settings') }}">
+                <span class="ICon">
+                    <ion-icon name="settings-outline"></ion-icon></span>
+                <span class="sidetag">Settings</span>
+            </a>
+        </li> -->
+
+        <li>
+            <a href="{{ url_for('auth.logout') }}">
+                <span class="ICon">
+                    <ion-icon name="log-out-outline"></ion-icon></span>
+                <span class="sidetag">Logout</span>
+            </a>
+        </li>
     </ul>
 </div>
 
-<div class="admin-content">
-    <header class="admin-header">
-        <h1>Welcome, Admin</h1>
+<div class="content">
+    <header class="Organization-header">
+        <div class="toggle">
+            <ion-icon name="menu-outline"></ion-icon>
+        </div>
+
+        <div class="header-right">
+            <div class="system-status">
+                <span class="status-dot online"></span> Online
+            </div>
+            <div class="date-time" id="dateTime"></div>
+        </div>
+
+        <div class="Home">
+            <a href="{{ url_for('admin.dashboard') }}">Home</a>
+        </div>
     </header>
 
-    <div class="admin-dashboard-cards">
-        <div class="admin-card">
-            <h3>Total Victims</h3>
-            <p>{{ total_victims }}</p>
+    <div class="dashboard-cards">
+        <div class="card">
+            <div>
+                <div class="count">{{ total_victims }}</div>
+                <div class="cardtitle">Victims</div>
+            </div>
+            <div class="cardICon">
+                <ion-icon name="people-outline"></ion-icon>
+            </div>
         </div>
-        <div class="admin-card">
-            <h3>Responders</h3>
-            <p>{{ total_responders }}</p>
+
+        <div class="card">
+            <div>
+                <div class="count">{{ total_responders }}</div>
+                <div class="cardtitle">Responders</div>
+            </div>
+            <div class="cardICon">
+                <ion-icon name="alert-circle-outline"></ion-icon>
+            </div>
         </div>
-        <div class="admin-card">
-            <h3>Organizations</h3>
-            <p>{{ total_organizations }}</p>
+
+        <div class="card">
+            <div>
+                <div class="count">{{ total_organizations }}</div>
+                <div class="cardtitle">Organizations</div>
+            </div>
+            <div class="cardICon">
+                <ion-icon name="briefcase-outline"></ion-icon>
+            </div>
         </div>
-        <div class="admin-card">
-            <h3>Resources</h3>
-            <p>{{ total_resources }}</p>
+
+        <div class="card">
+            <div>
+                <div class="count">{{ total_resources }}</div>
+                <div class="cardtitle">Resources</div>
+            </div>
+            <div class="cardICon">
+                <ion-icon name="library-outline"></ion-icon>
+            </div>
         </div>
     </div>
 </div>
 
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 {% endblock %}

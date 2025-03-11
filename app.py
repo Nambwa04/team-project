@@ -8,19 +8,18 @@ from flask_mail import Mail
 
 app = Flask(__name__)
 app.config.from_object(Config)
-#initialize mongo, bcrypt, mail, and realtime_service
+
+# Initialize extensions
 mail = Mail()
-#initialize mongo and bcrypt and realtime_service
 mongo.init_app(app)
 bcrypt.init_app(app)
 realtime_service.init_app(app)
 mail.init_app(app)
 
-
 # Initialize User collection
 User.init_user()
 
-# create an admin
+# Create an admin user
 def create_admin():
     with app.app_context():
         admin_username = app.config["ADMIN_USERNAME"]
@@ -36,22 +35,18 @@ def create_admin():
 
 create_admin()
 
-
-# route importation
+# Import and register blueprints
 from routes.auth import auth_bp
-from routes.dashboard import dashboard_bp
 from routes.responderRoute import responder_bp
 from routes.organizationRoute import organization_bp
 from routes.victimRoute import victim_bp
-from routes.resourceRoutes import resource_bp
+from routes.resourceRoute import resource_bp
 from routes.reportRoute import report_bp
 from routes.victimProfileRoute import victimProfile_bp
 from routes.adminRoute import admin_bp
 from routes.settingsRoute import settings_bp
 
-#register blueprints
 app.register_blueprint(auth_bp, url_prefix='/auth')
-app.register_blueprint(dashboard_bp)
 app.register_blueprint(responder_bp, url_prefix='/responder')
 app.register_blueprint(organization_bp, url_prefix='/organization')
 app.register_blueprint(victim_bp, url_prefix='/victim')
@@ -65,6 +60,6 @@ app.register_blueprint(settings_bp)
 def landing():
     return render_template('frontpage.html')
 
-
 if __name__ == '__main__':
+    # Debugging: Print all registered routes
     realtime_service.socketio.run(app, debug=True)

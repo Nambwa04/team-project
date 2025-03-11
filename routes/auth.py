@@ -4,7 +4,6 @@ from datetime import datetime
 from pymongo.errors import DuplicateKeyError
 from services.victimService import victimService
 from utils import generate_reset_token, send_reset_email, verify_reset_token
-# from services.authService import AuthService
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -19,16 +18,19 @@ def register():
         password = request.form["password"]
         confirm_password = request.form["confirm_password"]
 
-        # Checking if user  exists
+        # Checking if user exists
         if User.find_by_email(email):
             flash("Email already exists", "danger")
             return redirect(url_for("auth.register"))
 
         try:
-            #create new user
-            user_id = User.register_user(username, email, password, role="victim").inserted_id
+            # Create new user
+            user = User.register_user(username, email, password, role="victim")
+            user_id = user.inserted_id  # Ensure correct user_id retrieval
+            
+            print("Newly Registered User ID:", user_id)  # Debugging line
 
-            #create victim profile
+            # Create victim profile
             victimService.victims.insert_one({
                 "user_id": user_id,
                 "username": username,
@@ -57,47 +59,39 @@ def login():
 
         user = User.find_by_email(email)
 
-        if user and bcrypt.check_password_hash(user["password"], password):
-            session["user_id"] = str(user["_id"])
-            session["username"] = user["username"]
-            session["email"] = email
-            session["role"] = user["role"]  # Store role in session
-            return redirect(url_for("auth.dashboard"))
-        else:
+        if not user or not bcrypt.check_password_hash(user["password"], password):
             flash("Invalid email or password", "danger")
             return redirect(url_for("auth.login"))
 
-    return render_template("login.html")
+        # Store user details in session
+        session["user_id"] = str(user["_id"])
+        session["username"] = user["username"]
+        session["email"] = email
+        session["role"] = user["role"].lower()  # Store lowercase role in session
 
-@auth_bp.route("/dashboard")
-def dashboard():
-    if "email" not in session:
-        flash("Please login first", "warning")
+        print("User Role Stored in Session:", session["role"])  # Debugging line
+
+        # Redirect based on role
+        role = session["role"]
+        if role == "admin":
+            return redirect(url_for("admin.dashboard"))
+        elif role == "responder":
+            return redirect(url_for("responder.dashboard"))
+        elif role == "organization":
+            return redirect(url_for("organization.dashboard"))
+        elif role == "victim":
+            return redirect(url_for("victim.dashboard"))
+
+        flash("Invalid role assigned to user", "danger")
         return redirect(url_for("auth.login"))
 
-    user = User.find_by_email(session["email"])
-    role = session.get("role", "victim")
-
-    # Get victim profile if role is victim
-    profile = None
-    if role == "victim":
-        profile = victimService.get_victim_profile(user["_id"])
-
-    # Redirect based on role
-    if role == 'admin':
-        return render_template('admin.html', user=user)
-    elif role == 'responder':
-        return render_template('responder_profile.html', user=user)
-    elif role == 'organization':
-        return render_template('organization_profile.html', user=user)
-    else: 
-        return render_template('victim_profile.html', user=user, profile=profile)
+    return render_template("login.html")
 
 @auth_bp.route("/logout")
 def logout():
     session.clear()
     flash("You have been logged out", "info")
-    return redirect(url_for("auth.login"))
+    return render_template("frontpage.html")
 
 @auth_bp.route('/forgot_password', methods=['GET', 'POST'])
 def forgot_password():
@@ -110,8 +104,8 @@ def forgot_password():
             # Send the reset email
             send_reset_email(user['email'], reset_token)
             flash("Password reset link sent to your email.", "success")
-
             return redirect(url_for('auth.login'))
+        else:
             flash("Email not found", "error")
     return render_template('forgot_password.html')
 
