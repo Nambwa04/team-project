@@ -5,6 +5,11 @@ from flask_pymongo import PyMongo
 from models import mongo
 from services.realtime import realtime_service 
 from flask_mail import Mail
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -15,6 +20,11 @@ mongo.init_app(app)
 bcrypt.init_app(app)
 realtime_service.init_app(app)
 mail.init_app(app)
+
+# Print environment variables for debugging
+print("MAIL_USERNAME:", app.config['MAIL_USERNAME'])
+print("MAIL_PASSWORD:", app.config['MAIL_PASSWORD'])
+print("MAIL_DEFAULT_SENDER:", app.config['MAIL_DEFAULT_SENDER'])
 
 # Initialize User collection
 User.init_user()

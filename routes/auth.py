@@ -59,7 +59,13 @@ def login():
 
         user = User.find_by_email(email)
 
-        if not user or not bcrypt.check_password_hash(user["password"], password):
+        if not user:
+            print("User not found")  # Debugging line
+            flash("Invalid email or password", "danger")
+            return redirect(url_for("auth.login"))
+
+        if not User.verify_password(user, password):
+            print("Password does not match")  # Debugging line
             flash("Invalid email or password", "danger")
             return redirect(url_for("auth.login"))
 
@@ -132,6 +138,7 @@ def reset_password():
         # Update the user's password
         user = User.find_by_email(email)
         if user:
+            # Pass the plain password to update_password
             User.update_password(user['_id'], new_password)
             flash("Your password has been reset successfully.", "success")
             return redirect(url_for('auth.login'))
