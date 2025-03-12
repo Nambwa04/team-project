@@ -1,7 +1,8 @@
-from flask import Blueprint, request, render_template, redirect, url_for, flash
+from flask import Blueprint, request, jsonify, render_template, redirect, url_for, flash
 from models.victim import VictimModel
 from models.user import mongo, User, bcrypt
 from bson import ObjectId 
+from datetime import datetime
 from services.victimService import VictimService
 from models.decorators import role_required
 from utils import generate_default_password 
@@ -46,46 +47,42 @@ def add_victim():
         gender = request.form.get('gender')
         location = request.form.get('location')
         case_description = request.form.get('case_description', '')
-        
-        # Basic validation
-        if not all([username, email]):
-            flash("Username and email are required", "error")
-            return redirect(url_for('victim.manage_victims'))
-        
+        password = request.form.get('password', 'defaultPassword123')  # Add default password
+        role = 'victim'
+
         # Create user account first
-        password = generate_default_password()  # Make sure this function exists
-        user_result = User.register_user(username, email, password, role="victim")
+        user_result = User.register_user(username, email, password, role)
         
         if not user_result:
             flash("Failed to create user account", "error")
             return redirect(url_for('victim.manage_victims'))
-        
+
         user_id = user_result.inserted_id
-        
-        # Create victim profile using the VictimModel directly
+        print(f"Created user with ID: {user_id}")  # Debug log
+
+        # Create victim profile
         victim_data = {
             "user_id": user_id,
             "username": username,
             "email": email,
             "phone": phone,
-            "location": location,
             "gender": gender,
-            "case_description": case_description
+            "location": location,
+            "case_description": case_description,
+            "created_at": datetime.now()
         }
-        
-        # Use the VictimModel instance
-        result = victim_model.add_victim(victim_data)
-        
-        if result:
-            flash("Victim added successfully", "success")
-        else:
-            flash("Failed to add victim", "error")
-        
+
+        # Insert into victims collection using mongo directly
+        mongo.db.victims.insert_one(victim_data)
+        print(f"Created victim profile for user ID: {user_id}")  # Debug log
+
+        flash("Victim added successfully!", "success")
+        return redirect(url_for('victim.manage_victims'))
+
     except Exception as e:
-        print(f"Error adding victim: {str(e)}")
+        print(f"Error in add_victim: {str(e)}")  # Debug log
         flash(f"Error: {str(e)}", "error")
-        
-    return redirect(url_for('victim.manage_victims'))
+        return redirect(url_for('victim.manage_victims'))
 
 @victim_bp.route('/edit_victim/<victim_id>', methods=['POST'])
 def edit_victim(victim_id):

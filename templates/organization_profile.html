@@ -4,12 +4,47 @@
 
 {% block content %}
 <div class="profile-container">
-    <h1>Organization Profile</h1>
-    <p><strong>Name:</strong> {{ organization.name }}</p>
-    <p><strong>Email:</strong> {{ organization.contact }}</p>
-    <p><strong>Category:</strong> {{ organization.category }}</p>
-    <p><strong>Location:</strong> {{ organization.location }}</p>
+    <div class="profile-header">
+        <div class="profile-image">
+            <img src="{{ url_for('static', filename='images/default-profile.jpg') }}" alt="Profile Picture" id="profilePic">
+        </div>
+        <div class="profile-info">
+            <h1>{{ organization.name or user.username }}</h1>
+            <p>{{ organization.email or user.email }}</p>
+        </div>
+    </div>
 
-    <a href="{{ url_for('auth.logout') }}">Logout</a>
+    <div class="profile-details">
+        <form action="{{ url_for('organizationProfile.update_profile') }}" method="POST">
+            <div class="form-group">
+                <label for="name">Organization Name:</label>
+                <input type="text" id="name" name="name" value="{{ organization.name or user.username }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" value="{{ organization.email or user.email }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone:</label>
+                <input type="tel" id="phone" name="phone" value="{{ organization.phone or '' }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location:</label>
+                <input type="text" id="location" name="location" value="{{ organization.location or '' }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="services">Services Provided:</label>
+                <textarea id="services" name="services" rows="4">{{ organization.services|join(', ') if organization.services else '' }}</textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Update Profile</button>
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}

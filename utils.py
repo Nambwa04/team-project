@@ -5,6 +5,8 @@ from flask_mail import Message
 from config import Config
 from flask import current_app, url_for
 from flask_mail import Mail, Message
+from bson import ObjectId
+from datetime import datetime
 
 mail = Mail()
 
@@ -32,3 +34,36 @@ def send_reset_email(to_email, token):
                   recipients=[to_email])
     msg.body = f"To reset your password, click the following link: {reset_url}\n\nIf you did not request a password reset, please ignore this email."
     mail.send(msg)
+
+def ensure_user_profile(user_id, role):
+    """Ensure a user has a profile in their role-specific collection"""
+    try:
+        user = User.find_by_id(ObjectId(user_id))
+        if not user:
+            return False
+
+        collection_map = {
+            'responder': mongo.db.responders,
+            'victim': mongo.db.victims,
+            'organization': mongo.db.organizations
+        }
+
+        collection = collection_map.get(role.lower())
+        if not collection:
+            return False
+
+        # Check if profile exists
+        profile = collection.find_one({"user_id": ObjectId(user_id)})
+        if not profile:
+            # Create basic profile
+            profile_data = {
+                "user_id": ObjectId(user_id),
+                "name": user.get("username", ""),
+                "email": user.get("email", ""),
+                "created_at": datetime.now()
+            }
+            collection.insert_one(profile_data)
+        return True
+    except Exception as e:
+        print(f"Error ensuring user profile: {str(e)}")
+        return False

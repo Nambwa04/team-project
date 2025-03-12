@@ -1,6 +1,7 @@
 from models import mongo, User
 from bson import ObjectId
 from flask_mail import Message, Mail
+from datetime import datetime
 
 mail = Mail()
 
@@ -32,17 +33,33 @@ class VictimService:
         return victims
 
     def get_victim_profile(self, user_id):
-        # Ensure user_id is treated as ObjectId
+        """Get or create victim profile"""
         try:
-            if ObjectId.is_valid(user_id):
-                user_id = ObjectId(user_id)
-            profile = self.victims.find_one({"user_id": user_id})
-            if profile:
-                profile['_id'] = str(profile['_id'])
-            return profile or {}
+            # First try to find existing profile
+            profile = self.victims.find_one({"user_id": ObjectId(user_id)})
+            
+            if not profile:
+                # Get user data
+                user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+                if user:
+                    # Create default profile
+                    profile = {
+                        "user_id": ObjectId(user_id),
+                        "username": user.get("username", ""),
+                        "email": user.get("email", ""),
+                        "phone": "",
+                        "gender": "",
+                        "location": "",
+                        "case_description": "",
+                        "created_at": datetime.now()
+                    }
+                    self.victims.insert_one(profile)
+                    print(f"Created new victim profile for user: {user_id}")
+            
+            return profile
         except Exception as e:
-            print(f"Error fetching victim profile: {e}")
-            return {}
+            print(f"Error getting victim profile: {str(e)}")
+            return None
 
     def create_victim_profile(self, user_id, username, email, phone, location="Unknown", gender="Unknown", case_description=""):
         if User.find_by_email(email):
@@ -66,27 +83,17 @@ class VictimService:
             "case_description": case_description
         })
 
-    def update_victim_profile(self, victim_id, username, location, gender, case_description):
-        victim = self.victims.find_one({"_id": ObjectId(victim_id)})
-        if not victim:
-            raise ValueError("Victim not found!")
-
-        User.collection.update_one(
-            {"_id": victim["user_id"]}, 
-            {"$set": {"username": username}}
-        )
-        updated_data = {
-            "username": username,
-            "location": location,
-            "gender": gender,
-            "case_description": case_description
-        }
-        
-        # Update the victim profile
-        return self.victims.update_one(
-            {"_id": ObjectId(victim_id)}, 
-            {"$set": updated_data}
-        )
+    def update_victim_profile(self, user_id, update_data):
+        """Update victim profile"""
+        try:
+            result = self.victims.update_one(
+                {"user_id": ObjectId(user_id)},
+                {"$set": update_data}
+            )
+            return result.modified_count > 0
+        except Exception as e:
+            print(f"Error updating victim profile: {str(e)}")
+            return False
 
     def delete_victim_profile(self, victim_id):
         # Fetch the victim to get the user_id

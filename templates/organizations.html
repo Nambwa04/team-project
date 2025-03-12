@@ -125,30 +125,30 @@
         <form id="addOrganizationForm" action="{{ url_for('organization.add_organization') }}" method="POST">
             <h3>Add New Organization</h3>
             <div>
-                <label for="username">Name:</label>
-                <input type="text" id="username" name="username" required>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
             </div>
             <div>
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" required>
             </div>
             <div>
-                <label for="contact">Contact:</label>
-                <input type="text" id="contact" name="contact" required>
-            </div>
-            <div>
-                <label for="category">Category:</label>
-                <input type="text" id="category" name="category" required>
+                <label for="phone">Phone:</label>
+                <input type="text" id="phone" name="phone" required>
             </div>
             <div>
                 <label for="location">Location:</label>
-                <select id="location" name="location" required>
-                    <option value="">Select Area</option>
-                    <option value="Nairobi">Nairobi</option>
-                    <option value="Mombasa">Mombasa</option>
-                    <option value="Kisumu">Kisumu</option>
-                </select>
+                <input type="text" id="location" name="location" required>
             </div>
+            <div>
+                <label for="services">Services Provided:</label>
+                <textarea id="services" name="services" required></textarea>
+            </div>
+            <div>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <input type="hidden" name="role" value="organization">
             <button type="submit">Save</button>
             <button type="button" id="cancelAddOrganization">Cancel</button>
         </form>

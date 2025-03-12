@@ -24,28 +24,49 @@ def manage_organizations():
     return render_template('organizations.html', organizations=organizations)
 
 @organization_bp.route('/add_organization', methods=['POST'])
-@role_required('admin')
 def add_organization():
-    organization = {
-        'username': request.form.get('username'),
-        'email': request.form.get('email'),
-        'contact': request.form.get('contact'),
-        'category': request.form.get('category'),
-        'location': request.form.get('location')
-    }
-
-    # Validate input
-    if not all(organization.values()):
-        flash('All fields are required!', 'error')
-        return redirect(url_for('organization.manage_organizations'))
-
     try:
-        organization_model.add_organization(organization)
-        flash('Organization has been added successfully!', 'success')
-    except Exception as e:
-        flash(f'Error adding organization: {str(e)}', 'error')
+        # Extract form data
+        name = request.form.get('name')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        location = request.form.get('location')
+        services = request.form.get('services')
+        password = request.form.get('password')
+        role = 'organization'  # Explicitly set role
 
-    return redirect(url_for('organization.manage_organizations'))
+        # Basic validation
+        if not all([name, email, password]):
+            flash("Name, email, and password are required", "error")
+            return redirect(url_for('organization.manage_organizations'))
+
+        # Create user account first
+        user_result = User.register_user(name, email, password, role)
+
+        if not user_result:
+            flash("Failed to create user account", "error")
+            return redirect(url_for('organization.manage_organizations'))
+
+        user_id = user_result.inserted_id
+
+        # Create organization profile
+        organization_data = {
+            "user_id": user_id,
+            "name": name,
+            "email": email,
+            "phone": phone,
+            "location": location,
+            "services": services
+        }
+        
+        # Insert into organizations collection
+        organizationService.organizations.insert_one(organization_data)
+
+        flash("Organization added successfully!", "success")
+        return redirect(url_for('organization.manage_organizations'))
+    except Exception as e:
+        flash(f"Error: {str(e)}", "error")
+        return redirect(url_for('organization.manage_organizations'))
 
 @organization_bp.route('/edit_organization/<organization_id>', methods=['POST'])
 @role_required('admin')

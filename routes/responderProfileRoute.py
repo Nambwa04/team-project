@@ -1,24 +1,58 @@
 from flask import Blueprint, session, render_template, redirect, url_for, flash, request
 from models.user import User
-from services import ResponderService
+from services.responderService import responderService
 from models.decorators import role_required
 from bson import ObjectId
+from datetime import datetime
+from models import mongo
 
 responderProfile_bp = Blueprint('responderProfile', __name__)
-responderService = ResponderService()
 
 @responderProfile_bp.route('/profile')
 @role_required('responder')
 def profile():
-    user_id = session.get("user_id")
-    if not user_id:
-        flash("You need to login first", "error")
-        return redirect(url_for('auth.login'))
-    profile_data = responderService.get_responder_profile(user_id)
-    if profile_data:
-        return render_template('responder_profile.html', profile=profile_data)
-    else:
-        flash("Profile not found", "error")
+    try:
+        user_id = session.get("user_id")
+        if not user_id:
+            flash("You need to login first", "error")
+            return redirect(url_for('auth.login'))
+        
+        print(f"Looking up profile for user_id: {user_id}")  # Debug log
+        
+        # Get user data
+        user = User.find_by_id(ObjectId(user_id))
+        if not user:
+            print(f"User not found for ID: {user_id}")  # Debug log
+            flash("User not found", "error")
+            return redirect(url_for('auth.login'))
+        
+        # Get or create responder profile
+        profile_data = mongo.db.responders.find_one({"user_id": ObjectId(user_id)})
+        
+        if not profile_data:
+            print(f"Creating new responder profile for user: {user_id}")  # Debug log
+            # Create default profile
+            profile_data = {
+                "user_id": ObjectId(user_id),
+                "name": user.get("username", ""),
+                "email": user.get("email", ""),
+                "phone": "",
+                "assigned_area": "",
+                "availability": "Available",
+                "cases_handled": 0,
+                "rating": 0,
+                "created_at": datetime.now()
+            }
+            mongo.db.responders.insert_one(profile_data)
+        
+        print(f"User data: {user}")  # Debug log
+        print(f"Profile data: {profile_data}")  # Debug log
+        
+        return render_template('responder_profile.html', profile=profile_data, user=user)
+    
+    except Exception as e:
+        print(f"Error in profile route: {str(e)}")  # Debug log
+        flash("Error loading profile", "error")
         return redirect(url_for('auth.login'))
 
 @responderProfile_bp.route('/profile/update', methods=['POST'])

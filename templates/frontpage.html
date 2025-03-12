@@ -1,54 +1,90 @@
 {% extends "base.html" %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Haven - End Gender-Based Violence{% endblock %}
 
 {% block content %}
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="container">
+        <div class="nav-brand">
+            <span>Haven</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About Us</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li><a href="{{ url_for('auth.login') }}" class="btn btn-outline">Login</a></li>
+            <li><a href="{{ url_for('auth.register') }}" class="btn btn-primary">Register</a></li>
+        </ul>
+    </div>
+</nav>
 
-
-
-<div class="frontpage-hero">
-    <h1>Stop Gender-based Violence</h1>
-    <p>Spreading awareness, assisting survivors, and driving change to end GBV</p>
-    <a href="{{ url_for('report.report_form') }}" class="btn">Report a Case</a>
-</div>
-
-<div class="frontpage-about"></div>
-    <h2>What is GBV?</h2>
-    <p>Gender-based Violence (GBV) refers to a harmful act inflicted on individuals based on gender, including physical, sexual, psychological, and economic abuse, often rooted in power imbalances and societal norms.</p>
-</div>
-
-<div class="frontpage-education">
-    <h2>Educational Resources</h2>
-    <p>Explore GBV, its root causes, and prevention strategies.</p>
-</div>
-<div>
-    <button ><a href="{{ url_for('auth.register') }}">register</a></button>
-</div>
-
-<div>
-    <button ><a href="{{ url_for('auth.login') }}">Login</button>
-</div>
-
-<div class="frontpage-effects"></div>
-    <h2>Effects of GBV</h2>
-    <ul class="frontpage-effects-list">
-        <li>Physical and Mental Health Issues – Survivors may suffer injuries, chronic pain, anxiety, depression, PTSD (Post-Traumatic Stress Disorder), and even suicide risk.</li>
-        <li>Economic Impact – GBV can lead to loss of income, job instability, and financial dependence due to physical or emotional trauma.</li>
-        <li>Social Consequences – Survivors may face stigma, isolation, or strained relationships with family and friends.</li>
-        <li>Intergenerational Effects – Children exposed to GBV are more likely to experience emotional distress, perform poorly in school, or perpetuate the cycle of violence (effects that span across generations).</li>
-    </ul>
-</div>
-
-<div class="frontpage-help"></div>
-    <h2>How You Can Help</h2>
-    <p>You can help end GBV by spreading awareness, supporting survivors, and reporting cases of abuse.</p>
-    <a href="" class="btn">Be part of the change</a>
+<!-- Hero Section -->
+<section id="home" class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1>Stop Gender-Based Violence</h1>
+            <p>Spreading awareness, assisting survivors, and driving change to end GBV</p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('report.report_form') }}" class="btn btn-primary">Report a Case</a>
+                <a href="#about" class="btn btn-secondary">Learn More</a>
+            </div>
+        </div>
+    </div>
 </section>
 
-<div class="frontpage-report"></div>
-    <h2>Report</h2>
-    <p>If you know someone at risk or a survivor in need of support, report confidentially.</p>
-    <a href="{{ url_for('report.report_form') }}" class="btn">Report Now</a>
+<!-- About Section -->
+<section id="about" class="about">
+    <div class="container">
+        <h2>About Haven</h2>
+        <p>Haven is dedicated to ending gender-based violence through support, education, and action. We provide resources, support, and a platform for survivors to speak up and seek help.</p>
+    </div>
 </section>
 
+<!-- Contact Section -->
+<section id="contact" class="contact">
+    <div class="container">
+        <h2>Contact Us</h2>
+        <p>If you know someone at risk or a survivor in need of support, report confidentially.</p>
+        <a href="{{ url_for('report.report_form') }}" class="btn btn-primary">Report Now</a>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <span>Haven</span>
+                <p>Haven is committed to ending gender-based violence through support, education, and action.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="{{ url_for('report.report_form') }}">Report</a></li>
+                </ul>
+            </div>
+            <div class="footer-social">
+                <h4>Connect With Us</h4>
+                <div class="social-links">
+                    <a href="#"><ion-icon name="logo-facebook"></ion-icon></a>
+                    <a href="#"><ion-icon name="logo-twitter"></ion-icon></a>
+                    <a href="#"><ion-icon name="logo-instagram"></ion-icon></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Haven. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 {% endblock %}

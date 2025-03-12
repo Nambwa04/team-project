@@ -58,38 +58,42 @@ def login():
         password = request.form["password"]
 
         user = User.find_by_email(email)
-
+        
         if not user:
-            print("User not found")  # Debugging line
+            print(f"User not found for email: {email}")  # Debug log
             flash("Invalid email or password", "danger")
             return redirect(url_for("auth.login"))
 
         if not User.verify_password(user, password):
-            print("Password does not match")  # Debugging line
+            print(f"Password verification failed for user: {email}")  # Debug log
             flash("Invalid email or password", "danger")
             return redirect(url_for("auth.login"))
 
         # Store user details in session
         session["user_id"] = str(user["_id"])
-        session["username"] = user["username"]
+        session["username"] = user.get("username", "")
         session["email"] = email
-        session["role"] = user["role"].lower()  # Store lowercase role in session
+        session["role"] = user["role"].lower()
 
-        print("User Role Stored in Session:", session["role"])  # Debugging line
+        print(f"Login successful - User ID: {session['user_id']}, Role: {session['role']}")  # Debug log
 
         # Redirect based on role
-        role = session["role"]
-        if role == "admin":
-            return redirect(url_for("admin.dashboard"))
-        elif role == "responder":
-            return redirect(url_for("responder.dashboard"))
-        elif role == "organization":
-            return redirect(url_for("organization.dashboard"))
-        elif role == "victim":
-            return redirect(url_for("victim.dashboard"))
-
-        flash("Invalid role assigned to user", "danger")
-        return redirect(url_for("auth.login"))
+        try:
+            if session["role"] == "admin":
+                return redirect(url_for("admin.dashboard"))
+            elif session["role"] == "responder":
+                return redirect(url_for("responderProfile.profile"))
+            elif session["role"] == "organization":
+                return redirect(url_for("organizationProfile.profile"))
+            elif session["role"] == "victim":
+                return redirect(url_for("victimProfile.profile"))
+            else:
+                flash("Invalid role", "danger")
+                return redirect(url_for("auth.login"))
+        except Exception as e:
+            print(f"Error during role redirect: {str(e)}")  # Debug log
+            flash("Error during login", "danger")
+            return redirect(url_for("auth.login"))
 
     return render_template("login.html")
 

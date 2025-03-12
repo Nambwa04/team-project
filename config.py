@@ -18,3 +18,8 @@ class Config:
     ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'admin@example.com')
     ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD', 'NewSecurePassword123')
     ADMIN_ROLE = 'admin'
+
+    @staticmethod
+    def init_app(app):
+        # You can add specific initialization code here if needed
+        pass

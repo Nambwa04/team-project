@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Responder Profile{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="profile-image">
+            <img src="{{ url_for('static', filename='images/default-profile.jpg') }}" alt="Profile Picture" id="profilePic">
+        </div>
+        <div class="profile-info">
+            <h1>{{ profile.name or user.username }}</h1>
+            <p>{{ profile.email or user.email }}</p>
+        </div>
+        <div class="profile-actions">
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-logout">
+                <ion-icon name="log-out-outline"></ion-icon>
+                Logout
+            </a>
+        </div>
+    </div>
+
+    <div class="profile-details">
+        <form action="{{ url_for('responderProfile.update_profile') }}" method="POST">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" value="{{ profile.name or user.username }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" value="{{ profile.email or user.email }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone:</label>
+                <input type="tel" id="phone" name="phone" value="{{ profile.phone }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="assigned_area">Assigned Area:</label>
+                <input type="text" id="assigned_area" name="assigned_area" value="{{ profile.assigned_area }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="availability">Availability:</label>
+                <select id="availability" name="availability">
+                    <option value="Available" {% if profile.availability == 'Available' %}selected{% endif %}>Available</option>
+                    <option value="Busy" {% if profile.availability == 'Busy' %}selected{% endif %}>Busy</option>
+                    <option value="Offline" {% if profile.availability == 'Offline' %}selected{% endif %}>Offline</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Cases Handled:</label>
+                <span>{{ profile.cases_handled or 0 }}</span>
+            </div>
+
+            <div class="form-group">
+                <label>Rating:</label>
+                <span>{{ profile.rating or 'No ratings yet' }}</span>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Update Profile</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script src="{{ url_for('static', filename='js/responder-profile.js') }}"></script>
+{% endblock %}

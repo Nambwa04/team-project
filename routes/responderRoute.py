@@ -1,8 +1,10 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
 from models.responders import ResponderModel
-from models.user import mongo
+from models.user import mongo, User
 from bson.objectid import ObjectId
 from models.decorators import role_required
+from services.responderService import responderService
+from datetime import datetime
 
 # Create Blueprint
 responder_bp = Blueprint('responder', __name__)
@@ -20,26 +22,51 @@ def manage_responders():
     return render_template('responders.html', responders=responders)
 
 @responder_bp.route('/add_responder', methods=['POST'])
-@role_required('admin')
 def add_responder():
-    responder = {
-        'name': request.form.get('name'),
-        'contact': request.form.get('contact'),
-        'assigned_area': request.form.get('assigned_area')
-    }
-
-    # Validate input
-    if not all(responder.values()):
-        flash('All fields are required!', 'error')
-        return redirect(url_for('responder.manage_responders'))
-
     try:
-        responder_model.add_responder(responder)
-        flash('Responder has been added successfully!', 'success')
-    except Exception as e:
-        flash(f'Error adding responder: {str(e)}', 'error')
+        # Extract form data
+        name = request.form.get('name')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        assigned_area = request.form.get('assigned_area')
+        password = request.form.get('password')
+        role = 'responder'
 
-    return redirect(url_for('responder.manage_responders'))
+        # Basic validation
+        if not all([name, email, password]):
+            flash("Name, email, and password are required", "error")
+            return redirect(url_for('responder.manage_responders'))
+
+        # Create user account first
+        user_result = User.register_user(name, email, password, role)
+        if not user_result:
+            flash("Failed to create user account", "error")
+            return redirect(url_for('responder.manage_responders'))
+
+        user_id = user_result.inserted_id
+
+        # Create responder profile
+        responder_data = {
+            "user_id": user_id,
+            "name": name,
+            "email": email,
+            "phone": phone,
+            "assigned_area": assigned_area,
+            "availability": "Available",
+            "cases_handled": 0,
+            "rating": 0,
+            "created_at": datetime.now()
+        }
+        
+        # Insert into responders collection
+        mongo.db.responders.insert_one(responder_data)
+
+        flash("Responder added successfully!", "success")
+        return redirect(url_for('responder.manage_responders'))
+    except Exception as e:
+        print(f"Error in add_responder: {str(e)}")
+        flash(f"Error: {str(e)}", "error")
+        return redirect(url_for('responder.manage_responders'))
 
 @responder_bp.route('/edit_responder/<responder_id>', methods=['POST'])
 @role_required('admin')

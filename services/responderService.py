@@ -33,17 +33,30 @@ class ResponderService:
         return responders
 
     def get_responder_profile(self, user_id):
-        # Ensure user_id is treated as ObjectId
+        """Get or create responder profile"""
         try:
-            if ObjectId.is_valid(user_id):
-                user_id = ObjectId(user_id)
-            profile = self.responders.find_one({"user_id": user_id})
-            if profile:
-                profile['_id'] = str(profile['_id'])
-            return profile or {}
+            profile = self.responders.find_one({"user_id": ObjectId(user_id)})
+            if not profile:
+                # Get user data
+                user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+                if user:
+                    # Create default profile
+                    profile = {
+                        "user_id": ObjectId(user_id),
+                        "name": user.get("username", ""),
+                        "email": user.get("email", ""),
+                        "phone": "",
+                        "assigned_area": "",
+                        "availability": "Available",
+                        "cases_handled": 0,
+                        "rating": 0,
+                        "created_at": datetime.now()
+                    }
+                    self.responders.insert_one(profile)
+            return profile
         except Exception as e:
-            print(f"Error fetching responder profile: {e}")
-            return {}
+            print(f"Error getting responder profile: {str(e)}")
+            return None
 
     def create_responder_profile(self, user_id, username, email, contact, specialization, location, availability="Available", experience_years=0):
         if User.find_by_email(email):
@@ -76,6 +89,30 @@ class ResponderService:
         send_password_email(email, default_password)
         
         return result
+
+    def create_responder(self, name, email, phone, assigned_area, user_id):
+        """Create a new responder profile"""
+        try:
+            # Create responder profile
+            responder_data = {
+                "user_id": ObjectId(user_id),  # Ensure user_id is ObjectId
+                "name": name,
+                "email": email,
+                "phone": phone,
+                "assigned_area": assigned_area,
+                "availability": "Available",
+                "cases_handled": 0,
+                "rating": 0,
+                "created_at": datetime.now()
+            }
+            
+            result = self.responders.insert_one(responder_data)
+            print(f"Responder profile created with ID: {result.inserted_id}")  # Debug log
+            return result
+
+        except Exception as e:
+            print(f"Error creating responder profile: {e}")  # Debug log
+            raise
 
     def update_responder_profile(self, responder_id, username, specialization, location, availability, experience_years):
         responder = self.responders.find_one({"_id": ObjectId(responder_id)})

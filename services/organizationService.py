@@ -1,6 +1,7 @@
 from models import mongo, User
 from bson import ObjectId
 from flask_mail import Message, Mail
+from datetime import datetime
 
 mail = Mail()
 
@@ -23,26 +24,22 @@ def send_password_email(email, password):
 
 class OrganizationService:
     def __init__(self):
-        self.organization = mongo.db.organizations
+        self.organizations = mongo.db.organizations
 
     def get_all_organizations(self):
-        organizations = list(self.organization.find())
+        organizations = list(self.organizations.find())
         for organization in organizations:
             organization['_id'] = str(organization['_id'])
         return organizations
 
     def get_organization_profile(self, user_id):
-        # Ensure user_id is treated as ObjectId
+        """Get or create organization profile"""
         try:
-            if ObjectId.is_valid(user_id):
-                user_id = ObjectId(user_id)
-            profile = self.organization.find_one({"user_id": user_id})
-            if profile:
-                profile['_id'] = str(profile['_id'])
-            return profile or {}
+            profile = self.organizations.find_one({"user_id": ObjectId(user_id)})
+            return profile
         except Exception as e:
-            print(f"Error fetching organization profile: {e}")
-            return {}
+            print(f"Error getting organization profile: {str(e)}")
+            return None
 
     def create_victim_profile(self, user_id, username, email, contact, category, location):
         if User.find_by_email(email):
@@ -56,7 +53,7 @@ class OrganizationService:
         User.register_user(username, email, default_password, role="organization")
         
         # Insert a new organization profile
-        return self.organization.insert_one({
+        return self.organizations.insert_one({
             "user_id": user_id,
             "username": username,
             "email": email,
@@ -65,30 +62,21 @@ class OrganizationService:
             "location": location
         })
 
-    def update_organization_profile(self, organization_id, username, category, location):
-        organization = self.organization.find_one({"_id": ObjectId(organization_id)})
-        if not organization:
-            raise ValueError("Organization not found!")
-
-        User.collection.update_one(
-            {"_id": organization["user_id"]}, 
-            {"$set": {"username": username}}
-        )
-        updated_data = {
-            "username": username,
-            "category": category,
-            "location": location
-        }
-
-        # Update the organization profile
-        return self.organization.update_one(
-            {"_id": ObjectId(organization_id)}, 
-            {"$set": updated_data}
-        )
+    def update_organization_profile(self, user_id, update_data):
+        """Update organization profile"""
+        try:
+            result = self.organizations.update_one(
+                {"user_id": ObjectId(user_id)},
+                {"$set": update_data}
+            )
+            return result.modified_count > 0
+        except Exception as e:
+            print(f"Error updating organization profile: {str(e)}")
+            return False
 
     def delete_organization_profile(self, organization_id):
         # Fetch the organization to get the user_id
-        organization = self.organization.find_one({"_id": ObjectId(organization_id)})
+        organization = self.organizations.find_one({"_id": ObjectId(organization_id)})
         if not organization:
             raise ValueError("Organization not found")
 
@@ -96,7 +84,7 @@ class OrganizationService:
         User.collection.delete_one({"_id": organization["user_id"]})  # Use the user_id from the victim document
 
         # Delete the organization profile
-        return self.organization.delete_one({"_id": ObjectId(organization_id)})
+        return self.organizations.delete_one({"_id": ObjectId(organization_id)})
 
     def search_victims(self, search_query=None, category=None):
         # Build the dynamic query

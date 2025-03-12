@@ -134,8 +134,8 @@
         <form id="addVictimForm" action="{{ url_for('victim.add_victim') }}" method="POST">
             <h3>Add New Victim</h3>
             <div>
-                <label for="username">Name:</label>
-                <input type="text" id="username" name="username" required>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
             </div>
             <div>
                 <label for="email">Email:</label>
@@ -146,21 +146,27 @@
                 <input type="text" id="phone" name="phone" required>
             </div>
             <div>
+                <label for="location">Location:</label>
+                <input type="text" id="location" name="location" required>
+            </div>
+            <div>
                 <label for="gender">Gender:</label>
                 <select id="gender" name="gender" required>
                     <option value="">Select Gender</option>
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
+                    <option value="Other">Other</option>
                 </select>
-            </div>
-            <div>
-                <label for="location">Location:</label>
-                <input type="text" id="location" name="location" required>
             </div>
             <div>
                 <label for="case_description">Case Description:</label>
                 <textarea id="case_description" name="case_description" required></textarea>
             </div>
+            <div>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <input type="hidden" name="role" value="victim">
             <button type="submit">Save</button>
             <button type="button" id="cancelAddVictim">Cancel</button>
         </form>
