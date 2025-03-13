@@ -94,23 +94,27 @@
     <div class="manage-section">
         <h1>Manage Responders</h1>
 
-        <div class="search">
-            <label>
-                <input type="text" id="searchResponder" name="search_query" placeholder="Search by Name or ID or Email">
-                <div>
-                    <button class="searchbtn"><ion-icon name="search-outline"></ion-icon></button>
-                </div>
-            </label>
-        </div>
+        <form action="{{ url_for('responder.search_responder') }}" method="GET" class="search-form">
+            <div class="search">
+                <label>
+                    <input type="text" id="searchResponder" name="search_query" placeholder="Search by Name or ID or Email">
+                    <div>
+                        <button type="submit" class="searchbtn"><ion-icon name="search-outline"></ion-icon></button>
+                    </div>
+                </label>
+            </div>
 
-        <div class="categoryFilter">
-            <select id="areaFilter" name="area">
-                <option value="">Filter Area</option>
-                <option value="Nairobi">Nairobi</option>
-                <option value="Mombasa">Mombasa</option>
-                <option value="Kisumu">Kisumu</option>
-            </select>
-        </div>
+            <div class="categoryFilter">
+                <select id="areaFilter" name="area">
+                    <option value="">Filter Area</option>
+                    <option value="Nairobi">Nairobi</option>
+                    <option value="Mombasa">Mombasa</option>
+                    <option value="Kisumu">Kisumu</option>
+                </select>
+            </div>
+            
+            <button type="submit" style="display:none;">Search</button>
+        </form>
 
         <button class="add-btn" id="showAddResponderForm">Add Responder</button>
     </div>

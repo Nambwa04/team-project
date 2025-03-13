@@ -98,7 +98,7 @@ class ResponderService:
                 "user_id": ObjectId(user_id),  # Ensure user_id is ObjectId
                 "name": name,
                 "email": email,
-                "phone": phone,
+                "contact": phone,  
                 "assigned_area": assigned_area,
                 "availability": "Available",
                 "cases_handled": 0,
@@ -107,11 +107,11 @@ class ResponderService:
             }
             
             result = self.responders.insert_one(responder_data)
-            print(f"Responder profile created with ID: {result.inserted_id}")  # Debug log
+            print(f"Responder profile created with ID: {result.inserted_id}")
             return result
 
         except Exception as e:
-            print(f"Error creating responder profile: {e}")  # Debug log
+            print(f"Error creating responder profile: {e}")
             raise
 
     def update_responder_profile(self, responder_id, username, specialization, location, availability, experience_years):

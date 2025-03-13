@@ -30,12 +30,17 @@ class ResponderModel:
 
     # Search responders by name or ID
     def search_responders(self, search_query):
-        return list(self.collection.find({
-            "$or": [
-                {"Name": {"$regex": search_query, "$options": "i"}},
-                {"ID": {"$regex": search_query, "$options": "i"}}
-            ]
-        }))
+        from bson.objectid import ObjectId
+        query_conditions = [
+            {"name": {"$regex": search_query, "$options": "i"}},  # lowercase "name"
+            {"email": {"$regex": search_query, "$options": "i"}}
+        ]
+        
+        # If search_query is a valid ObjectId, add a condition to search by _id
+        if ObjectId.is_valid(search_query):
+            query_conditions.append({"_id": ObjectId(search_query)})
+        
+        return list(self.collection.find({"$or": query_conditions}))
 
     # Count the total number of responders in the database
     def count_responders(self):

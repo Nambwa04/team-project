@@ -19,7 +19,9 @@ def manage_responders():
     for responder in responders:
         responder['_id'] = str(responder['_id'])
 
-    return render_template('responders.html', responders=responders)
+    total_responders = len(responders)  # Count total responders
+
+    return render_template('responders.html', responders=responders, total_responders=total_responders)
 
 @responder_bp.route('/add_responder', methods=['POST'])
 def add_responder():
@@ -50,7 +52,7 @@ def add_responder():
             "user_id": user_id,
             "name": name,
             "email": email,
-            "phone": phone,
+            "contact": phone,  
             "assigned_area": assigned_area,
             "availability": "Available",
             "cases_handled": 0,
