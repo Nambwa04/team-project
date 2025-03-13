@@ -94,3 +94,20 @@ def update_profile():
         flash(f"Error updating profile: {str(e)}", "error")
     
     return redirect(url_for('responderProfile.profile'))
+
+@responderProfile_bp.route('/send_message', methods=['POST'])
+@role_required('responder')
+def send_message():
+    try:
+        user_id = session.get("user_id")
+        message_content = request.form.get('message')
+        
+        if responderService.send_message(user_id, message_content):
+            flash("Message sent successfully", "success")
+        else:
+            flash("Error sending message", "error")
+            
+        return redirect(url_for('responderProfile.profile'))
+    except Exception as e:
+        flash(f"Error: {str(e)}", "error")
+        return redirect(url_for('responderProfile.profile'))

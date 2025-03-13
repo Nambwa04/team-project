@@ -3,37 +3,40 @@
 {% block title %}Register{% endblock %}
 
 {% block content %}
+
+<button>
+    <a href="{{ url_for('auth.logout') }}" class="btn btn-logout" >
+      <ion-icon name="log-out-outline"></ion-icon>
+      Home
+  </a>
+  </button>
+
 <div class="register-body">
     <div class="register-container">
         <h1>REGISTER</h1>
         <form action="{{ url_for('auth.register') }}" id="registerForm" class="form" method="POST">
             
-            <div class="register-form-control">
-                <!-- <label for="username">Username</label> -->
+            <div class="form-control">
                 <input type="text" id="username" name="username" placeholder="Username" required>
                 <small>Error message</small>
             </div>
 
-            <div class="register-form-control">
-                <!-- <label for="email">Email</label> -->
+            <div class="form-control">
                 <input type="email" id="email" name="email" placeholder="Email" required>
                 <small>Error message</small>
             </div>
 
-            <div class="register-form-control">
-                <!-- <label for="phone">Phone Number</label> -->
+            <div class="form-control">
                 <input type="tel" id="phone" name="phone" placeholder="Phone number" required>
                 <small>Error message</small>
             </div>
 
-            <div class="register-form-control">
-                <!-- <label for="location">Location</label> -->
+            <div class="form-control">
                 <input type="text" id="location" name="location" placeholder="Location" required>
                 <small>Error message</small>
             </div>
 
-            <div class="register-form-control">
-                <!-- <label for="gender">Gender</label> -->
+            <div class="form-control">
                 <select id="gender" name="gender" required>
                     <option value="" disabled selected>Select your gender</option>
                     <option value="Male">Male</option>
@@ -43,14 +46,12 @@
                 <small>Error message</small>
             </div>
 
-            <div class="register-form-control">
-                <!-- <label for="password">Password</label> -->
+            <div class="form-control">
                 <input type="password" id="password" name="password" placeholder="Password" required>
                 <small>Error message</small>
             </div>
 
-            <div class="register-form-control">
-                <!-- <label for="confirm-password">Confirm Password</label> -->
+            <div class="form-control">
                 <input type="password" id="confirmPassword" name="confirm_password" placeholder="Confirm Password" required>
                 <small>Error message</small>
             </div>

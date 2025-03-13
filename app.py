@@ -3,7 +3,7 @@ from config import Config
 from models import mongo, mail
 from services.realtime import realtime_service
 from flask_mail import Mail
-from dotenv import load_dotenv
+from dotenv import load_dotenv # type: ignore
 import os
 
 # Load environment variables from .env file

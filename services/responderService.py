@@ -222,5 +222,19 @@ class ResponderService:
                     {"$set": update_data}
                 )
 
+    def send_message(self, user_id, content):
+        """Send a message from the responder"""
+        try:
+            message = {
+                "user_id": ObjectId(user_id),
+                "content": content,
+                "timestamp": datetime.now()
+            }
+            self.messages.insert_one(message)
+            return True
+        except Exception as e:
+            print(f"Error sending message: {str(e)}")
+            return False
+
 # Instantiate ResponderService
 responderService = ResponderService()

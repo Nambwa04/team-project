@@ -3,16 +3,16 @@
 {% block title %}Responder Profile{% endblock %}
 
 {% block content %}
-<div class="profile-container">
-    <div class="profile-header">
-        <div class="profile-image">
-            <img src="{{ url_for('static', filename='images/default-profile.jpg') }}" alt="Profile Picture" id="profilePic">
+<div class="responder-profile-container">
+    <div class="responder-profile-header">
+        <div class="responder-profile-image">
+            <img src="{{ url_for('static', filename='images/default-profile.png') }}" alt="Profile Picture" id="profilePic">
         </div>
-        <div class="profile-info">
+        <div class="responder-profile-info">
             <h1>{{ profile.name or user.username }}</h1>
             <p>{{ profile.email or user.email }}</p>
         </div>
-        <div class="profile-actions">
+        <div class="responder-profile-actions">
             <a href="{{ url_for('auth.logout') }}" class="btn btn-logout">
                 <ion-icon name="log-out-outline"></ion-icon>
                 Logout
@@ -20,11 +20,32 @@
         </div>
     </div>
 
-    <div class="profile-details">
+    <!-- Tab Navigation -->
+    <div class="responder-profile-tabs">
+        <button class="tab-btn active" data-tab="basic-info">My Information</button>
+        <button class="tab-btn" data-tab="case-management">Case Management</button>
+        <button class="tab-btn" data-tab="communication">Communication</button>
+        <button class="tab-btn" data-tab="essential-actions">Essential Actions</button>
+        <button class="tab-btn" data-tab="account-settings">Account Settings</button>
+    </div>
+
+    <!-- Basic Information Tab -->
+    <div class="tab-content active" id="basic-info">
         <form action="{{ url_for('responderProfile.update_profile') }}" method="POST">
+            <h2>Basic Information</h2>
             <div class="form-group">
                 <label for="name">Name:</label>
                 <input type="text" id="name" name="name" value="{{ profile.name or user.username }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="specialization">Specialization:</label>
+                <select id="specialization" name="specialization" required>
+                    <option value="Counseling" {% if profile.specialization == 'Counseling' %}selected{% endif %}>Counseling</option>
+                    <option value="Legal" {% if profile.specialization == 'Legal' %}selected{% endif %}>Legal</option>
+                    <option value="Medical" {% if profile.specialization == 'Medical' %}selected{% endif %}>Medical</option>
+                    <option value="Crisis" {% if profile.specialization == 'Crisis' %}selected{% endif %}>Crisis</option>
+                </select>
             </div>
 
             <div class="form-group">
@@ -33,38 +54,102 @@
             </div>
 
             <div class="form-group">
-                <label for="phone">Phone:</label>
-                <input type="tel" id="phone" name="phone" value="{{ profile.phone }}" required>
-            </div>
-
-            <div class="form-group">
-                <label for="assigned_area">Assigned Area:</label>
-                <input type="text" id="assigned_area" name="assigned_area" value="{{ profile.assigned_area }}" required>
-            </div>
-
-            <div class="form-group">
-                <label for="availability">Availability:</label>
-                <select id="availability" name="availability">
-                    <option value="Available" {% if profile.availability == 'Available' %}selected{% endif %}>Available</option>
-                    <option value="Busy" {% if profile.availability == 'Busy' %}selected{% endif %}>Busy</option>
-                    <option value="Offline" {% if profile.availability == 'Offline' %}selected{% endif %}>Offline</option>
+                <label for="status">Status:</label>
+                <select id="status" name="status" required>
+                    <option value="Active" {% if profile.status == 'Active' %}selected{% endif %}>Active</option>
+                    <option value="Inactive" {% if profile.status == 'Inactive' %}selected{% endif %}>Inactive</option>
                 </select>
-            </div>
-
-            <div class="form-group">
-                <label>Cases Handled:</label>
-                <span>{{ profile.cases_handled or 0 }}</span>
-            </div>
-
-            <div class="form-group">
-                <label>Rating:</label>
-                <span>{{ profile.rating or 'No ratings yet' }}</span>
             </div>
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Update Profile</button>
             </div>
         </form>
+    </div>
+
+    <!-- Case Management Tab -->
+    <div class="tab-content" id="case-management">
+        <h2>Case Management</h2>
+        <div class="responder-case-list">
+            {% for case in cases %}
+            <div class="responder-case-item">
+                <p>Case #{{ case.id }} - {{ case.status }}</p>
+                <a href="{{ url_for('case.view', case_id=case.id) }}" class="btn btn-outline">View Case</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Communication Tab -->
+    <div class="tab-content" id="communication">
+        <h2>Communication</h2>
+        <div class="responder-messages">
+            <div class="responder-message-list">
+                {% for message in messages %}
+                <div class="responder-message-item">
+                    <p>{{ message.sender }}: {{ message.content }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            <form action="{{ url_for('responderProfile.send_message') }}" method="POST" class="responder-message-form">
+                <textarea name="message" placeholder="Type your message..." required></textarea>
+                <button type="submit" class="btn btn-primary">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Essential Actions Tab -->
+    <div class="tab-content" id="essential-actions">
+        <h2>Essential Actions</h2>
+        <div class="form-group">
+            <button type="button" class="btn btn-primary">Accept New Case</button>
+            <button type="button" class="btn btn-secondary">Decline New Case</button>
+        </div>
+
+        <div class="form-group">
+            <label for="case_status">Update Case Status:</label>
+            <select id="case_status" name="case_status">
+                <option value="New">New</option>
+                <option value="Active">Active</option>
+                <option value="Resolved">Resolved</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="refer_organization">Refer to Organization:</label>
+            <input type="text" id="refer_organization" name="refer_organization" placeholder="Organization Name">
+        </div>
+    </div>
+
+    <!-- Account Settings Tab -->
+    <div class="tab-content" id="account-settings">
+        <h2>Account Settings</h2>
+        <div class="form-group">
+            <label for="current_password">Current Password:</label>
+            <input type="password" id="current_password" name="current_password" required>
+        </div>
+
+        <div class="form-group">
+            <label for="new_password">New Password:</label>
+            <input type="password" id="new_password" name="new_password" required>
+        </div>
+
+        <div class="form-group">
+            <label for="confirm_password">Confirm Password:</label>
+            <input type="password" id="confirm_password" name="confirm_password" required>
+        </div>
+
+        <div class="form-group">
+            <label for="availability">Availability:</label>
+            <select id="availability" name="availability">
+                <option value="Available" {% if profile.availability == 'Available' %}selected{% endif %}>Available</option>
+                <option value="Unavailable" {% if profile.availability == 'Unavailable' %}selected{% endif %}>Unavailable</option>
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+        </div>
     </div>
 </div>
 {% endblock %}
@@ -73,4 +158,29 @@
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 <script src="{{ url_for('static', filename='js/responder-profile.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tab switching functionality
+    const tabs = document.querySelectorAll('.tab-btn');
+    const contents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.dataset.tab;
+            
+            // Update active tab
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            // Show corresponding content
+            contents.forEach(content => {
+                content.classList.remove('active');
+                if (content.id === target) {
+                    content.classList.add('active');
+                }
+            });
+        });
+    });
+});
+</script>
 {% endblock %}

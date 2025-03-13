@@ -25,6 +25,10 @@ def send_password_email(email, password):
 class OrganizationService:
     def __init__(self):
         self.organizations = mongo.db.organizations
+        self.messages = mongo.db.messages
+        self.cases = mongo.db.cases
+        self.referrals = mongo.db.referrals
+        self.services = mongo.db.services
 
     def get_all_organizations(self):
         organizations = list(self.organizations.find())
@@ -118,6 +122,37 @@ class OrganizationService:
             organization['_id'] = str(organization['_id'])
 
         return organizations
+
+    def send_message(self, user_id, content):
+        """Send a message from the organization"""
+        try:
+            message = {
+                "user_id": ObjectId(user_id),
+                "content": content,
+                "timestamp": datetime.now()
+            }
+            self.messages.insert_one(message)
+            return True
+        except Exception as e:
+            print(f"Error sending message: {str(e)}")
+            return False
+
+    def get_dashboard_data(self, user_id):
+        """Get dashboard data for the organization"""
+        try:
+            active_cases = self.cases.count_documents({"organization_id": ObjectId(user_id), "status": "Active"})
+            referrals = self.referrals.count_documents({"organization_id": ObjectId(user_id)})
+            services_provided = self.services.count_documents({"organization_id": ObjectId(user_id)})
+
+            dashboard_data = {
+                "active_cases": active_cases,
+                "referrals": referrals,
+                "services_provided": services_provided
+            }
+            return dashboard_data
+        except Exception as e:
+            print(f"Error getting dashboard data: {str(e)}")
+            return None
 
 # Instantiate OrganizationService
 organizationService = OrganizationService()

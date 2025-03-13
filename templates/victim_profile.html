@@ -3,24 +3,35 @@
 {% block title %}Victim Profile{% endblock %}
 
 {% block content %}
-<div class="profile-container">
-    <div class="profile-header">
-        <div class="profile-image">
-            <img src="{{ url_for('static', filename='images/default-profile.jpg') }}" alt="Profile Picture" id="profilePic">
+<div class="victim-profile-container">
+    <!-- Header Section -->
+    <div class="victim-profile-header">
+        <div class="victim-profile-image">
+            <img src="{{ url_for('static', filename='images/default-profile.png') }}" alt="Profile Picture" id="profilePic">
         </div>
-        <div class="profile-info">
+        <div class="victim-profile-info">
             <h1>{{ profile.username or user.username }}</h1>
             <p>{{ profile.email or user.email }}</p>
         </div>
-        <div class="profile-actions">
+        <div class="victim-profile-actions">
             <a href="{{ url_for('auth.logout') }}" class="btn btn-logout">
                 <ion-icon name="log-out-outline"></ion-icon>
                 Logout
             </a>
         </div>
     </div>
+    
+    <!-- Tab Navigation -->
+    <div class="victim-profile-tabs">
+        <button class="tab-btn active" data-tab="personal">Personal Info</button>
+        <button class="tab-btn" data-tab="cases">My Cases</button>
+        <button class="tab-btn" data-tab="resources">Resources</button>
+        <button class="tab-btn" data-tab="messages">Messages</button>
+        <button class="tab-btn" data-tab="location">Location</button>
+    </div>
 
-    <div class="profile-details">
+    <!-- Personal Information Tab -->
+    <div class="tab-content active" id="personal">
         <form action="{{ url_for('victimProfile.update_profile') }}" method="POST">
             <div class="form-group">
                 <label for="name">Name:</label>
@@ -37,20 +48,168 @@
                 <input type="tel" id="phone" name="phone" value="{{ profile.phone }}" required>
             </div>
 
-            <div class="form-group">
-                <label for="location">Location:</label>
-                <input type="text" id="location" name="location" value="{{ profile.location }}" required>
-            </div>
-
-            <div class="form-group">
-                <label for="case_description">Case Description:</label>
-                <textarea id="case_description" name="case_description" rows="4">{{ profile.case_description }}</textarea>
-            </div>
-
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Update Profile</button>
             </div>
         </form>
+
+        <!-- Password Change Section -->
+        <form action="{{ url_for('victimProfile.change_password') }}" method="POST" class="password-form">
+            <h3>Change Password</h3>
+            <div class="form-group">
+                <label for="current_password">Current Password:</label>
+                <input type="password" id="current_password" name="current_password" required>
+            </div>
+            <div class="form-group">
+                <label for="new_password">New Password:</label>
+                <input type="password" id="new_password" name="new_password" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-secondary">Change Password</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Cases Tab -->
+    <div class="tab-content" id="cases">
+        <div class="victim-cases-list">
+            {% for case in cases %}
+            <div class="victim-case-card">
+                <div class="victim-case-header">
+                    <h3>Case #{{ case.id }}</h3>
+                    <span class="status-badge {{ case.status.lower() }}">{{ case.status }}</span>
+                </div>
+                <p class="victim-case-description">{{ case.description }}</p>
+                <div class="victim-case-details">
+                    <p><strong>Responder:</strong> {{ case.responder_name or 'Unassigned' }}</p>
+                    <p><strong>Created:</strong> {{ case.created_at.strftime('%Y-%m-%d') }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Resources Tab -->
+    <div class="tab-content" id="resources">
+        <div class="victim-resources-filters">
+            <select id="serviceFilter">
+                <option value="">All Services</option>
+                <option value="medical">Medical</option>
+                <option value="legal">Legal</option>
+                <option value="counseling">Counseling</option>
+            </select>
+        </div>
+        <div class="victim-emergency-contacts">
+            <h3>Emergency Contacts</h3>
+            <div class="victim-contact-list">
+                <div class="victim-contact-item">
+                    <strong>Emergency Hotline:</strong> 911
+                </div>
+                <!-- Add more emergency contacts -->
+            </div>
+        </div>
+        <div class="victim-resources-list">
+            {% for resource in resources %}
+            <div class="victim-resource-card" data-type="{{ resource.type }}">
+                <h3>{{ resource.name }}</h3>
+                <p>{{ resource.description }}</p>
+                <div class="victim-resource-contact">
+                    <p><strong>Phone:</strong> {{ resource.phone }}</p>
+                    <p><strong>Address:</strong> {{ resource.address }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Messages Tab -->
+    <div class="tab-content" id="messages">
+        <div class="victim-messages-container">
+            <div class="victim-message-history">
+                {% for message in messages %}
+                <div class="victim-message {{ 'sent' if message.sender_id == user.id else 'received' }}">
+                    <div class="victim-message-content">{{ message.content }}</div>
+                    <div class="victim-message-time">{{ message.timestamp.strftime('%H:%M') }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            <form action="{{ url_for('victimProfile.send_message') }}" method="POST" class="victim-message-form">
+                <textarea name="message" placeholder="Type your message..." required></textarea>
+                <button type="submit" class="btn btn-primary">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Location Tab -->
+    <div class="tab-content" id="location">
+        <div class="victim-location-settings">
+            <div class="victim-location-sharing">
+                <h3>Location Sharing</h3>
+                <label class="switch">
+                    <input type="checkbox" id="locationToggle" {{ 'checked' if profile.location_sharing }}>
+                    <span class="slider round"></span>
+                </label>
+                <p>Allow responders to see your location</p>
+            </div>
+            <form action="{{ url_for('victimProfile.update_location') }}" method="POST" class="victim-location-form">
+                <div class="form-group">
+                    <label for="address">Current Address:</label>
+                    <input type="text" id="address" name="address" value="{{ profile.address }}">
+                </div>
+                <div class="form-group">
+                    <label for="city">City:</label>
+                    <input type="text" id="city" name="city" value="{{ profile.city }}">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Update Location</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+{% block scripts %}
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tab switching functionality
+    const tabs = document.querySelectorAll('.tab-btn');
+    const contents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.dataset.tab;
+            
+            // Update active tab
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            // Show corresponding content
+            contents.forEach(content => {
+                content.classList.remove('active');
+                if (content.id === target) {
+                    content.classList.add('active');
+                }
+            });
+        });
+    });
+
+    // Resource filtering
+    const serviceFilter = document.getElementById('serviceFilter');
+    const resourceCards = document.querySelectorAll('.victim-resource-card');
+
+    serviceFilter.addEventListener('change', () => {
+        const selectedType = serviceFilter.value;
+        resourceCards.forEach(card => {
+            if (!selectedType || card.dataset.type === selectedType) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
 {% endblock %}

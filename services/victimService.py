@@ -25,6 +25,9 @@ def send_password_email(email, password):
 class VictimService:
     def __init__(self):
         self.victims = mongo.db.victims
+        self.cases = mongo.db.cases
+        self.resources = mongo.db.resources
+        self.messages = mongo.db.messages
 
     def get_all_victims(self):
         victims = list(self.victims.find())
@@ -35,30 +38,34 @@ class VictimService:
     def get_victim_profile(self, user_id):
         """Get or create victim profile"""
         try:
-            # First try to find existing profile
             profile = self.victims.find_one({"user_id": ObjectId(user_id)})
-            
             if not profile:
-                # Get user data
-                user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
-                if user:
-                    # Create default profile
-                    profile = {
-                        "user_id": ObjectId(user_id),
-                        "username": user.get("username", ""),
-                        "email": user.get("email", ""),
-                        "phone": "",
-                        "gender": "",
-                        "location": "",
-                        "case_description": "",
-                        "created_at": datetime.now()
-                    }
-                    self.victims.insert_one(profile)
-                    print(f"Created new victim profile for user: {user_id}")
-            
+                # Create default profile if it doesn't exist
+                profile = self._create_default_profile(user_id)
             return profile
         except Exception as e:
             print(f"Error getting victim profile: {str(e)}")
+            return None
+
+    def _create_default_profile(self, user_id):
+        try:
+            user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+            if user:
+                profile = {
+                    "user_id": ObjectId(user_id),
+                    "username": user.get("username", ""),
+                    "email": user.get("email", ""),
+                    "phone": "",
+                    "location": "",
+                    "gender": "",
+                    "case_description": "",
+                    "location_sharing": False,
+                    "created_at": datetime.now()
+                }
+                self.victims.insert_one(profile)
+                return profile
+        except Exception as e:
+            print(f"Error creating default profile: {str(e)}")
             return None
 
     def create_victim_profile(self, user_id, username, email, phone, location="Unknown", gender="Unknown", case_description=""):
@@ -139,6 +146,56 @@ class VictimService:
             victim['_id'] = str(victim['_id'])
 
         return victims
+
+    def get_victim_cases(self, user_id):
+        try:
+            return list(self.cases.find({"victim_id": ObjectId(user_id)}))
+        except Exception as e:
+            print(f"Error getting victim cases: {str(e)}")
+            return []
+
+    def get_available_resources(self):
+        try:
+            return list(self.resources.find({}))
+        except Exception as e:
+            print(f"Error getting resources: {str(e)}")
+            return []
+
+    def get_victim_messages(self, user_id):
+        try:
+            return list(self.messages.find({
+                "$or": [
+                    {"sender_id": ObjectId(user_id)},
+                    {"receiver_id": ObjectId(user_id)}
+                ]
+            }).sort("timestamp", -1))
+        except Exception as e:
+            print(f"Error getting messages: {str(e)}")
+            return []
+
+    def update_victim_location(self, user_id, location_data):
+        try:
+            result = self.victims.update_one(
+                {"user_id": ObjectId(user_id)},
+                {"$set": location_data}
+            )
+            return result.modified_count > 0
+        except Exception as e:
+            print(f"Error updating location: {str(e)}")
+            return False
+
+    def send_message(self, user_id, content):
+        try:
+            message = {
+                "sender_id": ObjectId(user_id),
+                "content": content,
+                "timestamp": datetime.now()
+            }
+            result = self.messages.insert_one(message)
+            return bool(result.inserted_id)
+        except Exception as e:
+            print(f"Error sending message: {str(e)}")
+            return False
 
 # Instantiate VictimService
 victimService = VictimService()

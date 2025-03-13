@@ -13,7 +13,7 @@
 
         <li>
             <a href="{{ url_for('admin.dashboard') }}">
-                <span class="ICon">
+                <span class="icon">
                     <ion-icon name="home-outline"></ion-icon></span>                            
                 <span class="sidetag">Dashboard</span>
             </a>
@@ -21,7 +21,7 @@
 
         <li>
             <a href="{{ url_for('victim.manage_victims') }}">
-                <span class="ICon">
+                <span class="icon">
                     <ion-icon name="people-outline"></ion-icon></span>
                 <span class="sidetag">Victims</span>
             </a>
@@ -29,7 +29,7 @@
 
         <li>
             <a href="{{ url_for('responder.manage_responders') }}">
-                <span class="ICon">
+                <span class="icon">
                     <ion-icon name="alert-circle-outline"></ion-icon></span>
                 <span class="sidetag">Responders</span>
             </a>
@@ -37,7 +37,7 @@
 
         <li>
             <a href="{{ url_for('organization.manage_organizations') }}">
-                <span class="ICon">
+                <span class="icon">
                     <ion-icon name="briefcase-outline"></ion-icon></span>
                 <span class="sidetag">Organizations</span>
             </a>
@@ -45,23 +45,15 @@
 
         <li>
             <a href="{{ url_for('resource.manage_resources') }}">
-                <span class="ICon">
+                <span class="icon">
                     <ion-icon name="library-outline"></ion-icon></span>
                 <span class="sidetag">Resources</span>
             </a>
         </li>
 
-        <!-- <li>
-            <a href="{{ url_for('settings.settings') }}">
-                <span class="ICon">
-                    <ion-icon name="settings-outline"></ion-icon></span>
-                <span class="sidetag">Settings</span>
-            </a>
-        </li> -->
-
         <li>
             <a href="{{ url_for('auth.logout') }}">
-                <span class="ICon">
+                <span class="icon">
                     <ion-icon name="log-out-outline"></ion-icon></span>
                 <span class="sidetag">Logout</span>
             </a>
@@ -70,13 +62,36 @@
 </div>
 
 <div class="content">
-    <header class="Organization-header">
-        <!--menu for sidebar/hamburger yake-->
+    <header class="header">
         <div class="toggle">
             <ion-icon name="menu-outline"></ion-icon>
         </div>
-        <!--Nime maliza menu for sidebar/hamburger yake-->
 
+        <div class="header-right">
+            <div class="system-status">
+                <span class="status-dot online"></span> Online
+            </div>
+            <div class="date-time" id="dateTime"></div>
+        </div>
+
+        <div class="home">
+            <a href="{{ url_for('admin.dashboard') }}">Home</a>
+        </div>
+    </header>
+
+    <div class="dashboard-cards">
+        <div class="card">
+            <div>
+                <div class="count">{{ total_victims }}</div>
+                <div class="card-title">Victims</div>
+            </div>
+            <div class="card-icon">
+                <ion-icon name="people-outline"></ion-icon>
+            </div>
+        </div>
+    </div>
+
+    <div class="manage-section">
         <h1>Manage Victims</h1>
 
         <div class="search">
@@ -97,7 +112,7 @@
         </div>
 
         <button class="add-btn" id="showAddVictimForm">Add Victim</button>
-    </header>
+    </div>
 
     <table class="organizationsTable">
         <thead>
@@ -130,85 +145,93 @@
     </table>
 
     <!-- Add Victim Form -->
-    <div id="addVictimFormContainer" class="form-container" style="display: none;">
-        <form id="addVictimForm" action="{{ url_for('victim.add_victim') }}" method="POST">
-            <h3>Add New Victim</h3>
-            <div>
-                <label for="name">Name:</label>
-                <input type="text" id="name" name="name" required>
+    <div id="addVictimFormContainer" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Victim</h3>
+                <span class="modal-close" id="cancelAddVictim">&times;</span>
             </div>
-            <div>
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <div>
-                <label for="phone">Phone:</label>
-                <input type="text" id="phone" name="phone" required>
-            </div>
-            <div>
-                <label for="location">Location:</label>
-                <input type="text" id="location" name="location" required>
-            </div>
-            <div>
-                <label for="gender">Gender:</label>
-                <select id="gender" name="gender" required>
-                    <option value="">Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                </select>
-            </div>
-            <div>
-                <label for="case_description">Case Description:</label>
-                <textarea id="case_description" name="case_description" required></textarea>
-            </div>
-            <div>
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <input type="hidden" name="role" value="victim">
-            <button type="submit">Save</button>
-            <button type="button" id="cancelAddVictim">Cancel</button>
-        </form>
+            <form id="addVictimForm" action="{{ url_for('victim.add_victim') }}" method="POST">
+                <div>
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="username" required>
+                </div>
+                <div>
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div>
+                    <label for="phone">Phone:</label>
+                    <input type="text" id="phone" name="phone" required>
+                </div>
+                <div>
+                    <label for="location">Location:</label>
+                    <input type="text" id="location" name="location" required>
+                </div>
+                <div>
+                    <label for="gender">Gender:</label>
+                    <select id="gender" name="gender" required>
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="case_description">Case Description:</label>
+                    <textarea id="case_description" name="case_description" required></textarea>
+                </div>
+                <div>
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <input type="hidden" name="role" value="victim">
+                <button type="submit">Save</button>
+            </form>
+        </div>
     </div>
 
     <!-- Edit Victim Form -->
-    <div id="editVictimFormContainer" class="form-container" style="display: none;">
-        <form id="editVictimForm" action="" method="POST">
-            <h3>Edit Victim</h3>
-            <!-- Hidden field for MongoDB ObjectId -->
-            <input type="hidden" id="edit_victim_id" name="victim_id">
-            <div>
-                <label for="edit_name">Name:</label>
-                <input type="text" id="edit_name" name="username">
+    <div id="editVictimFormContainer" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Victim</h3>
+                <span class="modal-close" id="cancelEditVictim">&times;</span>
             </div>
-            <div>
-                <label for="edit_email">Email:</label>
-                <input type="email" id="edit_email" name="email">
-            </div>
-            <div>
-                <label for="edit_phone">Phone:</label>
-                <input type="text" id="edit_phone" name="phone">
-            </div>
-            <div>
-                <label for="edit_gender">Gender:</label>
-                <select id="edit_gender" name="gender">
-                    <option value="">Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                </select>
-            </div>
-            <div>
-                <label for="edit_location">Location:</label>
-                <input type="text" id="edit_location" name="location">
-            </div>
-            <div>
-                <label for="edit_case_description">Case Description:</label>
-                <textarea id="edit_case_description" name="case_description"></textarea>
-            </div>
-            <button type="submit">Update</button>
-            <button type="button" id="cancelEditVictim">Cancel</button>
-        </form>
+            <form id="editVictimForm" action="" method="POST">
+                <!-- Hidden field for MongoDB ObjectId -->
+                <input type="hidden" id="edit_victim_id" name="victim_id">
+                <div>
+                    <label for="edit_name">Name:</label>
+                    <input type="text" id="edit_name" name="username">
+                </div>
+                <div>
+                    <label for="edit_email">Email:</label>
+                    <input type="email" id="edit_email" name="email">
+                </div>
+                <div>
+                    <label for="edit_phone">Phone:</label>
+                    <input type="text" id="edit_phone" name="phone">
+                </div>
+                <div>
+                    <label for="edit_gender">Gender:</label>
+                    <select id="edit_gender" name="gender">
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="edit_location">Location:</label>
+                    <input type="text" id="edit_location" name="location">
+                </div>
+                <div>
+                    <label for="edit_case_description">Case Description:</label>
+                    <textarea id="edit_case_description" name="case_description"></textarea>
+                </div>
+                <button type="submit">Update</button>
+            </form>
+        </div>
     </div>
 </div>
 

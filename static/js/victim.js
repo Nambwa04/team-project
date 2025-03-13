@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (showAddVictimFormButton && addVictimFormContainer && cancelAddVictimButton) {
         showAddVictimFormButton.addEventListener('click', function() {
-            addVictimFormContainer.style.display = 'block';
+            addVictimFormContainer.style.display = 'flex';
             overlay.style.display = 'block';
         });
         cancelAddVictimButton.addEventListener('click', function() {
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             document.getElementById('editVictimForm').action = `/victim/edit_victim/${victimId}`;
 
-            editVictimFormContainer.style.display = 'block';
+            editVictimFormContainer.style.display = 'flex';
             overlay.style.display = 'block';
         });
     });

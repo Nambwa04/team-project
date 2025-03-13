@@ -23,27 +23,17 @@ def profile():
             return redirect(url_for('auth.login'))
 
         # Get or create organization profile
-        profile_data = organizationService.get_organization_profile(user_id)
-        if not profile_data:
-            # Create default profile
-            profile_data = {
-                "user_id": ObjectId(user_id),
-                "name": user.get("username", ""),
-                "email": user.get("email", ""),
-                "phone": "",
-                "location": "",
-                "services": [],
-                "created_at": datetime.now()
-            }
-            organizationService.organizations.insert_one(profile_data)
+        profile = organizationService.get_organization_profile(user_id)
+        if not profile:
+            flash("Profile not found", "error")
+            return redirect(url_for('auth.login'))
 
-        print(f"User data: {user}")  # Debug log
-        print(f"Profile data: {profile_data}")  # Debug log
+        # Get dashboard data
+        dashboard = organizationService.get_dashboard_data(user_id)
 
-        return render_template('organization_profile.html', organization=profile_data, user=user)
+        return render_template('organization_profile.html', user=user, profile=profile, dashboard=dashboard)
     except Exception as e:
-        print(f"Error in profile route: {str(e)}")  # Debug log
-        flash("Error loading profile", "error")
+        flash(f"Error: {str(e)}", "error")
         return redirect(url_for('auth.login'))
 
 @organizationProfile_bp.route('/profile/update', methods=['POST'])
@@ -80,3 +70,20 @@ def update_profile():
     else:
         flash("No changes made.", "info")
     return redirect(url_for('organizationProfile.profile'))
+
+@organizationProfile_bp.route('/send_message', methods=['POST'])
+@role_required('organization')
+def send_message():
+    try:
+        user_id = session.get("user_id")
+        message_content = request.form.get('message')
+        
+        if organizationService.send_message(user_id, message_content):
+            flash("Message sent successfully", "success")
+        else:
+            flash("Error sending message", "error")
+            
+        return redirect(url_for('organizationProfile.profile'))
+    except Exception as e:
+        flash(f"Error: {str(e)}", "error")
+        return redirect(url_for('organizationProfile.profile'))
