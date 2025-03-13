@@ -94,22 +94,24 @@
     <div class="manage-section">
         <h1>Manage Victims</h1>
 
-        <div class="search">
-            <label>
-                <input type="text" id="searchVictim" name="search_query" placeholder="Search by Name or ID or Email">
-                <div>
-                    <button class="searchbtn"><ion-icon name="search-outline"></ion-icon></button>
-                </div>
-            </label>
-        </div>
+        <form action="{{ url_for('victim.search_victim') }}" method="GET" class="search-form">
+            <div class="search">
+                <label>
+                    <input type="text" id="searchVictim" name="search_query" placeholder="Search by Name or ID or Email">
+                    <div>
+                        <button type="submit" class="searchbtn"><ion-icon name="search-outline"></ion-icon></button>
+                    </div>
+                </label>
+            </div>
 
-        <div class="categoryFilter">
-            <select id="genderFilter" name="gender">
-                <option value="">All</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-            </select>
-        </div>
+            <div class="categoryFilter">
+                <select id="genderFilter" name="gender">
+                    <option value="">All</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+        </form>
 
         <button class="add-btn" id="showAddVictimForm">Add Victim</button>
     </div>

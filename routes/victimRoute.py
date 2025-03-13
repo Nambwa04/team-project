@@ -86,26 +86,27 @@ def add_victim():
 
 @victim_bp.route('/edit_victim/<victim_id>', methods=['POST'])
 def edit_victim(victim_id):
-    updated_victim = {
-        'username': request.form.get('username'),
-        'email': request.form.get('email'),
-        'phone': request.form.get('phone'),
-        'gender': request.form.get('gender'),
-        'location': request.form.get('location'),
-        'case_description': request.form.get('case_description')
-    }
-    if not all(updated_victim.values()):
-        flash('All fields are required!', 'error')
-        return redirect(url_for('victim.manage_victims'))
     try:
-        result = victimService.update_victim_profile(
-            victim_id,
-            updated_victim['username'],
-            updated_victim['location'],
-            updated_victim['gender'],
-            updated_victim['case_description']
-        )
-        if result.modified_count:
+        # Collect all form data into a dictionary
+        updated_data = {
+            'username': request.form.get('username'),
+            'email': request.form.get('email'),
+            'phone': request.form.get('phone'),
+            'gender': request.form.get('gender'),
+            'location': request.form.get('location'),
+            'case_description': request.form.get('case_description')
+        }
+        
+        # Validate that all required fields are provided
+        if not all([updated_data['username'], updated_data['email'], updated_data['phone'], 
+                   updated_data['gender'], updated_data['location']]):
+            flash('All fields are required!', 'error')
+            return redirect(url_for('victim.manage_victims'))
+        
+        # Use the update_victim method from VictimModel which supports _id directly
+        result = victim_model.update_victim(victim_id, updated_data)
+        
+        if result.modified_count > 0:
             flash('Victim updated successfully', 'success')
         else:
             flash('No changes made or victim not found', 'error')

@@ -94,22 +94,27 @@
     <div class="manage-section">
         <h1>Manage Resources</h1>
 
-        <div class="search">
-            <label>
-                <input type="text" id="searchResources" name="search_query" placeholder="Search by Name or ID or Email">
-                <div>
-                    <button class="searchbtn"><ion-icon name="search-outline"></ion-icon></button>
-                </div>
-            </label>
-        </div>
-
-        <div class="categoryFilter">
-            <select id="categoryFilter" name="type">
-                <option value="">Filter</option>
-                <option value="PDF">PDF</option>
-                <option value="Word">Word(Docs)</option>
-            </select>
-        </div>
+        <form action="{{ url_for('resource.search_resource') }}" method="GET" class="search-form">
+            <div class="search">
+                <label>
+                    <input type="text" id="searchResource" name="search_query" placeholder="Search by Name or ID or Description">
+                    <div>
+                        <button type="submit" class="searchbtn"><ion-icon name="search-outline"></ion-icon></button>
+                    </div>
+                </label>
+            </div>
+            
+            <div class="categoryFilter">
+                <select id="typeFilter" name="type">
+                    <option value="">Filter Type</option>
+                    <option value="PDF">PDF</option>
+                    <option value="Video">Video</option>
+                    <option value="Word">Word(Docs)</option>
+                </select>
+            </div>
+            
+            <button type="submit" style="display:none;">Search</button>
+        </form>
 
         <button class="add-btn" id="showAddResourceForm">Add Resources</button>
     </div>

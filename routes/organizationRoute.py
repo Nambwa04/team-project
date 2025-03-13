@@ -52,11 +52,12 @@ def add_organization():
         # Create organization profile
         organization_data = {
             "user_id": user_id,
-            "name": name,
+            "username": name,         # Changed from name to username
             "email": email,
-            "phone": phone,
+            "contact": phone,         # Changed from phone to contact
             "location": location,
-            "services": services
+            "services": services,
+            "category": request.form.get('category', '')  # Added category field
         }
         
         # Insert into organizations collection
@@ -116,3 +117,34 @@ def delete_organization(organization_id):
         flash(f'Error deleting organization: {str(e)}', 'error')
 
     return redirect(url_for('organization.manage_organizations'))
+
+@organization_bp.route('/search_organization', methods=['GET'])
+@role_required('admin')
+def search_organization():
+    search_query = request.args.get('search_query', '')
+    area = request.args.get('area', '')
+    
+    if area and search_query:
+        # Both search and area filter
+        organizations = organization_model.search_organizations_by_query_and_category(
+            search_query=search_query, 
+            category='', 
+            location=area
+        )
+    elif search_query:
+        # Only search
+        organizations = organization_model.search_organizations(search_query)
+    elif area:
+        # Only area filter
+        organizations = organization_model.filter_by_location(area)
+    else:
+        # No filters, get all
+        organizations = organization_model.get_all_organizations()
+    
+    # Convert ObjectId to string for template rendering
+    for organization in organizations:
+        organization['_id'] = str(organization['_id'])
+    
+    total_organizations = len(organizations)
+    
+    return render_template('organizations.html', organizations=organizations, total_organizations=total_organizations)

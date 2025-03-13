@@ -1,6 +1,21 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Victim JS loaded');
 
+    // Handle the search form submission for better UX
+    const searchForm = document.querySelector('.search-form');
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            const searchQuery = document.getElementById('searchVictim').value.trim();
+            const genderFilter = document.getElementById('genderFilter').value;
+            
+            // Only submit if at least one field has a value
+            if (!searchQuery && !genderFilter) {
+                e.preventDefault();
+                alert('Please enter a search term or select a filter');
+            }
+        });
+    }
+
     // Add Victim Form toggling
     const showAddVictimFormButton = document.getElementById('showAddVictimForm');
     const addVictimFormContainer = document.getElementById('addVictimFormContainer');

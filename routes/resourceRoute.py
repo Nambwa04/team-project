@@ -18,7 +18,9 @@ def manage_resources():
     for resource in resources:
         resource['_id'] = str(resource['_id'])
 
-    return render_template('resources.html', resources=resources)
+    total_resources = len(resources)  
+
+    return render_template('resources.html', resources=resources, total_resources=total_resources)  # Pass total_resources
 
 @resource_bp.route('/add_resource', methods=['POST'])
 @role_required('admin')
@@ -86,3 +88,37 @@ def delete_resource(resource_id):
         flash(f'Error deleting resource: {str(e)}', 'error')
 
     return redirect(url_for('resource.manage_resources'))
+
+@resource_bp.route('/search_resource', methods=['GET'])
+@role_required('admin')
+def search_resource():
+    search_query = request.args.get('search_query', '')
+    category = request.args.get('category', '')
+    resource_type = request.args.get('type', '')  # Added type filter
+    
+    # Build query based on available filters
+    filter_conditions = {}
+    
+    # Add category filter if provided
+    if category:
+        filter_conditions['category'] = category
+    
+    # Add type filter if provided
+    if resource_type:
+        filter_conditions['type'] = resource_type
+    
+    # Handle search with or without filters
+    if search_query:
+        resources = resource_model.search_resources_with_filters(search_query, filter_conditions)
+    elif filter_conditions:
+        resources = resource_model.filter_resources(filter_conditions)
+    else:
+        resources = resource_model.get_all_resources()
+    
+    # Convert ObjectId to string for template rendering
+    for resource in resources:
+        resource['_id'] = str(resource['_id'])
+    
+    total_resources = len(resources)
+    
+    return render_template('resources.html', resources=resources, total_resources=total_resources)
