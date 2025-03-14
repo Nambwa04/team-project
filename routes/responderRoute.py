@@ -1,14 +1,25 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
+from flask import Blueprint, current_app, render_template, redirect, session, url_for, request, flash, jsonify
 from models.responders import ResponderModel
 from models.user import mongo, User
 from bson.objectid import ObjectId
 from models.decorators import role_required
+from models.victim import VictimModel
 from services.responderService import responderService
+from datetime import datetime
+
+# Add these imports if not already present
+from models.emergency import EmergencyModel
+from services.notification_service import NotificationService
+from bson.objectid import ObjectId
 from datetime import datetime
 
 # Create Blueprint
 responder_bp = Blueprint('responder', __name__)
 responder_model = ResponderModel(mongo)
+
+# Initialize the services
+emergency_model = EmergencyModel(mongo)
+notification_service = NotificationService(mongo)
 
 @responder_bp.route('/manage_responders', methods=['GET'])
 @role_required('admin')
@@ -135,3 +146,137 @@ def search_responder():
         responder['_id'] = str(responder['_id'])
     
     return render_template('responders.html', responders=responders)
+
+# Add these routes for responder emergency handling
+@responder_bp.route('/emergencies')
+def view_emergencies():
+    """View all active emergency cases"""
+    user_id = session.get("user_id")
+    if not user_id:
+        flash("You need to login first", "error")
+        return redirect(url_for('auth.login'))
+    
+    try:
+        # Get all active emergency cases
+        cases = emergency_model.get_active_emergency_cases()
+        
+        # Get victim details for each case
+        for case in cases:
+            victim = VictimModel.get_victim_by_id(case.get('victim_id'))
+            if victim:
+                case['victim_name'] = victim.get('name', 'Unknown')
+        
+        return render_template("responder/emergencies.html", cases=cases)
+        
+    except Exception as e:
+        flash(f"Error retrieving emergency cases: {str(e)}", "error")
+        return redirect(url_for('responder.dashboard'))
+
+@responder_bp.route('/emergency/<case_id>')
+def emergency_details(case_id):
+    """View details of a specific emergency case"""
+    user_id = session.get("user_id")
+    if not user_id:
+        flash("You need to login first", "error")
+        return redirect(url_for('auth.login'))
+    
+    try:
+        case = emergency_model.get_case_by_id(case_id)
+        if not case:
+            flash("Emergency case not found", "error")
+            return redirect(url_for('responder.view_emergencies'))
+        
+        # Get victim details
+        victim = VictimModel.get_victim_by_id(case.get('victim_id'))
+        
+        return render_template("responder/emergency_details.html", 
+                               case=case, 
+                               victim=victim)
+    
+    except Exception as e:
+        flash(f"Error retrieving case details: {str(e)}", "error")
+        return redirect(url_for('responder.view_emergencies'))
+
+@responder_bp.route('/emergency/accept/<case_id>', methods=['POST'])
+def accept_emergency(case_id):
+    """Accept an emergency case assignment"""
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"success": False, "error": "Not logged in"}), 401
+    
+    try:
+        # Assign this responder to the case
+        result = emergency_model.assign_responder(case_id, user_id)
+        
+        if result:
+            # Notify the victim
+            case = emergency_model.get_case_by_id(case_id)
+            responder = responder_model.get_responder_by_id(user_id)
+            
+            if case and responder:
+                notification_service.create_notification(
+                    case['victim_id'],
+                    "Responder Assigned",
+                    f"A responder ({responder.get('name', 'Unknown')}) has been assigned to your emergency case.",
+                    "info",
+                    {"case_id": case_id}
+                )
+            
+            return jsonify({
+                "success": True,
+                "message": "Emergency case accepted successfully"
+            }), 200
+        else:
+            return jsonify({
+                "success": False,
+                "error": "Failed to accept emergency case"
+            }), 500
+    
+    except Exception as e:
+        current_app.logger.error(f"Error accepting emergency: {str(e)}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@responder_bp.route('/emergency/resolve/<case_id>', methods=['POST'])
+def resolve_emergency(case_id):
+    """Resolve an emergency case"""
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"success": False, "error": "Not logged in"}), 401
+    
+    try:
+        resolution = request.json.get('resolution', "Case resolved by responder")
+        
+        # Check if this responder is assigned to the case
+        case = emergency_model.get_case_by_id(case_id)
+        if not case or str(case.get('responder_id')) != user_id:
+            return jsonify({
+                "success": False,
+                "error": "You are not assigned to this emergency case"
+            }), 403
+        
+        # Resolve the case
+        result = emergency_model.resolve_case(case_id, resolution)
+        
+        if result:
+            # Notify the victim
+            notification_service.create_notification(
+                case['victim_id'],
+                "Emergency Case Resolved",
+                f"Your emergency case has been resolved.",
+                "success",
+                {"case_id": case_id}
+            )
+            
+            return jsonify({
+                "success": True,
+                "message": "Emergency case resolved successfully"
+            }), 200
+        else:
+            return jsonify({
+                "success": False,
+                "error": "Failed to resolve emergency case"
+            }), 500
+    
+    except Exception as e:
+        current_app.logger.error(f"Error resolving emergency: {str(e)}")
+        return jsonify({"success": False, "error": str(e)}), 500

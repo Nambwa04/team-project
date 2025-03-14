@@ -5,6 +5,7 @@ mongo = PyMongo()
 
 class ResponderModel:
     def __init__(self, mongo):
+        self.mongo = mongo
         self.collection = mongo.db.responders
 
     # Retrieve all responders from the database
@@ -45,3 +46,49 @@ class ResponderModel:
     # Count the total number of responders in the database
     def count_responders(self):
         return self.collection.count_documents({})
+
+    # Add this new method
+    def get_available_responders(self):
+        """Get all available responders"""
+        available_responders = []
+        
+        # Find responder profiles where availability is "Available" and status is "Active"
+        active_profiles = list(self.collection.find({
+            "availability": "Available",
+            "status": "Active"
+        }))
+        
+        # For each profile, get the associated user
+        for profile in active_profiles:
+            if profile.get("user_id"):
+                user = self.mongo.db.users.find_one({"_id": profile["user_id"]})
+                if user and user.get("role") == "responder":
+                    # Combine user and profile data
+                    responder_data = {**user, "profile": profile}
+                    available_responders.append(responder_data)
+        
+        return available_responders
+    
+    # Also add a method to get a responder by ID
+    def get_responder_by_id(self, responder_id):
+        """Get responder details by ID"""
+        from bson.objectid import ObjectId
+        
+        # Convert string ID to ObjectId if needed
+        if isinstance(responder_id, str):
+            responder_id = ObjectId(responder_id)
+            
+        # First get the user data
+        user = self.mongo.db.users.find_one({"_id": responder_id, "role": "responder"})
+        
+        if not user:
+            return None
+            
+        # Then get the responder profile
+        profile = self.collection.find_one({"user_id": responder_id})
+        
+        # Combine the data
+        if profile:
+            user["profile"] = profile
+            
+        return user

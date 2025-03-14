@@ -19,6 +19,21 @@
                 Logout
             </a>
         </div>
+        <div class="sos-button-container">
+            <button id="sosButton" class="sos-button">SOS EMERGENCY</button>
+            <div class="sos-button-help">Click in case of emergency to alert responders</div>
+        </div>
+        <div class="location-toggle-container">
+            <label class="location-toggle">
+                <input type="checkbox" id="locationToggle">
+                <span class="location-toggle-slider"></span>
+            </label>
+            <div class="location-status-container">
+                <span class="location-status" id="locationStatus">Disabled</span>
+                <span class="last-updated" id="lastUpdatedTime"></span>
+            </div>
+            <div class="location-indicator" id="locationIndicator"></div>
+        </div>
     </div>
     
     <!-- Tab Navigation -->
@@ -171,6 +186,7 @@
 {% block scripts %}
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script src="{{ url_for('static', filename='js/sos.js') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Tab switching functionality

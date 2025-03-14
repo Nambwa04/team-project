@@ -1,4 +1,5 @@
-from flask import Blueprint, request, jsonify, render_template, redirect, url_for, flash
+from flask import Blueprint, current_app, request, jsonify, render_template, redirect, session, url_for, flash
+from models.responders import ResponderModel
 from models.victim import VictimModel
 from models.user import mongo, User, bcrypt
 from bson import ObjectId 
@@ -7,11 +8,23 @@ from services.victimService import VictimService
 from models.decorators import role_required
 from utils import generate_default_password 
 
+# Add these imports if not already present
+from models.emergency import EmergencyModel
+from services.location_service import LocationService
+from services.notification_service import NotificationService
+from bson.objectid import ObjectId
+from datetime import datetime
+
 # Create Blueprint
 victim_bp = Blueprint('victim', __name__)
 victim_model = VictimModel(mongo)
 
 victimService = VictimService()
+
+# Initialize the services
+emergency_model = EmergencyModel(mongo)
+location_service = LocationService()
+notification_service = NotificationService(mongo)
 
 @victim_bp.route('/manage_victims', methods=['GET'])
 @role_required('admin')
@@ -140,3 +153,58 @@ def search_victim():
     victims = victimService.search_victims(search_query, gender)
 
     return render_template('victims.html', victims=victims)
+
+# Add these routes for SOS functionality
+@victim_bp.route('/sos', methods=['POST'])
+def trigger_sos():
+    """Trigger an SOS emergency alert"""
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"success": False, "error": "Not logged in"}), 401
+    
+    try:
+        # Get the victim's current location if available
+        location = location_service.get_victim_location(user_id)
+        
+        # Create an emergency case
+        description = request.json.get('description', "Emergency SOS activated")
+        case_id = emergency_model.create_emergency_case(user_id, location, description)
+        
+        # Notify all available responders
+        responders = ResponderModel.get_available_responders()
+        for responder in responders:
+            notification_service.create_notification(
+                responder['_id'],
+                "EMERGENCY SOS ALERT",
+                "A victim has triggered an emergency SOS alert. Immediate attention required.",
+                "emergency",
+                {"case_id": case_id}
+            )
+        
+        return jsonify({
+            "success": True, 
+            "message": "SOS alert sent successfully",
+            "case_id": case_id
+        }), 200
+        
+    except Exception as e:
+        current_app.logger.error(f"Error triggering SOS: {str(e)}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@victim_bp.route('/sos/history')
+def sos_history():
+    """View SOS history for the victim"""
+    user_id = session.get("user_id")
+    if not user_id:
+        flash("You need to login first", "error")
+        return redirect(url_for('auth.login'))
+    
+    try:
+        # Get all emergency cases for this victim
+        cases = emergency_model.get_cases_by_victim(user_id)
+        
+        return render_template("victim/sos_history.html", cases=cases)
+        
+    except Exception as e:
+        flash(f"Error retrieving SOS history: {str(e)}", "error")
+        return redirect(url_for('victim.dashboard'))
