@@ -87,22 +87,42 @@
 
     <!-- Cases Tab -->
     <div class="tab-content" id="cases">
-        <div class="victim-cases-list">
+    <div class="victim-cases-list">
+        {% if cases %}
             {% for case in cases %}
             <div class="victim-case-card">
                 <div class="victim-case-header">
-                    <h3>Case #{{ case.id }}</h3>
+                    <h3>Case #{{ case._id }}</h3>
                     <span class="status-badge {{ case.status.lower() }}">{{ case.status }}</span>
                 </div>
-                <p class="victim-case-description">{{ case.description }}</p>
                 <div class="victim-case-details">
-                    <p><strong>Responder:</strong> {{ case.responder_name or 'Unassigned' }}</p>
-                    <p><strong>Created:</strong> {{ case.created_at.strftime('%Y-%m-%d') }}</p>
+                    <p class="victim-case-description">{{ case.description }}</p>
+                    <p><strong>Created:</strong> {{ case.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                    
+                    {% if case.responder_id %}
+                        <p><strong>Assigned To:</strong> {{ case.responder_name or 'A responder' }}</p>
+                    {% else %}
+                        <p><strong>Assigned To:</strong> Pending assignment</p>
+                    {% endif %}
+                    
+                    {% if case.updated_at != case.created_at %}
+                        <p><strong>Last Updated:</strong> {{ case.updated_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                    {% endif %}
+                    
+                    {% if case.notes %}
+                        <div class="victim-case-notes">
+                            <p><strong>Notes from responder:</strong></p>
+                            <p>{{ case.notes }}</p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
-        </div>
+        {% else %}
+            <p>You have no active cases at this time.</p>
+        {% endif %}
     </div>
+</div>
 
     <!-- Resources Tab -->
     <div class="tab-content" id="resources">

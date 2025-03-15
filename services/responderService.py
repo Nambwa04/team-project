@@ -236,5 +236,64 @@ class ResponderService:
             print(f"Error sending message: {str(e)}")
             return False
 
+    def find_nearest_responders(self, victim_location, limit=5):
+        """Find the nearest available responders to a victim location
+        
+        Args:
+            victim_location: Dict with 'latitude' and 'longitude' keys
+            limit: Maximum number of responders to return
+            
+        Returns:
+            List of nearest responder documents sorted by proximity
+        """
+        if not victim_location or 'latitude' not in victim_location or 'longitude' not in victim_location:
+            # If no location provided, just return available responders
+            return list(self.responders.find({"availability": "Available"}).limit(limit))
+            
+        # Get all available responders
+        available_responders = list(self.responders.find({"availability": "Available"}))
+        
+        # Calculate distance for each responder (if they have location data)
+        responders_with_distance = []
+        for responder in available_responders:
+            responder_location = responder.get('last_location', {})
+            if responder_location and 'latitude' in responder_location and 'longitude' in responder_location:
+                # Calculate distance using Haversine formula
+                distance = self._calculate_distance(
+                    victim_location['latitude'], 
+                    victim_location['longitude'],
+                    responder_location['latitude'], 
+                    responder_location['longitude']
+                )
+                responder['distance'] = distance
+                responders_with_distance.append(responder)
+            else:
+                # Responders without location go at the end with "unknown" distance
+                responder['distance'] = float('inf')
+                responders_with_distance.append(responder)
+        
+        # Sort responders by distance (nearest first)
+        responders_with_distance.sort(key=lambda r: r['distance'])
+        
+        # Return limited number of nearest responders
+        return responders_with_distance[:limit]
+    
+    def _calculate_distance(self, lat1, lon1, lat2, lon2):
+        """Calculate distance between two coordinates using Haversine formula"""
+        from math import radians, sin, cos, sqrt, atan2
+        
+        # Convert latitude and longitude from degrees to radians
+        lat1, lon1, lat2, lon2 = map(radians, [float(lat1), float(lon1), float(lat2), float(lon2)])
+        
+        # Haversine formula
+        dlon = lon2 - lon1
+        dlat = lat2 - lat1
+        a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+        c = 2 * atan2(sqrt(a), sqrt(1-a))
+        radius = 6371  # Radius of Earth in kilometers
+        distance = radius * c
+        
+        return distance
+
 # Instantiate ResponderService
 responderService = ResponderService()

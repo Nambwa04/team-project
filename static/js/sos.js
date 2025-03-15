@@ -106,11 +106,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(data.error || "Failed to send SOS alert");
             }
             
-            // Show success message
+            // Show success message with responder info if assigned
+            let message = 'Your emergency alert has been sent.';
+            if (data.responder_assigned && data.responder_name) {
+                message = `Responder ${data.responder_name} has been assigned to your emergency and is on the way.`;
+            } else {
+                message = `Your emergency alert has been sent to ${data.responders_notified} responders.`;
+            }
+            
             Swal.fire({
                 icon: 'success',
                 title: 'SOS Alert Sent!',
-                text: `Responders have been notified of your emergency. ${data.responders_notified} responder(s) alerted.`,
+                text: message,
                 confirmButtonColor: '#4CAF50'
             });
             

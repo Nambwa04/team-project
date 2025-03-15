@@ -154,6 +154,27 @@ class VictimService:
             print(f"Error getting victim cases: {str(e)}")
             return []
 
+    def get_victim_cases_with_details(self, user_id):
+        """Get all cases for a victim with responder details"""
+        try:
+            # Get all cases for this victim
+            cases = list(mongo.db.emergency_cases.find({"victim_id": ObjectId(user_id)}))
+            
+            # Add responder details to each case
+            for case in cases:
+                if 'responder_id' in case and case['responder_id']:
+                    responder = mongo.db.responders.find_one({"user_id": case['responder_id']})
+                    if responder:
+                        case['responder_name'] = responder.get('name', 'Unknown Responder')
+                
+                # Ensure _id is string
+                case['_id'] = str(case['_id'])
+                
+            return cases
+        except Exception as e:
+            print(f"Error getting victim cases with details: {str(e)}")
+            return []
+
     def get_available_resources(self):
         try:
             return list(self.resources.find({}))

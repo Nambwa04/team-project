@@ -4,7 +4,7 @@ from models.user import mongo, User
 from bson.objectid import ObjectId
 from models.decorators import role_required
 from models.victim import VictimModel
-from services.responderService import responderService
+from services.responderService import ResponderService, responderService
 from datetime import datetime
 
 # Add these imports if not already present
@@ -280,3 +280,125 @@ def resolve_emergency(case_id):
     except Exception as e:
         current_app.logger.error(f"Error resolving emergency: {str(e)}")
         return jsonify({"success": False, "error": str(e)}), 500
+
+# Add this route to handle case status updates
+
+@responder_bp.route('/update_case_status/<case_id>', methods=['POST'])
+@role_required('responder')
+def update_case_status(case_id):
+    """Update the status of a case"""
+    user_id = session.get("user_id")
+    if not user_id:
+        flash("You need to login first", "error")
+        return redirect(url_for('auth.login'))
+    
+    try:
+        # Get form data
+        status = request.form.get('status')
+        notes = request.form.get('notes', '')
+        
+        # Initialize the emergency model with mongo connection
+        from models import mongo  
+        emergency_model = EmergencyModel(mongo)
+        
+        # Check if this responder is assigned to the case
+        case = emergency_model.get_case_by_id(case_id)
+        if not case or str(case.get('responder_id')) != user_id:
+            flash("You are not authorized to update this case", "error")
+            return redirect(url_for('responderProfile.profile'))
+        
+        # Update the case status
+        result = emergency_model.update_case_status(case_id, status, notes)
+        
+        if result:
+            # Notify the victim about the status update
+            notification_service.create_notification(
+                case['victim_id'],
+                "Case Status Updated",
+                f"Your case status has been updated to {status}",
+                "info",
+                {"case_id": case_id}
+            )
+            
+            flash("Case status updated successfully", "success")
+        else:
+            flash("Failed to update case status", "error")
+            
+        return redirect(url_for('responderProfile.profile'))
+        
+    except Exception as e:
+        current_app.logger.error(f"Error updating case status: {str(e)}")
+        flash(f"Error updating case status: {str(e)}", "error")
+        return redirect(url_for('responderProfile.profile'))
+
+@responder_bp.route('/respond_to_emergency/<case_id>', methods=['POST'])
+def respond_to_emergency(case_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        flash('Please login to respond to emergencies', 'error')
+        return redirect(url_for('auth.login'))
+    
+    try:
+        action = request.form.get('action')
+        notes = request.form.get('notes', '')
+        
+        if action == 'accept':
+            # Update the emergency case with responder's ID
+            result = mongo.db.emergency_cases.update_one(
+                {"_id": ObjectId(case_id)},
+                {
+                    "$set": {
+                        "responder_id": ObjectId(user_id),
+                        "status": "IN_PROGRESS",
+                        "updated_at": datetime.utcnow(),
+                        "notes": notes if notes else "Case accepted by responder"
+                    }
+                }
+            )
+            
+            if result.modified_count > 0:
+                # Update responder's availability
+                mongo.db.responder_profiles.update_one(
+                    {"user_id": ObjectId(user_id)},
+                    {"$set": {"availability": "Busy"}}
+                )
+                
+                # Get case details to notify victim
+                case = mongo.db.emergency_cases.find_one({"_id": ObjectId(case_id)})
+                if case and 'victim_id' in case:
+                    # Get responder info
+                    responder = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+                    responder_name = responder.get('username', 'A responder') if responder else 'A responder'
+                    
+                    # Notify victim
+                    mongo.db.notifications.insert_one({
+                        "user_id": case['victim_id'],
+                        "title": "Responder Assigned to Your Case",
+                        "message": f"{responder_name} has accepted your emergency case and is responding to your situation.",
+                        "type": "success",
+                        "related_id": ObjectId(case_id),
+                        "created_at": datetime.utcnow(),
+                        "read": False
+                    })
+                
+                flash('You have successfully accepted the emergency case', 'success')
+            else:
+                flash('This case has already been assigned to another responder', 'warning')
+        
+        elif action == 'decline':
+            # Log the declination but don't change the case assignment
+            mongo.db.responder_actions.insert_one({
+                "responder_id": ObjectId(user_id),
+                "case_id": ObjectId(case_id),
+                "action": "DECLINED",
+                "notes": notes,
+                "timestamp": datetime.utcnow()
+            })
+            
+            flash('You have declined the emergency case', 'info')
+        
+        return redirect(url_for('responderProfile.profile'))
+        
+    except Exception as e:
+        flash(f'Error: {str(e)}', 'error')
+        return redirect(url_for('responderProfile.profile'))

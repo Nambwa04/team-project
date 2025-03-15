@@ -69,16 +69,107 @@
 
     <!-- Case Management Tab -->
     <div class="tab-content" id="case-management">
-        <h2>Case Management</h2>
-        <div class="responder-case-list">
-            {% for case in cases %}
-            <div class="responder-case-item">
-                <p>Case #{{ case.id }} - {{ case.status }}</p>
-                <a href="{{ url_for('case.view', case_id=case.id) }}" class="btn btn-outline">View Case</a>
-            </div>
-            {% endfor %}
+    <h2>Case Management</h2>
+    
+    <!-- Emergency SOS Cases Section -->
+    <div class="emergency-cases-section">
+        <h3 class="emergency-header"><ion-icon name="warning-outline"></ion-icon> Emergency SOS Cases</h3>
+        <div class="responder-case-list emergency-list">
+            {% if emergency_cases %}
+                {% for case in emergency_cases %}
+                <div class="responder-case-item emergency-case">
+                    <div class="case-header emergency">
+                        <h3>Emergency SOS #{{ case._id }}</h3>
+                        <span class="status-badge emergency">SOS</span>
+                    </div>
+                    <div class="case-details">
+                        <p><strong>Victim:</strong> {{ case.victim_name }}</p>
+                        <p><strong>Created:</strong> {{ case.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                        <p><strong>Description:</strong> {{ case.description }}</p>
+                        
+                        {% if case.location %}
+                        <div class="location-info">
+                            <p><strong>Location:</strong> 
+                                <a href="https://maps.google.com/?q={{ case.location.latitude }},{{ case.location.longitude }}" 
+                                   target="_blank" class="map-link">
+                                   View on Map <ion-icon name="location-outline"></ion-icon>
+                                </a>
+                            </p>
+                            <div class="location-coordinates">
+                                <span>Lat: {{ case.location.latitude|round(5) }}</span>
+                                <span>Long: {{ case.location.longitude|round(5) }}</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="case-actions emergency-actions">
+                        <form action="{{ url_for('responder.respond_to_emergency', case_id=case._id) }}" method="POST" class="emergency-response-form">
+                            <div class="emergency-buttons">
+                                <button type="submit" name="action" value="accept" class="btn btn-accept">
+                                    <ion-icon name="checkmark-circle-outline"></ion-icon> Accept Case
+                                </button>
+                                <button type="submit" name="action" value="decline" class="btn btn-decline">
+                                    <ion-icon name="close-circle-outline"></ion-icon> Decline
+                                </button>
+                            </div>
+                            <textarea name="notes" placeholder="Add response notes here (optional)..."></textarea>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>No emergency SOS cases waiting for response.</p>
+            {% endif %}
         </div>
     </div>
+
+    <!-- Assigned Cases Section -->
+    <h3 class="cases-header">Assigned Cases</h3>
+    <div class="responder-case-list">
+        {% if cases %}
+            {% for case in cases %}
+            <div class="responder-case-item {% if case.priority == 'HIGH' %}high-priority{% endif %}">
+                <div class="case-header">
+                    <h3>Case #{{ case._id }}</h3>
+                    <span class="status-badge {{ case.status.lower() }}">{{ case.status }}</span>
+                    {% if case.priority == 'HIGH' %}
+                        <span class="priority-badge high">HIGH PRIORITY</span>
+                    {% endif %}
+                </div>
+                <div class="case-details">
+                    <p><strong>Victim:</strong> {{ case.victim_name }}</p>
+                    <p><strong>Created:</strong> {{ case.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                    <p><strong>Description:</strong> {{ case.description }}</p>
+                    
+                    {% if case.location %}
+                    <div class="location-info">
+                        <p><strong>Location:</strong> 
+                            <a href="https://maps.google.com/?q={{ case.location.latitude }},{{ case.location.longitude }}" 
+                               target="_blank" class="map-link">
+                               View on Map <ion-icon name="location-outline"></ion-icon>
+                            </a>
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="case-actions">
+                    <form action="{{ url_for('responder.update_case_status', case_id=case._id) }}" method="POST">
+                        <select name="status" class="case-status-select">
+                            <option value="PENDING" {% if case.status == 'PENDING' %}selected{% endif %}>Pending</option>
+                            <option value="IN_PROGRESS" {% if case.status == 'IN_PROGRESS' %}selected{% endif %}>In Progress</option>
+                            <option value="RESOLVED" {% if case.status == 'RESOLVED' %}selected{% endif %}>Resolved</option>
+                        </select>
+                        <textarea name="notes" placeholder="Add case notes here..."></textarea>
+                        <button type="submit" class="btn btn-primary">Update Status</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No cases assigned to you at this time.</p>
+        {% endif %}
+    </div>
+</div>
 
     <!-- Communication Tab -->
     <div class="tab-content" id="communication">

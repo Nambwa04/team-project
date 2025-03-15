@@ -1,6 +1,8 @@
 from bson.objectid import ObjectId
 from datetime import datetime
 
+from flask import current_app
+
 class EmergencyModel:
     def __init__(self, mongo):
         self.mongo = mongo
@@ -48,9 +50,20 @@ class EmergencyModel:
     
     def get_cases_by_responder(self, responder_id):
         """Get all emergency cases assigned to a specific responder"""
-        return list(self.collection.find(
-            {"responder_id": ObjectId(responder_id)}
-        ).sort("created_at", -1))
+        try:
+            cases = list(self.collection.find({"responder_id": ObjectId(responder_id)}))
+            # Convert ObjectIds to strings for serialization
+            for case in cases:
+                case["_id"] = str(case["_id"])
+                # Ensure datetime objects are properly formatted
+                if "created_at" in case:
+                    case["created_at"] = case["created_at"]
+                if "updated_at" in case:
+                    case["updated_at"] = case["updated_at"]
+            return cases
+        except Exception as e:
+            current_app.logger.error(f"Error getting cases by responder: {str(e)}")
+            return []
     
     def get_recent_emergency_cases(self, limit=10):
         """Get the most recent emergency cases"""
@@ -107,3 +120,105 @@ class EmergencyModel:
             }
         )
         return result.modified_count > 0
+    
+    def update_case_status(self, case_id, status, notes=None):
+        """Update the status of an emergency case
+        
+        Args:
+            case_id: ID of the emergency case
+            status: New status (e.g., 'PENDING', 'ASSIGNED', 'IN_PROGRESS', 'RESOLVED')
+            notes: Additional notes from the responder
+            
+        Returns:
+            Boolean indicating success
+        """
+        update_data = {
+            "status": status,
+            "updated_at": datetime.utcnow()
+        }
+        
+        if notes:
+            # Append to existing notes or create new
+            case = self.get_case_by_id(case_id)
+            existing_notes = case.get("notes", []) if case else []
+            
+            new_note = {
+                "content": notes,
+                "timestamp": datetime.utcnow(),
+                "status": status
+            }
+            
+            existing_notes.append(new_note)
+            update_data["notes"] = existing_notes
+        
+        result = self.collection.update_one(
+            {"_id": ObjectId(case_id)},
+            {"$set": update_data}
+        )
+        
+        return result.modified_count > 0
+    
+    def auto_assign_responder(self, case_id, location=None):
+        """
+        Automatically assign the nearest available responder to an emergency case
+        
+        Args:
+            case_id: ID of the emergency case
+            location: Dictionary containing victim's location data
+            
+        Returns:
+            Dictionary with assignment result and responder info if successful
+        """
+        from services.responderService import ResponderService
+        
+        try:
+            # Get responder service instance
+            responder_service = ResponderService()
+            
+            # Find nearest responders (max 3)
+            nearest_responders = responder_service.find_nearest_responders(location, limit=3)
+            
+            if not nearest_responders:
+                return {
+                    "success": False,
+                    "message": "No available responders found",
+                    "responder_assigned": False
+                }
+            
+            # Try to assign the nearest responder
+            assigned = False
+            assigned_responder = None
+            
+            for responder in nearest_responders:
+                # Assign this responder to the case
+                result = self.assign_responder(case_id, responder["_id"])
+                
+                if result:
+                    assigned = True
+                    assigned_responder = responder
+                    break
+            
+            if assigned and assigned_responder:
+                # Return success with responder info
+                return {
+                    "success": True,
+                    "message": "Responder automatically assigned",
+                    "responder_assigned": True,
+                    "responder_id": str(assigned_responder["_id"]),
+                    "responder_name": assigned_responder.get("name", "Unknown"),
+                    "distance": assigned_responder.get("distance", "Unknown")
+                }
+            else:
+                return {
+                    "success": False,
+                    "message": "Failed to assign responders",
+                    "responder_assigned": False
+                }
+                
+        except Exception as e:
+            print(f"Error in auto-assigning responder: {str(e)}")
+            return {
+                "success": False,
+                "message": f"Error: {str(e)}",
+                "responder_assigned": False
+            }
