@@ -245,6 +245,17 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+    // Location toggle functionality
+    const locationToggle = document.getElementById('locationToggle');
+    const locationStatus = document.getElementById('locationStatus');
+    
+    // Set initial status based on checkbox state
+    locationStatus.textContent = locationToggle.checked ? "Location enabled" : "Location disabled";
+    
+    // Update status when toggle changes
+    locationToggle.addEventListener('change', function() {
+        locationStatus.textContent = this.checked ? "Location enabled" : "Location disabled";
+    });
 });
 </script>
 {% endblock %}
