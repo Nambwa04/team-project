@@ -26,8 +26,8 @@
             <h1>Stop Gender-Based Violence</h1>
             <p>Spreading awareness, assisting survivors, and driving change to end GBV</p>
             <div class="hero-buttons">
-                <a href="{{ url_for('report.report_form') }}" class="btn btn-primary">Report a Case</a>
-                <a href="#about" class="btn btn-secondary">Learn More</a>
+                <a href="{{ url_for('report.report_form') }}">Report a Case</a>
+                <a href="#about">Learn More</a>
             </div>
         </div>
     </div>
@@ -47,7 +47,6 @@
             </div>
             <div class="about-card">
                 <div class="card-icon">
-                    <ion-icon name="flowchart-outline"></ion-icon>
                 </div>
                 <h3>How It Works</h3>
                 <p>Our platform connects survivors with trained responders based on their needs and location. After registration, you can request assistance, communicate securely with support professionals, and access resources—all within a private, confidential environment designed with your safety in mind.</p>
@@ -78,7 +77,12 @@
         <div class="footer-grid">
             <div class="footer-brand">
                 <span>Haven</span>
-                <p>Haven is committed to ending gender-based violence through support, education, and action.</p>
+                <p>Haven is committed to ending gbv through 
+                    <span style="--f:4;" data-text="support,">support,</span>
+                    <span style="--f:3;" data-text="education,">education,</span>
+                    <span style="--f:2;" data-text="and">and</span>
+                    <span style="--f:1;" data-text="action">action</span>
+                </p>
             </div>
             <div class="footer-links">
                 <h4>Quick Links</h4>

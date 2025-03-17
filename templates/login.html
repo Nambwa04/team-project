@@ -4,13 +4,13 @@
 
 {% block content %}
 <!-- Navigation -->
-<nav class="navbar">
+<nav class="navbar" style="background: transparent !important; box-shadow: none;">
     <div class="container">
         <div class="nav-brand">
-            <span>Haven</span>
+            <span style="color: white;">Haven</span>
         </div>
         <ul class="nav-links">
-            <li><a href="{{ url_for('auth.logout') }}">Home</a></li>
+            <li><a style="color: white;" href="{{ url_for('auth.logout') }}">Home</a></li>
         </ul>
     </div>
 </nav>
@@ -32,14 +32,13 @@
                 <input type="password" id="password" name="password" placeholder="Password" required>
                 <small>Error message</small>
             </div>
+            
+            <div style="padding: 10px 90px;">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
 
             <div class="recover">
-                <label for=""><input type="checkbox">Remember Me</label>
                 <label><a href="{{ url_for('auth.forgot_password') }}">Forget Password</a></label>
-            </div>
-            
-            <div>
-                <button type="submit" class="btn btn-primary">Login</button>
             </div>
 
             <div class="Register">

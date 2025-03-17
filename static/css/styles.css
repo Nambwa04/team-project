@@ -33,13 +33,25 @@ p {
 /* Buttons */
 .btn {
     display: inline-block;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
+/*  padding: 0.75rem 1.5rem; 
+    border-radius: 8px; */
     text-decoration: none;
     font-weight: 500;
     transition: all 0.3s ease;
 }
 
+.btn-primary,
+.btn-secondary {
+    background-color: #6EC6FF;
+    color: black !important;
+    border: none;
+}
+
+.btn-primary:hover,
+.btn-secondary:hover {
+    background-color: #FFD166;
+}
+/*
 .btn-primary {
     background-color: #4a90e2;
     color: white;
@@ -49,7 +61,7 @@ p {
 .btn-primary:hover {
     background-color: #357ab8;
 }
-
+/*
 .btn-secondary {
     background-color: #6c757d;
     color: white;
@@ -59,7 +71,7 @@ p {
 .btn-secondary:hover {
     background-color: #5a6268;
 }
-
+*/
 .btn-outline {
     background-color: transparent;
     color: #4a90e2;
@@ -68,12 +80,12 @@ p {
 
 .btn-outline:hover {
     background-color: #4a90e2;
-    color: white;
+    color: black !important;
 }
 
 /* Navbar */
 .navbar {
-    background-color: #ffffff;
+    background-color: #6EC6FF;
     padding: 1rem 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     position: fixed;
@@ -104,6 +116,10 @@ p {
     margin: 0;
 }
 
+.navbar .nav-links li:nth-child(-n+3) {
+    margin-top: 15px;/*spacing for home =, about Us and Contact us*/
+}
+
 .navbar .nav-links a {
     color: #2c3e50;
     text-decoration: none;
@@ -112,7 +128,7 @@ p {
 }
 
 .navbar .nav-links a:hover {
-    color: #4a90e2;
+    color: #8B0000;
 }
 
 /* Sidebar */
@@ -434,7 +450,8 @@ p {
 .footer {
     background-color: #2c3e50;
     color: white;
-    padding: 2rem 0;
+/*    padding: 2rem 0; */
+    padding: 1rem 0;
 }
 
 .footer .footer-grid {
@@ -444,11 +461,57 @@ p {
 }
 
 .footer .footer-brand {
+    display: inline-block;
     font-size: 1.5rem;
     font-weight: 700;
 }
 
+.footer .footer-brand p {
+    display: inline-block;
+}
+
+.footer .footer-brand p span {/*Added*/
+    position: relative;
+    display: inline-block;
+    color: transparent;
+    -webkit-text-stroke: .7px #e74c3c;
+   animation: display-text 16s linear infinite;
+    animation-delay: calc(-4s * var(--f));/*because we want to start from support--- after every 3s text will change according to the index set*/
+}
+
+@keyframes display-text {
+    25%,
+    100% {
+        display: none;
+    }
+}
+
+.footer .footer-brand p span::before {/*For the vertical animated lines*/
+    content: attr(data-text);
+    position: absolute;
+    width: 0;
+    border-right: 2px solid #ff6b6b;
+    color: #ff6b6b;
+    white-space: nowrap;/*Text does not go down*/
+    overflow: hidden;
+    animation: fill-text 4s linear infinite;
+}
+
+@keyframes fill-text {
+    10%,
+    100% {
+        width: 0;
+    }
+
+    70%,
+    90% {
+        width: 100%;
+    }
+}
+
 .footer .footer-links ul {
+    display: flex;
+    gap: 1rem;
     list-style: none;
     padding: 0;
 }
@@ -465,6 +528,15 @@ p {
 
 .footer .footer-links ul li a:hover {
     color: #4a90e2;
+}
+
+.footer .footer-links h4 {
+    color: white !important;
+}
+
+
+.footer .footer-social h4 {
+    color: white !important;
 }
 
 .footer .footer-social .social-links a {
@@ -487,8 +559,12 @@ p {
 
 /* Hero Section */
 .hero {
-    background: linear-gradient(135deg, #4a90e2, #6a82fb);
-    color: white;
+    background-image: url("/static/images/R.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+/*    background: linear-gradient(135deg, #4a90e2, #6a82fb);
+    color: white; */
     padding: 4rem 0;
     text-align: center;
     height: 100vh;
@@ -499,17 +575,78 @@ p {
 }
 
 .hero h1 {
+    position: relative;
+    top: -90px !important;
     font-size: 2.5rem;
     margin-bottom: 1rem;
 }
 
 .hero p {
+    position: relative;
+    top: -100px;
+    color: #042f3a;
     font-size: 1.25rem;
     margin-bottom: 2rem;
 }
-
+/*
 .hero-buttons .btn {
     margin: 0.5rem;
+}
+*/
+
+.hero-content .hero-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 445px;
+    height: 50px;
+}
+
+.hero-buttons a {
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 190px;
+    height: 100%;
+    text-decoration: none;
+    background-color:#6EC6FF;
+    border: 2px solid #6EC6FF;
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: 0.0625rem;
+    border-radius: 1.5625rem;
+    overflow: hidden;
+    color: black;
+    z-index: 1;
+    transition: 0.4s ease-in-out;
+}
+
+.hero-buttons a:nth-child(2) {
+    background: transparent;
+    color: black;
+}
+
+.hero-buttons a:nth-child(2):hover {
+    color: black;
+}
+
+.hero-buttons a:nth-child(2) {
+    background: transparent;
+}
+.hero-buttons a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: #FFCDD2;
+    z-index: -1;
+    transition: 0.5s ease-in-out;
+}
+
+.hero-buttons a:hover::before {
+    width: 100%;
 }
 
 /* About Section */
@@ -520,7 +657,7 @@ p {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    background-color: #f4f6f8;
+    background-color: #6D8821;
 }
 
 .about h2 {
@@ -540,7 +677,10 @@ p {
 }
 
 .about-card {
-    background: white;
+    background-image: url("/static/images/orange.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     border: 1px solid #e9ecef;
     border-radius: 12px;
     padding: 2rem;
@@ -555,7 +695,8 @@ p {
 
 .card-icon {
     font-size: 2.5rem;
-    color: #4a90e2;
+/*    color: #4a90e2;*/
+    color: #8B0000;
     margin-bottom: 1rem;
 }
 
@@ -566,21 +707,24 @@ p {
 
 .about-card p {
     font-size: 1rem;
-    color: #6c757d;
+    color: #2c3e50;
+/*    color: #6c757d; */
 }
 
 /* Contact Section */
 .contact {
+    background-image: url("/static/images/pexels.jpg");
     padding: 4rem 0;
     text-align: center;
     height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    background-color: #e0e7ff; /* Slightly different shade */
+/*    background-color: #e0e7ff; /* Slightly different shade */
 }
 
 .contact h2 {
+    color: #2b639e;
     font-size: 2rem;
     margin-bottom: 1rem;
 }
@@ -592,6 +736,7 @@ p {
 
 .contact .btn {
     margin-top: 1rem;
+    border-radius: 1.5625rem;
 }
 
 /* Form Styles */
@@ -607,13 +752,18 @@ p {
     gap: 0.25rem; /* Reduced gap */
 }
 
+.Login-container .form-control input {
+    background-color: #16a085;
+}
+
 .form-control input,
 .form-control select {
     padding: 0.5rem; /* Reduced padding */
     border: 1px solid #e9ecef;
     border-radius: 8px;
     font-size: 1rem;
-    color: #2c3e50;
+    color: white;
+    letter-spacing: 0.2rem;
 }
 
 .form-control input:focus,
@@ -655,37 +805,43 @@ button:hover {
 .register-body,
 .Login-body {
     display: flex;
-    justify-content: center;
+    justify-content: right;
     align-items: center;
     height: 100vh;
-    background-color: #f4f6f8;
+    background-image: url("/static/images/GbV.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .register-container,
 .Login-container {
-    background: white;
+    position: relative;
+    right: 10px;
+    background: transparent;
     padding: 1.5rem; /* Reduced padding */
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    box-shadow: 0 2px 10px rgba(255, 255, 255, 0.5);
     width: 100%;
     max-width: 400px;
+    backdrop-filter: blur(10px);
     text-align: center;
 }
 
 .register-container h1,
 .Login-container h2 {
     margin-bottom: 1rem;
-    color: #2c3e50;
+    color: white;
 }
 
 .register-container p,
 .Login-container p {
-    color: #6c757d;
+    color: white;
 }
 
 .register-container a,
 .Login-container a {
-    color: #4a90e2;
+    color: #A7DBFF;
     text-decoration: none;
     transition: color 0.3s ease;
 }
@@ -693,6 +849,7 @@ button:hover {
 .register-container a:hover,
 .Login-container a:hover {
     color: #357ab8;
+    text-decoration: underline;
 }
 
 .alert {
