@@ -175,15 +175,16 @@
     <div class="tab-content" id="communication">
         <h2>Communication</h2>
         <div class="responder-messages">
-            <div class="responder-message-list">
+            <div class="responder-message-list" id="responderMessageList">
                 {% for message in messages %}
                 <div class="responder-message-item">
-                    <p>{{ message.sender }}: {{ message.content }}</p>
+                    <p>{{ message.sender_username }}: {{ message.content }}</p>
+                    <div class="message-time">{{ message.timestamp.strftime('%H:%M') }}</div>
                 </div>
                 {% endfor %}
             </div>
-            <form action="{{ url_for('responderProfile.send_message') }}" method="POST" class="responder-message-form">
-                <textarea name="message" placeholder="Type your message..." required></textarea>
+            <form action="{{ url_for('responderProfile.send_message') }}" method="POST" class="responder-message-form" id="responderMessageForm">
+                <textarea name="message" placeholder="Type your message..." required id="responderMessageInput"></textarea>
                 <button type="submit" class="btn btn-primary">Send</button>
             </form>
         </div>
@@ -246,6 +247,7 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 <script src="{{ url_for('static', filename='js/responder-profile.js') }}"></script>
@@ -272,6 +274,46 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+
+    // AJAX polling for messages
+    function fetchMessages() {
+        $.ajax({
+            url: "{{ url_for('responderProfile.get_messages') }}",
+            method: "GET",
+            success: function(data) {
+                const messageList = $('#responderMessageList');
+                messageList.empty();
+                data.messages.forEach(message => {
+                    const messageItem = `<div class="responder-message-item">
+                        <p>${message.username}: ${message.message}</p>
+                        <div class="message-time">${new Date(message.timestamp).toLocaleTimeString()}</div>
+                    </div>`;
+                    messageList.append(messageItem);
+                });
+            }
+        });
+    }
+
+    // Poll every 5 seconds
+    setInterval(fetchMessages, 5000);
+
+    // Send message
+    $('#responderMessageForm').off('submit').on('submit', function(e) {
+        e.preventDefault();
+        const messageInput = $('#responderMessageInput');
+        const message = messageInput.val();
+        $.ajax({
+            url: "{{ url_for('responderProfile.send_message') }}",
+            method: "POST",
+            data: { message: message },
+            success: function() {
+                messageInput.val('');
+                fetchMessages();
+            }
+        });
+    });
+
+    fetchMessages(); // Initial fetch
 });
 </script>
 {% endblock %}

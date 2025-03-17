@@ -160,7 +160,7 @@
     <!-- Messages Tab -->
     <div class="tab-content" id="messages">
         <div class="victim-messages-container">
-            <div class="victim-message-history">
+            <div class="victim-message-history" id="victimMessageHistory">
                 {% for message in messages %}
                 <div class="victim-message {{ 'sent' if message.sender_id == user.id else 'received' }}">
                     <div class="victim-message-content">{{ message.content }}</div>
@@ -168,8 +168,8 @@
                 </div>
                 {% endfor %}
             </div>
-            <form action="{{ url_for('victimProfile.send_message') }}" method="POST" class="victim-message-form">
-                <textarea name="message" placeholder="Type your message..." required></textarea>
+            <form action="{{ url_for('victimProfile.send_message') }}" method="POST" class="victim-message-form" id="victimMessageForm">
+                <textarea name="message" id="victimMessageInput" placeholder="Type your message..." required></textarea>
                 <button type="submit" class="btn btn-primary">Send</button>
             </form>
         </div>
@@ -204,6 +204,7 @@
 </div>
 
 {% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 <script src="{{ url_for('static', filename='js/sos.js') }}"></script>
@@ -245,6 +246,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
     // Location toggle functionality
     const locationToggle = document.getElementById('locationToggle');
     const locationStatus = document.getElementById('locationStatus');
@@ -256,6 +258,46 @@ document.addEventListener('DOMContentLoaded', function() {
     locationToggle.addEventListener('change', function() {
         locationStatus.textContent = this.checked ? "Location enabled" : "Location disabled";
     });
+
+    // Polling for new messages
+    function fetchMessages() {
+        $.ajax({
+            url: "{{ url_for('victimProfile.get_messages') }}",
+            method: "GET",
+            success: function(data) {
+                const messageList = $('#victimMessageHistory');
+                messageList.empty();
+                data.messages.forEach(message => {
+                    const messageItem = `<div class="victim-message ${message.user_id == '{{ user.id }}' ? 'sent' : 'received'}">
+                        <div class="victim-message-content">${message.user_id == '{{ user.id }}' ? 'Me' : message.username}: ${message.message}</div>
+                        <div class="victim-message-time">${new Date(message.timestamp).toLocaleTimeString()}</div>
+                    </div>`;
+                    messageList.append(messageItem);
+                });
+            }
+        });
+    }
+
+    // Poll every 5 seconds
+    setInterval(fetchMessages, 5000);
+
+    // Send message
+    $('#victimMessageForm').off('submit').on('submit', function(e) {
+        e.preventDefault();
+        const messageInput = $('#victimMessageInput');
+        const message = messageInput.val();
+        $.ajax({
+            url: "{{ url_for('victimProfile.send_message') }}",
+            method: "POST",
+            data: { message: message },
+            success: function() {
+                messageInput.val('');
+                fetchMessages();
+            }
+        });
+    });
+
+    fetchMessages(); // Initial fetch
 });
 </script>
 {% endblock %}

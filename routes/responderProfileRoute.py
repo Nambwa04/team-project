@@ -1,4 +1,4 @@
-from flask import Blueprint, session, render_template, redirect, url_for, flash, request, current_app
+from flask import Blueprint, session, render_template, redirect, url_for, flash, request, current_app, jsonify
 from models.emergency import EmergencyModel
 from models.user import User
 from services.responderService import responderService
@@ -39,7 +39,6 @@ def profile():
     print(f"Found {len(cases)} cases assigned to this responder")
     
     # Get ALL pending cases with high priority - no responder assigned
-    # Use simpler query to match how cases are created
     emergency_cases = list(mongo.db.emergency_cases.find({
         "status": "PENDING",
         "priority": "HIGH", 
@@ -48,12 +47,15 @@ def profile():
     
     print(f"Found {len(emergency_cases)} emergency cases needing response")
     
+    # Get messages
+    messages = list(mongo.db.messages.find({'room': 'victim_to_responder'}).sort("timestamp", 1))
+    
     return render_template('responder_profile.html', 
                           user=user, 
                           profile=profile, 
                           cases=cases,
                           emergency_cases=emergency_cases,
-                          messages=[])
+                          messages=messages)
 
 @responderProfile_bp.route('/profile/update', methods=['POST'])
 @role_required('responder')
@@ -103,11 +105,15 @@ def send_message():
         message_content = request.form.get('message')
         
         if responderService.send_message(user_id, message_content):
-            flash("Message sent successfully", "success")
+            return jsonify({"success": True, "message": "Message sent successfully"}), 200
         else:
-            flash("Error sending message", "error")
-            
-        return redirect(url_for('responderProfile.profile'))
+            return jsonify({"success": False, "message": "Error sending message"}), 500
     except Exception as e:
-        flash(f"Error: {str(e)}", "error")
-        return redirect(url_for('responderProfile.profile'))
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@responderProfile_bp.route('/get_messages', methods=['GET'])
+@role_required('responder')
+def get_messages():
+    user_id = session.get("user_id")
+    messages = list(mongo.db.messages.find({'room': 'victim_to_responder'}).sort("timestamp", 1))
+    return jsonify(messages), 200

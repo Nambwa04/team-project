@@ -25,6 +25,7 @@ def send_password_email(email, password):
 class ResponderService:
     def __init__(self):
         self.responders = mongo.db.responders
+        self.messages = mongo.db.messages  # Add this line
 
     def get_all_responders(self):
         responders = list(self.responders.find())
@@ -223,10 +224,11 @@ class ResponderService:
                 )
 
     def send_message(self, user_id, content):
-        """Send a message from the responder"""
         try:
+            user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
             message = {
-                "user_id": ObjectId(user_id),
+                "sender_id": ObjectId(user_id),
+                "sender_username": user["username"],
                 "content": content,
                 "timestamp": datetime.now()
             }
@@ -235,6 +237,18 @@ class ResponderService:
         except Exception as e:
             print(f"Error sending message: {str(e)}")
             return False
+
+    def get_responder_messages(self, user_id):
+        try:
+            return list(self.messages.find({
+                "$or": [
+                    {"sender_id": ObjectId(user_id)},
+                    {"receiver_id": ObjectId(user_id)}
+                ]
+            }).sort("timestamp", -1))
+        except Exception as e:
+            print(f"Error getting messages: {str(e)}")
+            return []
 
     def find_nearest_responders(self, victim_location, limit=5):
         """Find the nearest available responders to a victim location

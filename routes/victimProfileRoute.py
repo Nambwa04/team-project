@@ -124,22 +124,40 @@ def update_location():
         current_app.logger.error(f"Error updating location: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
+# Get messages
+@victimProfile_bp.route('/get_messages', methods=['GET'])
+@role_required('victim')
+def get_messages():
+    try:
+        user_id = session.get("user_id")
+        messages = list(mongo.db.messages.find({'room': 'victim_to_responder'}))
+        for message in messages:
+            message['_id'] = str(message['_id'])
+            message['user_id'] = str(message['user_id'])
+            message['timestamp'] = message['timestamp'].strftime('%Y-%m-%d %H:%M:%S')
+        return jsonify({'messages': messages})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# Send message
 @victimProfile_bp.route('/send_message', methods=['POST'])
 @role_required('victim')
 def send_message():
     try:
         user_id = session.get("user_id")
+        username = session.get("username")
         message_content = request.form.get('message')
         
-        if victimService.send_message(user_id, message_content):
-            flash("Message sent successfully", "success")
-        else:
-            flash("Error sending message", "error")
-            
-        return redirect(url_for('victimProfile.profile'))
+        mongo.db.messages.insert_one({
+            'user_id': ObjectId(user_id),
+            'username': username,
+            'room': 'victim_to_responder',
+            'message': message_content,
+            'timestamp': datetime.utcnow()
+        })
+        return jsonify({'success': True})
     except Exception as e:
-        flash(f"Error: {str(e)}", "error")
-        return redirect(url_for('victimProfile.profile'))
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 # SOS alert endpoint
 @victimProfile_bp.route('/sos', methods=['POST'])

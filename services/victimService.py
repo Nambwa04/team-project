@@ -184,12 +184,7 @@ class VictimService:
 
     def get_victim_messages(self, user_id):
         try:
-            return list(self.messages.find({
-                "$or": [
-                    {"sender_id": ObjectId(user_id)},
-                    {"receiver_id": ObjectId(user_id)}
-                ]
-            }).sort("timestamp", -1))
+            return list(self.messages.find({'room': 'victim_to_responder'}).sort("timestamp", 1))
         except Exception as e:
             print(f"Error getting messages: {str(e)}")
             return []
@@ -207,13 +202,15 @@ class VictimService:
 
     def send_message(self, user_id, content):
         try:
+            user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
             message = {
                 "sender_id": ObjectId(user_id),
+                "sender_username": user["username"],
                 "content": content,
                 "timestamp": datetime.now()
             }
-            result = self.messages.insert_one(message)
-            return bool(result.inserted_id)
+            self.messages.insert_one(message)
+            return True
         except Exception as e:
             print(f"Error sending message: {str(e)}")
             return False
