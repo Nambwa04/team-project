@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Log in{% endblock %}
+
+{% block content %}
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="container">
+        <div class="nav-brand">
+            <span>Haven</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('auth.logout') }}">Home</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="Login-body">
+    <div class="Login-container">
+        <form action="{{ url_for('auth.login') }}" method="POST">
+
+            <h2>Login</h2>
+
+            <div class="form-control">
+                <ion-icon name="mail-outline"></ion-icon>
+                <input type="email" id="email" name="email" placeholder="Email" required>
+                <small>Error message</small>
+            </div>
+
+            <div class="form-control">
+                <ion-icon name="lock-closed-outline"></ion-icon>
+                <input type="password" id="password" name="password" placeholder="Password" required>
+                <small>Error message</small>
+            </div>
+
+            <div class="recover">
+                <label for=""><input type="checkbox">Remember Me</label>
+                <label><a href="{{ url_for('auth.forgot_password') }}">Forget Password</a></label>
+            </div>
+            
+            <div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+
+            <div class="Register">
+                <p>First time here? <a href="{{ url_for('auth.register') }}" id="sign-up-redirect">Sign up</a></p>
+            </div>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul>
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+{% endblock %}

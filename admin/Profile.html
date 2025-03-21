@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+    <div class="sidebar">
+        <ul>
+            <li>
+                <div class="pmenu">
+                <div class="pmenu">
+                    <div class="toggle">
+                        <ion-icon name="menu-outline"></ion-icon>
+                    </div>
+                <!--End of menu for sidebar/hamburger-->
+                </div>
+            </li>
+
+            <li>
+                <a href="frontpage.html">
+                    <span class="ICon">
+                        <ion-icon name="home-outline"></ion-icon></span>
+                    <span class="sidetag">Main</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="Resources.html">
+                    <span class="ICon">
+                        <ion-icon name="library-outline"></ion-icon></span>
+                    <span class="sidetag">Resources</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="Messages.html">
+                    <span class="ICon">
+                        <ion-icon name="chat-box-outline"></ion-icon></span>
+                    <span class="sidetag">Messages</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="Logout.html">
+                    <span class="ICon">
+                        <ion-icon name="log-out-outline"></ion-icon></span>
+                    <span class="sidetag">Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+
+<div class="content">
+            <header class="Organization-header">
+                <h1>My Profile</h1>
+            </header>
+    <main class="profile-container">
+        <section class="picard">
+            
+            <!-- Profile Picture Upload (Now at Top Right) -->
+            <div class="profile-pic-container">
+                <img src=".jpg" alt="User Avatar" id="profilePic">
+            </div>
+            
+            <div class="upload-icon" onclick="document.getElementById('fileInput').click()">📷</div>
+
+        </section>
+        <section class="profile-card">
+
+
+            <!-- User Info -->
+            <h2 id="userName">John Doe</h2>
+            <p>Email: <span id="userEmail">johndoe@example.com</span></p>
+            <p>Phone: <span id="userPhone">+123456789</span></p>
+            <p>Role: <span id="userRole">Admin</span></p>
+
+            <!-- About Section -->
+            <div class="about-section">
+                <h3>About</h3>
+                <p id="userAbout">Passionate about social justice and gender equality.</p>
+
+                <h3>Location</h3>
+                <p id="userLocation">Nairobi, Kenya</p>
+            </div>
+
+            <!-- Report Button -->
+            <button class="report-btn">Report an Incident</button>
+
+ <!---->      <button class="btn" id="editProfileBtn">Edit Profile</button>
+        </section>
+
+        <!-- File Input for Uploading -->
+        <input type="file" id="fileInput" accept="image/*">
+    </main>
+
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Edit Profile</h2>
+            <form id="editProfileForm">
+                <input type="text" id="editName" placeholder="Enter new name">
+                <input type="email" id="editEmail" placeholder="Enter new email">
+                <input type="text" id="editPhone" placeholder="Enter new phone number">
+                <button type="submit" class="btn">Save Changes</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Get elements from the DOM
+    const profilePic = document.getElementById("profilePic"); // Profile picture element
+    const fileInput = document.getElementById("fileInput"); // File input element
+
+    // Listen for file selection
+    fileInput.addEventListener("change", function(event) {
+        // Get the selected file
+        const file = event.target.files[0];
+
+        // Check if a file is selected
+        if (file) {
+            // Create a FileReader to read the image
+            const reader = new FileReader();
+
+            // When the image is loaded, set it as the profile picture
+            reader.onload = function(e) {
+                profilePic.src = e.target.result; // Set new image source
+                // Save the image in local storage
+              //  localStorage.setItem("profileImage", e.target.result);
+            };
+
+            // Read the file as a Data URL
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Load saved profile picture on page load
+    window.addEventListener("load", function() {
+        // Check if a saved image exists in local storage
+        const savedImage = localStorage.getItem("profileImage");
+
+        // If an image is saved, display it
+        if (savedImage) {
+            profilePic.src = savedImage;
+        }
+    });
+
+    // Edit profile
+    const modal = document.getElementById("editProfileModal");
+    const editBtn = document.getElementById("editProfileBtn");
+    const closeModal = document.querySelector(".close-modal");
+
+    editBtn.onclick = () => modal.style.display = "flex";
+    closeModal.onclick = () => modal.style.display = "none";
+    window.onclick = (event) => { if (event.target === modal) modal.style.display = "none"; };
+
+    document.getElementById("editProfileForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        document.getElementById("userName").innerText = document.getElementById("editName").value;
+        document.getElementById("userEmail").innerText = document.getElementById("editEmail").value;
+        document.getElementById("userPhone").innerText = document.getElementById("editPhone").value;
+        modal.style.display = "none";
+    });
+</script>
+
+    <script src="static/script.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+</body>
+</html>

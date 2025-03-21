@@ -1,0 +1,319 @@
+{% extends "base.html" %}
+
+{% block title %}Responder Profile{% endblock %}
+
+{% block content %}
+<div class="responder-profile-container">
+    <div class="responder-profile-header">
+        <div class="responder-profile-image">
+            <img src="{{ url_for('static', filename='images/default-profile.png') }}" alt="Profile Picture" id="profilePic">
+        </div>
+        <div class="responder-profile-info">
+            <h1>{{ profile.name or user.username }}</h1>
+            <p>{{ profile.email or user.email }}</p>
+        </div>
+        <div class="responder-profile-actions">
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-logout">
+                <ion-icon name="log-out-outline"></ion-icon>
+                Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="responder-profile-tabs">
+        <button class="tab-btn active" data-tab="basic-info">My Information</button>
+        <button class="tab-btn" data-tab="case-management">Case Management</button>
+        <button class="tab-btn" data-tab="communication">Communication</button>
+        <button class="tab-btn" data-tab="essential-actions">Essential Actions</button>
+        <button class="tab-btn" data-tab="account-settings">Account Settings</button>
+    </div>
+
+    <!-- Basic Information Tab -->
+    <div class="tab-content active" id="basic-info">
+        <form action="{{ url_for('responderProfile.update_profile') }}" method="POST">
+            <h2>Basic Information</h2>
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" value="{{ profile.name or user.username }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="specialization">Specialization:</label>
+                <select id="specialization" name="specialization" required>
+                    <option value="Counseling" {% if profile.specialization == 'Counseling' %}selected{% endif %}>Counseling</option>
+                    <option value="Legal" {% if profile.specialization == 'Legal' %}selected{% endif %}>Legal</option>
+                    <option value="Medical" {% if profile.specialization == 'Medical' %}selected{% endif %}>Medical</option>
+                    <option value="Crisis" {% if profile.specialization == 'Crisis' %}selected{% endif %}>Crisis</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" value="{{ profile.email or user.email }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="status">Status:</label>
+                <select id="status" name="status" required>
+                    <option value="Active" {% if profile.status == 'Active' %}selected{% endif %}>Active</option>
+                    <option value="Inactive" {% if profile.status == 'Inactive' %}selected{% endif %}>Inactive</option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Update Profile</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Case Management Tab -->
+    <div class="tab-content" id="case-management">
+    <h2>Case Management</h2>
+    
+    <!-- Emergency SOS Cases Section -->
+    <div class="emergency-cases-section">
+        <h3 class="emergency-header"><ion-icon name="warning-outline"></ion-icon> Emergency SOS Cases</h3>
+        <div class="responder-case-list emergency-list">
+            {% if emergency_cases %}
+                {% for case in emergency_cases %}
+                <div class="responder-case-item emergency-case">
+                    <div class="case-header emergency">
+                        <h3>Emergency SOS #{{ case._id }}</h3>
+                        <span class="status-badge emergency">SOS</span>
+                    </div>
+                    <div class="case-details">
+                        <p><strong>Victim:</strong> {{ case.victim_name }}</p>
+                        <p><strong>Created:</strong> {{ case.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                        <p><strong>Description:</strong> {{ case.description }}</p>
+                        
+                        {% if case.location %}
+                        <div class="location-info">
+                            <p><strong>Location:</strong> 
+                                <a href="https://maps.google.com/?q={{ case.location.latitude }},{{ case.location.longitude }}" 
+                                   target="_blank" class="map-link">
+                                   View on Map <ion-icon name="location-outline"></ion-icon>
+                                </a>
+                            </p>
+                            <div class="location-coordinates">
+                                <span>Lat: {{ case.location.latitude|round(5) }}</span>
+                                <span>Long: {{ case.location.longitude|round(5) }}</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="case-actions emergency-actions">
+                        <form action="{{ url_for('responder.respond_to_emergency', case_id=case._id) }}" method="POST" class="emergency-response-form">
+                            <div class="emergency-buttons">
+                                <button type="submit" name="action" value="accept" class="btn btn-accept">
+                                    <ion-icon name="checkmark-circle-outline"></ion-icon> Accept Case
+                                </button>
+                                <button type="submit" name="action" value="decline" class="btn btn-decline">
+                                    <ion-icon name="close-circle-outline"></ion-icon> Decline
+                                </button>
+                            </div>
+                            <textarea name="notes" placeholder="Add response notes here (optional)..."></textarea>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>No emergency SOS cases waiting for response.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Assigned Cases Section -->
+    <h3 class="cases-header">Assigned Cases</h3>
+    <div class="responder-case-list">
+        {% if cases %}
+            {% for case in cases %}
+            <div class="responder-case-item {% if case.priority == 'HIGH' %}high-priority{% endif %}">
+                <div class="case-header">
+                    <h3>Case #{{ case._id }}</h3>
+                    <span class="status-badge {{ case.status.lower() }}">{{ case.status }}</span>
+                    {% if case.priority == 'HIGH' %}
+                        <span class="priority-badge high">HIGH PRIORITY</span>
+                    {% endif %}
+                </div>
+                <div class="case-details">
+                    <p><strong>Victim:</strong> {{ case.victim_name }}</p>
+                    <p><strong>Created:</strong> {{ case.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                    <p><strong>Description:</strong> {{ case.description }}</p>
+                    
+                    {% if case.location %}
+                    <div class="location-info">
+                        <p><strong>Location:</strong> 
+                            <a href="https://maps.google.com/?q={{ case.location.latitude }},{{ case.location.longitude }}" 
+                               target="_blank" class="map-link">
+                               View on Map <ion-icon name="location-outline"></ion-icon>
+                            </a>
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="case-actions">
+                    <form action="{{ url_for('responder.update_case_status', case_id=case._id) }}" method="POST">
+                        <select name="status" class="case-status-select">
+                            <option value="PENDING" {% if case.status == 'PENDING' %}selected{% endif %}>Pending</option>
+                            <option value="IN_PROGRESS" {% if case.status == 'IN_PROGRESS' %}selected{% endif %}>In Progress</option>
+                            <option value="RESOLVED" {% if case.status == 'RESOLVED' %}selected{% endif %}>Resolved</option>
+                        </select>
+                        <textarea name="notes" placeholder="Add case notes here..."></textarea>
+                        <button type="submit" class="btn btn-primary">Update Status</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No cases assigned to you at this time.</p>
+        {% endif %}
+    </div>
+</div>
+
+    <!-- Communication Tab -->
+    <div class="tab-content" id="communication">
+        <h2>Communication</h2>
+        <div class="responder-messages">
+            <div class="responder-message-list" id="responderMessageList">
+                {% for message in messages %}
+                <div class="responder-message-item">
+                    <p>{{ message.sender_username }}: {{ message.content }}</p>
+                    <div class="message-time">{{ message.timestamp.strftime('%H:%M') }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            <form action="{{ url_for('responderProfile.send_message') }}" method="POST" class="responder-message-form" id="responderMessageForm">
+                <textarea name="message" placeholder="Type your message..." required id="responderMessageInput"></textarea>
+                <button type="submit" class="btn btn-primary">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Essential Actions Tab -->
+    <div class="tab-content" id="essential-actions">
+        <h2>Essential Actions</h2>
+        <div class="form-group">
+            <button type="button" class="btn btn-primary">Accept New Case</button>
+            <button type="button" class="btn btn-secondary">Decline New Case</button>
+        </div>
+
+        <div class="form-group">
+            <label for="case_status">Update Case Status:</label>
+            <select id="case_status" name="case_status">
+                <option value="New">New</option>
+                <option value="Active">Active</option>
+                <option value="Resolved">Resolved</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="refer_organization">Refer to Organization:</label>
+            <input type="text" id="refer_organization" name="refer_organization" placeholder="Organization Name">
+        </div>
+    </div>
+
+    <!-- Account Settings Tab -->
+    <div class="tab-content" id="account-settings">
+        <h2>Account Settings</h2>
+        <div class="form-group">
+            <label for="current_password">Current Password:</label>
+            <input type="password" id="current_password" name="current_password" required>
+        </div>
+
+        <div class="form-group">
+            <label for="new_password">New Password:</label>
+            <input type="password" id="new_password" name="new_password" required>
+        </div>
+
+        <div class="form-group">
+            <label for="confirm_password">Confirm Password:</label>
+            <input type="password" id="confirm_password" name="confirm_password" required>
+        </div>
+
+        <div class="form-group">
+            <label for="availability">Availability:</label>
+            <select id="availability" name="availability">
+                <option value="Available" {% if profile.availability == 'Available' %}selected{% endif %}>Available</option>
+                <option value="Unavailable" {% if profile.availability == 'Unavailable' %}selected{% endif %}>Unavailable</option>
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script src="{{ url_for('static', filename='js/responder-profile.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tab switching functionality
+    const tabs = document.querySelectorAll('.tab-btn');
+    const contents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.dataset.tab;
+            
+            // Update active tab
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            // Show corresponding content
+            contents.forEach(content => {
+                content.classList.remove('active');
+                if (content.id === target) {
+                    content.classList.add('active');
+                }
+            });
+        });
+    });
+
+    // AJAX polling for messages
+    function fetchMessages() {
+        $.ajax({
+            url: "{{ url_for('responderProfile.get_messages') }}",
+            method: "GET",
+            success: function(data) {
+                const messageList = $('#responderMessageList');
+                messageList.empty();
+                data.messages.forEach(message => {
+                    const messageItem = `<div class="responder-message-item">
+                        <p>${message.username}: ${message.message}</p>
+                        <div class="message-time">${new Date(message.timestamp).toLocaleTimeString()}</div>
+                    </div>`;
+                    messageList.append(messageItem);
+                });
+            }
+        });
+    }
+
+    // Poll every 5 seconds
+    setInterval(fetchMessages, 5000);
+
+    // Send message
+    $('#responderMessageForm').off('submit').on('submit', function(e) {
+        e.preventDefault();
+        const messageInput = $('#responderMessageInput');
+        const message = messageInput.val();
+        $.ajax({
+            url: "{{ url_for('responderProfile.send_message') }}",
+            method: "POST",
+            data: { message: message },
+            success: function() {
+                messageInput.val('');
+                fetchMessages();
+            }
+        });
+    });
+
+    fetchMessages(); // Initial fetch
+});
+</script>
+{% endblock %}

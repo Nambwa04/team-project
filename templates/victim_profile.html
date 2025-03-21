@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+
+{% block title %}Victim Profile{% endblock %}
+
+{% block content %}
+<div class="victim-profile-container">
+    <!-- Header Section -->
+    <div class="victim-profile-header">
+        <div class="victim-profile-image">
+            <img src="{{ url_for('static', filename='images/default-profile.png') }}" alt="Profile Picture" id="profilePic">
+        </div>
+        <div class="victim-profile-info">
+            <h1>{{ profile.username or user.username }}</h1>
+            <p>{{ profile.email or user.email }}</p>
+        </div>
+        <div class="victim-profile-actions">
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-logout">
+                <ion-icon name="log-out-outline"></ion-icon>
+                Logout
+            </a>
+        </div>
+        <div class="sos-button-container">
+            <button id="sosButton" class="sos-button">SOS EMERGENCY</button>
+            <div class="sos-button-help">Click in case of emergency to alert responders</div>
+        </div>
+        <div class="location-toggle-container">
+            <label class="location-toggle">
+                <input type="checkbox" id="locationToggle">
+                <span class="location-toggle-slider"></span>
+            </label>
+            <div class="location-status-container">
+                <span class="location-status" id="locationStatus">Disabled</span>
+                <span class="last-updated" id="lastUpdatedTime"></span>
+            </div>
+            <div class="location-indicator" id="locationIndicator"></div>
+        </div>
+    </div>
+    
+    <!-- Tab Navigation -->
+    <div class="victim-profile-tabs">
+        <button class="tab-btn active" data-tab="personal">Personal Info</button>
+        <button class="tab-btn" data-tab="cases">My Cases</button>
+        <button class="tab-btn" data-tab="resources">Resources</button>
+        <button class="tab-btn" data-tab="messages">Messages</button>
+        <button class="tab-btn" data-tab="location">Location</button>
+    </div>
+
+    <!-- Personal Information Tab -->
+    <div class="tab-content active" id="personal">
+        <form action="{{ url_for('victimProfile.update_profile') }}" method="POST">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" value="{{ profile.username }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" value="{{ profile.email }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone:</label>
+                <input type="tel" id="phone" name="phone" value="{{ profile.phone }}" required>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Update Profile</button>
+            </div>
+        </form>
+
+        <!-- Password Change Section -->
+        <form action="{{ url_for('victimProfile.change_password') }}" method="POST" class="password-form">
+            <h3>Change Password</h3>
+            <div class="form-group">
+                <label for="current_password">Current Password:</label>
+                <input type="password" id="current_password" name="current_password" required>
+            </div>
+            <div class="form-group">
+                <label for="new_password">New Password:</label>
+                <input type="password" id="new_password" name="new_password" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-secondary">Change Password</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Cases Tab -->
+    <div class="tab-content" id="cases">
+    <div class="victim-cases-list">
+        {% if cases %}
+            {% for case in cases %}
+            <div class="victim-case-card">
+                <div class="victim-case-header">
+                    <h3>Case #{{ case._id }}</h3>
+                    <span class="status-badge {{ case.status.lower() }}">{{ case.status }}</span>
+                </div>
+                <div class="victim-case-details">
+                    <p class="victim-case-description">{{ case.description }}</p>
+                    <p><strong>Created:</strong> {{ case.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                    
+                    {% if case.responder_id %}
+                        <p><strong>Assigned To:</strong> {{ case.responder_name or 'A responder' }}</p>
+                    {% else %}
+                        <p><strong>Assigned To:</strong> Pending assignment</p>
+                    {% endif %}
+                    
+                    {% if case.updated_at != case.created_at %}
+                        <p><strong>Last Updated:</strong> {{ case.updated_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                    {% endif %}
+                    
+                    {% if case.notes %}
+                        <div class="victim-case-notes">
+                            <p><strong>Notes from responder:</strong></p>
+                            <p>{{ case.notes }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>You have no active cases at this time.</p>
+        {% endif %}
+    </div>
+</div>
+
+    <!-- Resources Tab -->
+    <div class="tab-content" id="resources">
+        <div class="victim-resources-filters">
+            <select id="serviceFilter">
+                <option value="">All Services</option>
+                <option value="medical">Medical</option>
+                <option value="legal">Legal</option>
+                <option value="counseling">Counseling</option>
+            </select>
+        </div>
+        <div class="victim-emergency-contacts">
+            <h3>Emergency Contacts</h3>
+            <div class="victim-contact-list">
+                <div class="victim-contact-item">
+                    <strong>Emergency Hotline:</strong> 911
+                </div>
+                <!-- Add more emergency contacts -->
+            </div>
+        </div>
+        <div class="victim-resources-list">
+            {% for resource in resources %}
+            <div class="victim-resource-card" data-type="{{ resource.type }}">
+                <h3>{{ resource.name }}</h3>
+                <p>{{ resource.description }}</p>
+                <div class="victim-resource-contact">
+                    <p><strong>Phone:</strong> {{ resource.phone }}</p>
+                    <p><strong>Address:</strong> {{ resource.address }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Messages Tab -->
+    <div class="tab-content" id="messages">
+        <div class="victim-messages-container">
+            <div class="victim-message-history" id="victimMessageHistory">
+                {% for message in messages %}
+                <div class="victim-message {{ 'sent' if message.sender_id == user.id else 'received' }}">
+                    <div class="victim-message-content">{{ message.content }}</div>
+                    <div class="victim-message-time">{{ message.timestamp.strftime('%H:%M') }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            <form action="{{ url_for('victimProfile.send_message') }}" method="POST" class="victim-message-form" id="victimMessageForm">
+                <textarea name="message" id="victimMessageInput" placeholder="Type your message..." required></textarea>
+                <button type="submit" class="btn btn-primary">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Location Tab -->
+    <div class="tab-content" id="location">
+        <div class="victim-location-settings">
+            <div class="victim-location-sharing">
+                <h3>Location Sharing</h3>
+                <label class="switch">
+                    <input type="checkbox" id="locationToggle" {{ 'checked' if profile.location_sharing }}>
+                    <span class="slider round"></span>
+                </label>
+                <p>Allow responders to see your location</p>
+            </div>
+            <form action="{{ url_for('victimProfile.update_location') }}" method="POST" class="victim-location-form">
+                <div class="form-group">
+                    <label for="address">Current Address:</label>
+                    <input type="text" id="address" name="address" value="{{ profile.address }}">
+                </div>
+                <div class="form-group">
+                    <label for="city">City:</label>
+                    <input type="text" id="city" name="city" value="{{ profile.city }}">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Update Location</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script src="{{ url_for('static', filename='js/sos.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tab switching functionality
+    const tabs = document.querySelectorAll('.tab-btn');
+    const contents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.dataset.tab;
+            
+            // Update active tab
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            // Show corresponding content
+            contents.forEach(content => {
+                content.classList.remove('active');
+                if (content.id === target) {
+                    content.classList.add('active');
+                }
+            });
+        });
+    });
+
+    // Resource filtering
+    const serviceFilter = document.getElementById('serviceFilter');
+    const resourceCards = document.querySelectorAll('.victim-resource-card');
+
+    serviceFilter.addEventListener('change', () => {
+        const selectedType = serviceFilter.value;
+        resourceCards.forEach(card => {
+            if (!selectedType || card.dataset.type === selectedType) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+
+    // Location toggle functionality
+    const locationToggle = document.getElementById('locationToggle');
+    const locationStatus = document.getElementById('locationStatus');
+    
+    // Set initial status based on checkbox state
+    locationStatus.textContent = locationToggle.checked ? "Location enabled" : "Location disabled";
+    
+    // Update status when toggle changes
+    locationToggle.addEventListener('change', function() {
+        locationStatus.textContent = this.checked ? "Location enabled" : "Location disabled";
+    });
+
+    // Polling for new messages
+    function fetchMessages() {
+        $.ajax({
+            url: "{{ url_for('victimProfile.get_messages') }}",
+            method: "GET",
+            success: function(data) {
+                const messageList = $('#victimMessageHistory');
+                messageList.empty();
+                data.messages.forEach(message => {
+                    const messageItem = `<div class="victim-message ${message.user_id == '{{ user.id }}' ? 'sent' : 'received'}">
+                        <div class="victim-message-content">${message.user_id == '{{ user.id }}' ? 'Me' : message.username}: ${message.message}</div>
+                        <div class="victim-message-time">${new Date(message.timestamp).toLocaleTimeString()}</div>
+                    </div>`;
+                    messageList.append(messageItem);
+                });
+            }
+        });
+    }
+
+    // Poll every 5 seconds
+    setInterval(fetchMessages, 5000);
+
+    // Send message
+    $('#victimMessageForm').off('submit').on('submit', function(e) {
+        e.preventDefault();
+        const messageInput = $('#victimMessageInput');
+        const message = messageInput.val();
+        $.ajax({
+            url: "{{ url_for('victimProfile.send_message') }}",
+            method: "POST",
+            data: { message: message },
+            success: function() {
+                messageInput.val('');
+                fetchMessages();
+            }
+        });
+    });
+
+    fetchMessages(); // Initial fetch
+});
+</script>
+{% endblock %}
+{% endblock %}

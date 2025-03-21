@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}Organization Profile{% endblock %}
+
+{% block content %}
+<div class="organization-profile-container">
+    <div class="organization-profile-header">
+        <div class="organization-profile-image">
+            <img src="{{ url_for('static', filename='images/default-profile.png') }}" alt="Organization Logo" id="organizationLogo">
+        </div>
+        <div class="organization-profile-info">
+            <h1>{{ profile.name }}</h1>
+            <p>{{ profile.type }}</p>
+        </div>
+        <div class="organization-profile-actions">
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-logout">
+                <ion-icon name="log-out-outline"></ion-icon>
+                Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="organization-profile-tabs">
+        <button class="tab-btn active" data-tab="organization-info">Organization Information</button>
+        <button class="tab-btn" data-tab="service-offerings">Service </button>
+        <button class="tab-btn" data-tab="referral-management">Referral </button>
+        <button class="tab-btn" data-tab="resource-sharing">Resource </button>
+        <button class="tab-btn" data-tab="basic-communication"> Communication</button>
+        <button class="tab-btn" data-tab="simple-dashboard"> Dashboard</button>
+    </div>
+
+    <!-- Organization Information Tab -->
+    <div class="tab-content active" id="organization-info">
+        <h2>Organization Information</h2>
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" value="{{ profile.name }}" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="type">Type:</label>
+            <input type="text" id="type" name="type" value="{{ profile.type }}" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="contact">Contact Information:</label>
+            <input type="text" id="contact" name="contact" value="{{ profile.contact }}" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="service_hours">Service Hours:</label>
+            <input type="text" id="service_hours" name="service_hours" value="{{ profile.service_hours }}" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" readonly>{{ profile.description }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="geographic_area">Geographic Area Served:</label>
+            <input type="text" id="geographic_area" name="geographic_area" value="{{ profile.geographic_area }}" readonly>
+        </div>
+    </div>
+
+    <!-- Service Offerings Tab -->
+    <div class="tab-content" id="service-offerings">
+        <h2>Service Offerings</h2>
+        <div class="organization-service-list">
+            {% for service in profile.services %}
+            <div class="organization-service-item">
+                <p>{{ service.name }} - {{ service.type }}</p>
+                <p>{{ service.description }}</p>
+                <p>{{ service.requirements }}</p>
+                <p>{{ service.capacity_status }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Referral Management Tab -->
+    <div class="tab-content" id="referral-management">
+        <h2>Referral Management</h2>
+        <div class="organization-referral-list">
+            {% for referral in referrals %}
+            <div class="organization-referral-item">
+                <p>Referral #{{ referral.id }} - {{ referral.status }}</p>
+                <a href="{{ url_for('referral.view', referral_id=referral.id) }}" class="btn btn-outline">View Referral</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Resource Sharing Tab -->
+    <div class="tab-content" id="resource-sharing">
+        <h2>Resource Sharing</h2>
+        <div class="organization-resource-list">
+            {% for resource in resources %}
+            <div class="organization-resource-item">
+                <p>{{ resource.name }}</p>
+                <a href="{{ url_for('static', filename='resources/' ~ resource.filename) }}" class="btn btn-outline">Download</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Basic Communication Tab -->
+    <div class="tab-content" id="basic-communication">
+        <h2>Basic Communication</h2>
+        <div class="organization-messages">
+            <div class="organization-message-list">
+                {% for message in messages %}
+                <div class="organization-message-item">
+                    <p>{{ message.sender }}: {{ message.content }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            <form action="{{ url_for('organizationProfile.send_message') }}" method="POST" class="organization-message-form">
+                <textarea name="message" placeholder="Type your message..." required></textarea>
+                <button type="submit" class="btn btn-primary">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Simple Dashboard Tab -->
+    <div class="tab-content" id="simple-dashboard">
+        <h2>Simple Dashboard</h2>
+        <div class="organization-dashboard">
+            <p>Active Cases: {{ dashboard.active_cases }}</p>
+            <p>Referrals: {{ dashboard.referrals }}</p>
+            <p>Services Provided: {{ dashboard.services_provided }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script src="{{ url_for('static', filename='js/organization-profile.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tab switching functionality
+    const tabs = document.querySelectorAll('.tab-btn');
+    const contents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.dataset.tab;
+            
+            // Update active tab
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            // Show corresponding content
+            contents.forEach(content => {
+                content.classList.remove('active');
+                if (content.id === target) {
+                    content.classList.add('active');
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

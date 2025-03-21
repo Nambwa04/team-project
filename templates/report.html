@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Report a Case{% endblock %}
+
+{% block content %}
+<div class="report-content">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div id="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    <button>
+      <a href="{{ url_for('auth.logout') }}" class="btn btn-logout" >
+        <ion-icon name="log-out-outline"></ion-icon>
+        Home
+    </a>
+    </button>
+    <div class="report-container">
+        <header>
+            <h1>Report a Case</h1>
+        </header>
+        <form id="reportForm" action="{{ url_for('report.submit_report') }}" method="POST">
+            <div>
+                <label for="reporterName">Your Name:</label>
+                <input type="text" id="reporterName" name="reporter_name" required>
+            </div>
+            <div>
+                <label for="reporterContact">Your Contact:</label>
+                <input type="text" id="reporterContact" name="reporter_contact" required>
+            </div>
+            <div>
+                <label for="caseDescription">Case Description:</label>
+                <textarea id="caseDescription" name="case_description" required></textarea>
+            </div>
+            <div>
+                <label for="caseLocation">Case Location:</label>
+                <input type="text" id="caseLocation" name="case_location" required>
+            </div>
+            <button type="submit">Submit Report</button> 
+        </form>
+    
+</div>
+
+<script src="{{ url_for('static', filename='js/report.js') }}"></script>
+{% endblock %}

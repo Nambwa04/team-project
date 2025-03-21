@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Haven - End Gender-Based Violence{% endblock %}
+
+{% block content %}
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="container">
+        <div class="nav-brand">
+            <span>Haven</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About Us</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li><a href="{{ url_for('auth.login') }}" class="btn btn-outline">Login</a></li>
+            <li><a href="{{ url_for('auth.register') }}" class="btn btn-primary">Register</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section id="home" class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1>Stop Gender-Based Violence</h1>
+            <p>Spreading awareness, assisting survivors, and driving change to end GBV</p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('report.report_form') }}" class="btn btn-primary">Report a Case</a>
+                <a href="#about" class="btn btn-secondary">Learn More</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="about">
+    <div class="container">
+        <h2>About Haven</h2>
+        <div class="about-cards">
+            <div class="about-card">
+                <div class="card-icon">
+                    <ion-icon name="shield-outline"></ion-icon>
+                </div>
+                <h3>Our Mission</h3>
+                <p>SafeHaven provides a secure, confidential platform connecting GBV survivors with immediate support, professional responders, and essential resources. We're committed to creating a trauma-informed digital space where survivors can safely seek help on their own terms.</p>
+            </div>
+            <div class="about-card">
+                <div class="card-icon">
+                    <ion-icon name="flowchart-outline"></ion-icon>
+                </div>
+                <h3>How It Works</h3>
+                <p>Our platform connects survivors with trained responders based on their needs and location. After registration, you can request assistance, communicate securely with support professionals, and access resources—all within a private, confidential environment designed with your safety in mind.</p>
+            </div>
+            <div class="about-card">
+                <div class="card-icon">
+                    <ion-icon name="people-outline"></ion-icon>
+                </div>
+                <h3>Our Support Network</h3>
+                <p>SafeHaven partners with qualified responders and organizations specializing in legal assistance, medical care, counseling, and emergency services. Our vetted network of professionals is dedicated to providing compassionate, effective support to survivors of gender-based violence.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="contact">
+    <div class="container">
+        <h2>Contact Us</h2>
+        <p>If you know someone at risk or a survivor in need of support, report confidentially.</p>
+        <a href="{{ url_for('report.report_form') }}" class="btn btn-primary">Report Now</a>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <span>Haven</span>
+                <p>Haven is committed to ending gender-based violence through support, education, and action.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="{{ url_for('report.report_form') }}">Report</a></li>
+                </ul>
+            </div>
+            <div class="footer-social">
+                <h4>Connect With Us</h4>
+                <div class="social-links">
+                    <a href="#"><ion-icon name="logo-facebook"></ion-icon></a>
+                    <a href="#"><ion-icon name="logo-twitter"></ion-icon></a>
+                    <a href="#"><ion-icon name="logo-instagram"></ion-icon></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Haven. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+{% endblock %}
