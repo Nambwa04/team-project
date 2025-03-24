@@ -3,7 +3,7 @@
 {% block title %}Report a Case{% endblock %}
 
 {% block content %}
-<div class="report-content">
+<div class="register-body">
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <div id="flash-messages">
@@ -13,32 +13,36 @@
             </div>
         {% endif %}
     {% endwith %}
-    <button>
-      <a href="{{ url_for('auth.logout') }}" class="btn btn-logout" >
-        <ion-icon name="log-out-outline"></ion-icon>
-        Home
-    </a>
-    </button>
-    <div class="report-container">
-        <header>
-            <h1>Report a Case</h1>
-        </header>
+    
+<!-- Navigation -->
+<nav class="navbar" style="background: transparent !important; box-shadow: none;">
+    <div class="container">
+        <div class="nav-brand">
+            <span style="color: white;">Haven</span>
+        </div>
+        <ul class="nav-links">
+            <li><a style="color: white;" href="{{ url_for('auth.logout') }}">Home</a></li>
+        </ul>
+    </div>
+</nav>
+    <div class="register-container">
+            <h2>Report a Case</h2>
+
         <form id="reportForm" action="{{ url_for('report.submit_report') }}" method="POST">
-            <div>
-                <label for="reporterName">Your Name:</label>
-                <input type="text" id="reporterName" name="reporter_name" required>
+            <div class="form-control" style="margin-bottom: 1rem;">
+                <ion-icon name="person-outline"></ion-icon>
+                <input type="text" id="reporterName" name="reporter_name" placeholder="Your Name:" required>
             </div>
-            <div>
-                <label for="reporterContact">Your Contact:</label>
-                <input type="text" id="reporterContact" name="reporter_contact" required>
+            <div class="form-control" style="margin-bottom: 2rem;">
+                <ion-icon name="call-outline"></ion-icon>
+                <input type="text" id="reporterContact" name="reporter_contact" placeholder="Your Contact:" required>
             </div>
-            <div>
-                <label for="caseDescription">Case Description:</label>
-                <textarea id="caseDescription" name="case_description" required></textarea>
+            <div class="form-control" style="margin-bottom: 1rem;">
+                <textarea id="caseDescription" name="case_description" placeholder="Case Description:" required></textarea>
             </div>
-            <div>
-                <label for="caseLocation">Case Location:</label>
-                <input type="text" id="caseLocation" name="case_location" required>
+            <div class="form-control" style="margin-bottom: 2rem; background-color: transparent;">
+                <ion-icon name="location"></ion-icon>
+                <input type="text" id="caseLocation" name="case_location" placeholder="Case Location:" required>
             </div>
             <button type="submit">Submit Report</button> 
         </form>
@@ -46,4 +50,6 @@
 </div>
 
 <script src="{{ url_for('static', filename='js/report.js') }}"></script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 {% endblock %}

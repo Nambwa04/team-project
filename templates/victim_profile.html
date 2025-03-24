@@ -69,8 +69,8 @@
         </form>
 
         <!-- Password Change Section -->
-        <form action="{{ url_for('victimProfile.change_password') }}" method="POST" class="password-form">
-            <h3>Change Password</h3>
+        <form action="{{ url_for('victimProfile.change_password') }}" method="POST">
+            <h3 style="margin-top: 1rem;">Change Password</h3>
             <div class="form-group">
                 <label for="current_password">Current Password:</label>
                 <input type="password" id="current_password" name="current_password" required>

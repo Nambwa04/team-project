@@ -116,6 +116,9 @@ def edit_victim(victim_id):
             flash('All fields are required!', 'error')
             return redirect(url_for('victim.manage_victims'))
         
+        print(f"Updating victim with ID: {victim_id}")
+        print(f"Updated data: {updated_data}")
+        
         # Use the update_victim method from VictimModel which supports _id directly
         result = victim_model.update_victim(victim_id, updated_data)
         
