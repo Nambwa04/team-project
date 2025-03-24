@@ -33,35 +33,39 @@
     <!-- Organization Information Tab -->
     <div class="tab-content active" id="organization-info">
         <h2>Organization Information</h2>
-        <div class="form-group">
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" value="{{ profile.name }}" readonly>
-        </div>
+        <form action="{{ url_for('organizationProfile.update_profile') }}" method="POST">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" value="{{ profile.username }}" required>
+            </div>
 
-        <div class="form-group">
-            <label for="type">Type:</label>
-            <input type="text" id="type" name="type" value="{{ profile.type }}" readonly>
-        </div>
+            <div class="form-group">
+                <label for="type">Type:</label>
+                <input type="text" id="type" name="type" value="{{ profile.services }}" required>
+            </div>
 
-        <div class="form-group">
-            <label for="contact">Contact Information:</label>
-            <input type="text" id="contact" name="contact" value="{{ profile.contact }}" readonly>
-        </div>
+            <div class="form-group">
+                <label for="contact">Contact Information:</label>
+                <input type="text" id="contact" name="contact" value="{{ profile.contact }}" required>
+            </div>
 
-        <div class="form-group">
-            <label for="service_hours">Service Hours:</label>
-            <input type="text" id="service_hours" name="service_hours" value="{{ profile.service_hours }}" readonly>
-        </div>
+            <div class="form-group">                    
+                <label for="service_hours">Service Hours:</label>
+                <input type="text" id="service_hours" name="service_hours" value="{{ profile.service_hours }}" required>
+            </div>
 
-        <div class="form-group">
-            <label for="description">Description:</label>
-            <textarea id="description" name="description" readonly>{{ profile.description }}</textarea>
-        </div>
+            <div class="form-group">
+                <label for="desreadonly">Description:</label>
+                <textarea id="description" name="description" required>{{ profile.description }}</textarea>
+            </div>
 
-        <div class="form-group">
-            <label for="geographic_area">Geographic Area Served:</label>
-            <input type="text" id="geographic_area" name="geographic_area" value="{{ profile.geographic_area }}" readonly>
-        </div>
+            <div class="form-group">
+                <label for="geographic_area">Geographic Area Served:</label>
+                <input type="text" id="geographic_area" name="geographic_area" value="{{ profile.location }}" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+        </form>
     </div>
 
     <!-- Service Offerings Tab -->
