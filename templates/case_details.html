@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+
+{% block title %}Case Details - {{ case._id }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="page-title">Emergency Case Details</h1>
+                <a href="{{ url_for('emergency.view_cases') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Cases
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between">
+                    <h5 class="mb-0">Case Information</h5>
+                    <span class="status-badge status-{{ case.status|lower }}">{{ case.status }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Case ID:</strong></div>
+                        <div class="col-md-8">{{ case._id }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Created:</strong></div>
+                        <div class="col-md-8">{{ case.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Updated:</strong></div>
+                        <div class="col-md-8">{{ case.updated_at.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Priority:</strong></div>
+                        <div class="col-md-8">
+                            <span class="priority-badge priority-{{ case.priority|lower }}">{{ case.priority }}</span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Description:</strong></div>
+                        <div class="col-md-8">{{ case.description }}</div>
+                    </div>
+                    
+                    {% if case.location %}
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Location:</strong></div>
+                        <div class="col-md-8">
+                            <!-- <div id="map" style="height: 300px; width: 100%; border-radius: 8px;"></div>
+                            <div class="mt-2"> -->
+                                <small>
+                                    Latitude: {{ case.location.latitude }}, Longitude: {{ case.location.longitude }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if case.resolved_at %}
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Resolved At:</strong></div>
+                        <div class="col-md-8">{{ case.resolved_at.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if case.resolution %}
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Resolution:</strong></div>
+                        <div class="col-md-8">{{ case.resolution }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            {% if case.notes %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Case Notes</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="timeline">
+                        {% for note in case.notes %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker status-{{ note.status|lower }}"></div>
+                            <div class="timeline-content">
+                                <h6 class="timeline-title">
+                                    Status changed to {{ note.status }}
+                                    <small>{{ note.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+                                </h6>
+                                <p>{{ note.content }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Case Actions for Responders -->
+            {% if session.role == 'responder' and session.user_id == case.responder_id|string and case.status != 'RESOLVED' %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Update Case Status</h5>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('emergency.update_case_status') }}" method="POST">
+                        <input type="hidden" name="case_id" value="{{ case._id }}">
+                        
+                        <div class="form-group">
+                            <label for="status">Status:</label>
+                            <select name="status" id="status" class="form-control" required>
+                                <option value="ASSIGNED" {% if case.status == 'ASSIGNED' %}selected{% endif %}>Assigned</option>
+                                <option value="IN_PROGRESS" {% if case.status == 'IN_PROGRESS' %}selected{% endif %}>In Progress</option>
+                                <option value="RESOLVED">Resolved</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notes">Notes:</label>
+                            <textarea name="notes" id="notes" class="form-control" rows="4" 
+                                    placeholder="Enter details about the status update..." required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Update Status</button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Victim Information -->
+            {% if victim %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Victim Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Name:</strong></div>
+                        <div class="col-md-8">{{ victim.name }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Email:</strong></div>
+                        <div class="col-md-8">{{ victim.email }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Phone:</strong></div>
+                        <div class="col-md-8">
+                            <a href="tel:{{ victim.phone }}">{{ victim.phone }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Responder Information -->
+            {% if responder %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Responder Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Name:</strong></div>
+                        <div class="col-md-8">{{ responder.name }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4"><strong>Phone:</strong></div>
+                        <div class="col-md-8">
+                            <a href="tel:{{ responder.phone }}">{{ responder.phone }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Case Controls -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Actions</h5>
+                </div>
+                <div class="card-body">
+                    {% if session.role == 'responder' and case.status == 'PENDING' and not case.responder_id %}
+                    <form action="{{ url_for('emergency.assign_case') }}" method="POST" class="mb-3">
+                        <input type="hidden" name="case_id" value="{{ case._id }}">
+                        <button type="submit" class="btn btn-success btn-block">
+                            <i class="fas fa-user-check"></i> Take This Case
+                        </button>
+                    </form>
+                    {% endif %}
+                    
+                    {% if case.location %}
+                    <a href="https://maps.google.com/?q={{ case.location.latitude }},{{ case.location.longitude }}" 
+                       target="_blank" class="btn btn-info btn-block mb-3">
+                        <i class="fas fa-map-marker-alt"></i> Open in Google Maps
+                    </a>
+                    {% endif %}
+                    
+                    {% if session.role == 'admin' %}
+                    <a href="{{ url_for('admin.emergency_cases', case_id=case._id) }}" class="btn btn-warning btn-block mb-3">
+                        <i class="fas fa-edit"></i> Edit Case
+                    </a>
+                    
+                    <button type="button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#deleteCaseModal">
+                        <i class="fas fa-trash"></i> Delete Case
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Case Modal (for admins) -->
+{% if session.role == 'admin' %}
+<div class="modal fade" id="deleteCaseModal" tabindex="-1" role="dialog" aria-labelledby="deleteCaseModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteCaseModalLabel">Confirm Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this case? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <form action="{{ url_for('admin.delete_case', case_id=case._id) }}" method="POST">
+                    <button type="submit" class="btn btn-danger">Delete Case</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

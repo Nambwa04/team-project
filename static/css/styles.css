@@ -1758,3 +1758,37 @@ input:checked + .location-toggle-slider:before {
     50% { opacity: 0.7; }
     100% { opacity: 1; }
 }
+
+/* Status Badges for Cases */
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.status-pending {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.status-assigned {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.status-in_progress {
+    background-color: #007bff;
+    color: white;
+}
+
+.status-resolved {
+    background-color: #28a745;
+    color: white;
+}
+
+.status-unknown {
+    background-color: #6c757d;
+    color: white;
+}

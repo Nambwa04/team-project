@@ -55,7 +55,8 @@ def create_app():
     from routes.responderProfileRoute import responderProfile_bp
     from routes.adminRoute import admin_bp
     from routes.settingsRoute import settings_bp
-    from routes.main import main_bp  # Update this import
+    from routes.main import main_bp  
+    from routes.emergency import emergency_bp
 
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(responder_bp, url_prefix='/responder')
@@ -69,6 +70,7 @@ def create_app():
     app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(settings_bp)
     app.register_blueprint(main_bp, url_prefix='/')
+    app.register_blueprint(emergency_bp, url_prefix='/emergency')
 
     @app.route('/')
     def landing():

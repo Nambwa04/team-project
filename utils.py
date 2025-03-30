@@ -7,6 +7,8 @@ from flask import current_app, url_for
 from flask_mail import Mail, Message
 from bson import ObjectId
 from datetime import datetime
+from models import mongo
+from models.user import User
 
 mail = Mail()
 

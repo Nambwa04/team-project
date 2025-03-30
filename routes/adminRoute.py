@@ -146,7 +146,7 @@ def emergency_cases():
     # Get all emergency cases
     cases = emergency_model.get_all_emergency_cases()
     
-    return render_template("admin/emergency_cases.html", cases=cases)
+    return render_template("case.html", cases=cases)
 
 @admin_bp.route('/emergency-case/<case_id>')
 def emergency_case_details(case_id):
@@ -160,7 +160,7 @@ def emergency_case_details(case_id):
         case = emergency_model.get_case_by_id(case_id)
         if not case:
             flash("Emergency case not found", "error")
-            return redirect(url_for('admin.emergency_cases'))
+            return redirect(url_for('case'))
         
         # Get victim details
         victim = victim_model.get_victim_by_id(case.get('victim_id'))
@@ -170,14 +170,14 @@ def emergency_case_details(case_id):
         if case.get('responder_id'):
             responder = responder_model.get_responder_by_id(case.get('responder_id'))
         
-        return render_template("admin/emergency_case_details.html", 
+        return render_template("case_details.html", 
                                case=case, 
                                victim=victim, 
                                responder=responder)
     
     except Exception as e:
         flash(f"Error retrieving case details: {str(e)}", "error")
-        return redirect(url_for('admin.emergency_cases'))
+        return redirect(url_for('emergency.view_cases'))
 
 @admin_bp.route('/api/emergency-cases')
 def get_emergency_cases():
@@ -268,3 +268,119 @@ def emergency_dashboard_data():
             'success': False,
             'error': str(e)
         }), 500
+
+@admin_bp.route('/edit-case/<case_id>', methods=['GET', 'POST'])
+def edit_case(case_id):
+    """Edit an emergency case"""
+    user_id = session.get("user_id")
+    if not user_id or session.get("role") != "admin":
+        flash("You need admin privileges to edit cases", "error")
+        return redirect(url_for('auth.login'))
+    
+    try:
+        case = emergency_model.get_case_by_id(case_id)
+        if not case:
+            flash("Emergency case not found", "error")
+            return redirect(url_for('admin.emergency_cases'))
+        
+        if request.method == 'POST':
+            # Collect form data
+            description = request.form.get('description')
+            priority = request.form.get('priority')
+            status = request.form.get('status')
+            responder_id = request.form.get('responder_id')
+            
+            # Prepare update data
+            update_data = {
+                "description": description,
+                "priority": priority,
+                "status": status,
+                "updated_at": datetime.now()
+            }
+            
+            # Handle responder assignment
+            if responder_id:
+                # Check if responder exists
+                responder = responder_model.get_responder_by_id(responder_id)
+                if responder:
+                    update_data["responder_id"] = ObjectId(responder_id)
+                    
+                    # Add a note about responder assignment
+                    responder_name = responder.get('name', 'Unknown responder')
+                    note = {
+                        "status": status,
+                        "content": f"Admin assigned {responder_name} to this case",
+                        "timestamp": datetime.now(),
+                        "user_id": user_id
+                    }
+                    
+                    # Update the case with the new responder and note
+                    result = mongo.db.emergency_cases.update_one(
+                        {"_id": ObjectId(case_id)},
+                        {
+                            "$set": update_data,
+                            "$push": {"notes": note}
+                        }
+                    )
+                else:
+                    # If responder doesn't exist, just update the case without changing responder
+                    result = mongo.db.emergency_cases.update_one(
+                        {"_id": ObjectId(case_id)},
+                        {"$set": update_data}
+                    )
+            else:
+                # If no responder selected, just update the case
+                result = mongo.db.emergency_cases.update_one(
+                    {"_id": ObjectId(case_id)},
+                    {"$set": update_data}
+                )
+            
+            if result.modified_count > 0:
+                flash("Emergency case updated successfully", "success")
+            else:
+                flash("No changes were made", "info")
+                
+            return redirect(url_for('admin.emergency_case_details', case_id=case_id))
+        
+        # Get all responders for dropdown
+        responders = responder_model.get_all_responders()
+        
+        # Convert ObjectId to string for template
+        case['_id'] = str(case['_id'])
+        if 'responder_id' in case:
+            case['responder_id'] = str(case['responder_id'])
+        
+        return render_template("edit_case.html", case=case, responders=responders)
+        
+    except Exception as e:
+        flash(f"Error editing case: {str(e)}", "error")
+        return redirect(url_for('admin.emergency_cases'))
+
+@admin_bp.route('/delete-case/<case_id>', methods=['POST'])
+def delete_case(case_id):
+    """Delete an emergency case"""
+    user_id = session.get("user_id")
+    if not user_id or session.get("role") != "admin":
+        flash("You need admin privileges to delete cases", "error")
+        return redirect(url_for('auth.login'))
+    
+    try:
+        # Check if case exists
+        case = emergency_model.get_case_by_id(case_id)
+        if not case:
+            flash("Emergency case not found", "error")
+            return redirect(url_for('admin.emergency_cases'))
+        
+        # Delete the case
+        result = mongo.db.emergency_cases.delete_one({"_id": ObjectId(case_id)})
+        
+        if result.deleted_count > 0:
+            flash("Emergency case deleted successfully", "success")
+        else:
+            flash("Failed to delete emergency case", "error")
+            
+        return redirect(url_for('admin.emergency_cases'))
+        
+    except Exception as e:
+        flash(f"Error deleting case: {str(e)}", "error")
+        return redirect(url_for('admin.emergency_cases'))
