@@ -5,7 +5,6 @@ from flask import current_app
 
 class EmergencyModel:
     def __init__(self, mongo):
-        self.mongo = mongo
         self.collection = mongo.db.emergency_cases
         
         # Ensure indexes for better query performance

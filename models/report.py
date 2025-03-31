@@ -5,7 +5,7 @@ mongo = PyMongo()
 
 class ReportModel:
     def __init__(self, mongo):
-        self.collection = mongo.db.reports
+        self.collection = mongo.db.report
 
     # Insert a new report into the database
     def add_report(self, report_data):
