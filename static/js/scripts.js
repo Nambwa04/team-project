@@ -256,29 +256,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Function to update and display the current date and time in DD/MM/YYYY format
 function updateDateTime() {
-    let now = new Date(); // Get the current date and time
+    let now = new Date();
+    let day = now.getDate().toString().padStart(2, '0');
+    let month = (now.getMonth() + 1).toString().padStart(2, '0');
+    let year = now.getFullYear();
+    let hours = now.getHours().toString().padStart(2, '0');
+    let minutes = now.getMinutes().toString().padStart(2, '0');
+    let seconds = now.getSeconds().toString().padStart(2, '0');
 
-    // Extract the day, month, and year from the date
-    let day = now.getDate().toString().padStart(2, '0'); // Get day (1-31) and ensure two digits (e.g., 07)
-    let month = (now.getMonth() + 1).toString().padStart(2, '0'); // Get month (0-11), add 1 to match human format (1-12)
-    let year = now.getFullYear(); // Get full year (e.g., 2025)
-
-    // Extract hours, minutes, and seconds for real-time display
-    let hours = now.getHours().toString().padStart(2, '0'); // Get hours (0-23) in two-digit format
-    let minutes = now.getMinutes().toString().padStart(2, '0'); // Get minutes (0-59) in two-digit format
-    let seconds = now.getSeconds().toString().padStart(2, '0'); // Get seconds (0-59) in two-digit format
-
-    // Construct the formatted date-time string in DD/MM/YYYY HH:MM:SS format
     let dateString = `${day}/${month}/${year}`;
     let timeString = `${hours}:${minutes}:${seconds}`;
 
-    // Update the HTML element with date on top and time below using <br> for line break
-    document.getElementById("dateTime").innerHTML = `${dateString}<br>${timeString}`;
+    const dateTimeElement = document.getElementById("dateTime");
+    if (dateTimeElement) {
+        dateTimeElement.innerHTML = `${dateString}<br>${timeString}`;
+    } else {
+        console.warn('Element with id "dateTime" not found');
+    }
 }
 
-// Call updateDateTime every 1000 milliseconds (1 second) to keep the time updated
 setInterval(updateDateTime, 1000);
-
-// Call the function immediately so the date and time display as soon as the page loads
 updateDateTime();
 // END OF admin.html
+
+console.log('Script loaded');
+const button = document.getElementById('someButton');
+if (button) {
+    button.addEventListener('click', function () {
+        console.log('Button clicked');
+    });
+} else {
+    console.warn('Button with id "someButton" not found');
+}

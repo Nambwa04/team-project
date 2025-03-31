@@ -89,7 +89,9 @@
                             <div class="timeline-content">
                                 <h6 class="timeline-title">
                                     Status changed to {{ note.status }}
-                                    <small>{{ note.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+                                    <small>
+                                        {{ note.timestamp.strftime('%Y-%m-%d %H:%M') if note.timestamp else 'No timestamp available' }}
+                                    </small>
                                 </h6>
                                 <p>{{ note.content }}</p>
                             </div>

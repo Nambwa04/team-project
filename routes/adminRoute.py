@@ -146,7 +146,15 @@ def emergency_cases():
     # Get all emergency cases
     cases = emergency_model.get_all_emergency_cases()
     
-    return render_template("case.html", cases=cases)
+    # Calculate stats
+    stats = {
+        "pending": emergency_model.count_cases_by_status("PENDING"),
+        "assigned": emergency_model.count_cases_by_status("ASSIGNED"),
+        "in_progress": emergency_model.count_cases_by_status("IN_PROGRESS"),
+        "resolved": emergency_model.count_cases_by_status("RESOLVED"),
+    }
+    
+    return render_template("case.html", cases=cases, stats=stats)
 
 @admin_bp.route('/emergency-case/<case_id>')
 def emergency_case_details(case_id):
@@ -160,7 +168,16 @@ def emergency_case_details(case_id):
         case = emergency_model.get_case_by_id(case_id)
         if not case:
             flash("Emergency case not found", "error")
-            return redirect(url_for('case'))
+            return redirect(url_for('admin.emergency_cases'))
+        
+        # Convert note timestamps to datetime objects
+        if "notes" in case:
+            for note in case["notes"]:
+                if isinstance(note.get("timestamp"), str):
+                    try:
+                        note["timestamp"] = datetime.fromisoformat(note["timestamp"])
+                    except ValueError:
+                        note["timestamp"] = None  # Handle invalid timestamp formats
         
         # Get victim details
         victim = victim_model.get_victim_by_id(case.get('victim_id'))
@@ -177,7 +194,7 @@ def emergency_case_details(case_id):
     
     except Exception as e:
         flash(f"Error retrieving case details: {str(e)}", "error")
-        return redirect(url_for('emergency.view_cases'))
+        return redirect(url_for('admin.emergency_cases'))
 
 @admin_bp.route('/api/emergency-cases')
 def get_emergency_cases():
@@ -365,14 +382,15 @@ def delete_case(case_id):
         return redirect(url_for('auth.login'))
     
     try:
-        # Check if case exists
+        # Check if the case exists
         case = emergency_model.get_case_by_id(case_id)
         if not case:
             flash("Emergency case not found", "error")
             return redirect(url_for('admin.emergency_cases'))
         
-        # Delete the case
+        print(f"Attempting to delete case with ID: {case_id}")
         result = mongo.db.emergency_cases.delete_one({"_id": ObjectId(case_id)})
+        print(f"Deleted count: {result.deleted_count}")
         
         if result.deleted_count > 0:
             flash("Emergency case deleted successfully", "success")
