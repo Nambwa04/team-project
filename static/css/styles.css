@@ -199,6 +199,19 @@ p {
     right: 0;
     z-index: 1000;
 }
+.case-header {
+    width: 100vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.01rem 1rem;
+    background-color: #D32F2F;
+    position: fixed;
+    top: 0;
+    margin-bottom: 1.25rem;
+    right: 0;
+    z-index: 1000;
+}
 .header h1 {
     position: relative; justify-content: center; top: 7px;
         font-size: 2.5rem; 
@@ -305,6 +318,13 @@ text-decoration: underline;
   color: #F0E68C;
 }
 
+/*Manage sector*/
+.manage-sector {
+    position: relative;
+    top: 3rem; left: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
 
 /* Manage Section */
 .manage-section {
@@ -342,14 +362,27 @@ text-decoration: underline;
 .manage-section .search button:hover {
     background-color: #357ab8;
 }
-.manage-section .categoryFilter {
+.manage-section .categoryFilter, .manage-section .responderFilter {
     margin-bottom: 1rem;
 }
-.manage-section .categoryFilter select {
+.manage-section .responderFilter {
+    position: relative;
+    left: 29rem; top: -3.7rem;
+}
+.manage-section .categoryFilter select, .manage-section .responderFilter select {
     padding: 0.75rem;
     border: 1px solid #e9ecef;
     border-radius: 8px;
     font-size: 1rem;
+}
+.manage-sector .headerview {
+    position: relative;
+    top: 3rem; left: 1rem;
+}
+.manage-section .apply-filters {
+    position: absolute;
+    padding: 0.75rem 1.5rem;
+    right: 1.75rem; top: 29.5rem;
 }
 .manage-section .add-btn {
     padding: 0.75rem 1.5rem;
@@ -364,7 +397,10 @@ text-decoration: underline;
 .manage-section .add-btn:hover {
     background-color: #357ab8;
 }
-
+.manage-section .cases {
+    padding: 0rem 35rem 0rem 0rem;
+    margin-top: 1rem;
+}
 /* Table Styles */
 .organizationsTable {
     width: 100%;
@@ -1185,7 +1221,16 @@ button:hover {
   margin-left: 0; /* Removed conflicting margin-left */
   padding: 0.01rem; /* Added padding */
 }
-
+.case-content {
+    overflow: hidden;
+    position: relative;
+    top: 0; left: 0;
+    width: 100vw;
+    min-height: 100vh;
+    background: #F0E68C;
+    transition: 0.5s;
+    padding: 0.01rem; /* Added padding */
+}
 
 /* Report Page Specific Styles */
 .report-container {
