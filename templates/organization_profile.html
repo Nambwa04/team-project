@@ -9,8 +9,8 @@
             <img src="{{ url_for('static', filename='images/default-profile.png') }}" alt="Organization Logo" id="organizationLogo">
         </div>
         <div class="organization-profile-info">
-            <h1>{{ profile.name }}</h1>
-            <p>{{ profile.type }}</p>
+            <h1>{{ profile.username }}</h1>
+            <p>{{ profile.email }}</p>
         </div>
         <div class="organization-profile-actions">
             <a href="{{ url_for('auth.logout') }}" class="btn btn-logout">

@@ -148,3 +148,20 @@ def search_organization():
     total_organizations = len(organizations)
     
     return render_template('organizations.html', organizations=organizations, total_organizations=total_organizations)
+
+@organization_bp.route('/view_organizations', methods=['GET'])
+@role_required('responder')
+def view_organizations():
+    try:
+        # Fetch all organizations
+        organizations = organization_model.get_all_organizations()
+
+        # Convert ObjectId to string for template rendering
+        for organization in organizations:
+            organization['_id'] = str(organization['_id'])
+
+        # Render a template specifically for responders to view organizations
+        return render_template('view_organizations.html', organizations=organizations)
+    except Exception as e:
+        flash(f"Error fetching organizations: {str(e)}", "error")
+        return redirect(url_for('responderProfile.profile'))

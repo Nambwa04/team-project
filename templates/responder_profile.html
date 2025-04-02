@@ -169,6 +169,13 @@
             <p>No cases assigned to you at this time.</p>
         {% endif %}
     </div>
+
+    <!-- Link to View Organizations -->
+    <div class="view-organizations-link">
+        <a href="{{ url_for('organization.view_organizations') }}" class="btn btn-secondary">
+            <ion-icon name="briefcase-outline"></ion-icon> View Organizations
+        </a>
+    </div>
 </div>
 
     <!-- Communication Tab -->

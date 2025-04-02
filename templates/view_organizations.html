@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}View Organizations{% endblock %}
+
+{% block content %}
+<div class="sidebar">
+    <ul>
+        <li>
+            <a href="#">
+                <span class="sidetag">Responder</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('responderProfile.profile') }}">
+                <span class="icon">
+                    <ion-icon name="home-outline"></ion-icon></span>                            
+                <span class="sidetag">Profile</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('organization.view_organizations') }}">
+                <span class="icon">
+                    <ion-icon name="briefcase-outline"></ion-icon></span>
+                <span class="sidetag">Organizations</span>
+            </a>
+        </li>
+
+    </ul>
+</div>
+
+<div class="content">
+    <header class="header">
+        <h1>View Organizations</h1>
+        <div class="toggle">
+            <ion-icon name="menu-outline"></ion-icon>
+        </div>
+
+        <div class="header-right">
+            <div class="system-status">
+                <span class="status-dot online"></span> Online
+            </div>
+            <div class="date-time" id="dateTime"></div>
+        </div>
+
+        <div class="home">
+            <a href="{{ url_for('responderProfile.profile') }}">Home</a>
+        </div>
+    </header>
+
+    <div class="manage-section">
+        <h2>Organizations</h2>
+    </div>
+
+    <table class="organizationsTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>Location</th>
+                <th>Services</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for organization in organizations %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ organization.username }}</td>
+                <td>{{ organization.contact }}</td>
+                <td>{{ organization.location }}</td>
+                <td>{{ organization.services }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if not organizations %}
+    <p>No organizations found.</p>
+    {% endif %}
+</div>
+
+<script src="{{ url_for('static', filename='js/organization.js') }}"></script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+{% endblock %}
