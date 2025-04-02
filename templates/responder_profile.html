@@ -174,14 +174,10 @@
     <!-- Communication Tab -->
     <div class="tab-content" id="communication">
         <h2>Communication</h2>
+        <!-- Messaging Section -->
         <div class="responder-messages">
             <div class="responder-message-list" id="responderMessageList">
-                {% for message in messages %}
-                <div class="responder-message-item">
-                    <p>{{ message.sender_username }}: {{ message.content }}</p>
-                    <div class="message-time">{{ message.timestamp.strftime('%H:%M') }}</div>
-                </div>
-                {% endfor %}
+                <!-- Messages will be dynamically loaded here -->
             </div>
             <form action="{{ url_for('responderProfile.send_message') }}" method="POST" class="responder-message-form" id="responderMessageForm">
                 <textarea name="message" placeholder="Type your message..." required id="responderMessageInput"></textarea>

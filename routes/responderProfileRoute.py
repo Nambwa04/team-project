@@ -102,18 +102,31 @@ def update_profile():
 def send_message():
     try:
         user_id = session.get("user_id")
+        username = session.get("username")
         message_content = request.form.get('message')
-        
-        if responderService.send_message(user_id, message_content):
-            return jsonify({"success": True, "message": "Message sent successfully"}), 200
-        else:
-            return jsonify({"success": False, "message": "Error sending message"}), 500
+
+        # Insert the message into the 'messages' collection
+        mongo.db.messages.insert_one({
+            'user_id': ObjectId(user_id),
+            'username': username,
+            'room': 'victim_to_responder',
+            'message': message_content,
+            'timestamp': datetime.utcnow()
+        })
+        return jsonify({'success': True})
     except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @responderProfile_bp.route('/get_messages', methods=['GET'])
 @role_required('responder')
 def get_messages():
-    user_id = session.get("user_id")
-    messages = list(mongo.db.messages.find({'room': 'victim_to_responder'}).sort("timestamp", 1))
-    return jsonify(messages), 200
+    try:
+        # Fetch messages from the 'messages' collection for the room 'victim_to_responder'
+        messages = list(mongo.db.messages.find({'room': 'victim_to_responder'}).sort("timestamp", 1))
+        for message in messages:
+            message['_id'] = str(message['_id'])
+            message['user_id'] = str(message['user_id'])
+            message['timestamp'] = message['timestamp'].strftime('%Y-%m-%d %H:%M:%S')
+        return jsonify({'messages': messages})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
