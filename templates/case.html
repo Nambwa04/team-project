@@ -130,8 +130,8 @@
                 </td>
                 <td>{{ case.description|truncate(30) }}</td>
                 <td>
-                    {% if case.victim %}
-                        {{ case.victim.name }}
+                    {% if case.victim_name %}
+                        {{ case.victim_name }}
                     {% else %}
                         <span class="text-muted">Unknown</span>
                     {% endif %}

@@ -98,27 +98,13 @@ def case_details(case_id):
     
     # Get victim info
     victim = None
-    if case.get("victim_id"):
-        victim_data = mongo.db.victims.find_one({"_id": case["victim_id"]})
-        if victim_data:
-            victim_user = User.find_by_id(victim_data.get("user_id"))
-            victim = {
-                "name": victim_user.get("username") if victim_user else "Unknown",
-                "id": str(victim_data["_id"]),
-                "email": victim_user.get("email") if victim_user else "Unknown",
-                "phone": victim_data.get("phone", "Unknown")
-            }
-    
+    if case.get("victim_name"):
+        victim = {}
+
     # Get responder info
     responder = None
     if case.get("responder_id"):
-        responder_data = mongo.db.responders.find_one({"_id": case["responder_id"]})
-        if responder_data:
-            responder = {
-                "name": responder_data.get("name", "Unknown"),
-                "id": str(responder_data["_id"]),
-                "phone": responder_data.get("phone", "Unknown")
-            }
+            responder = {}
     
     return render_template('case_details.html', 
                           case=case,
