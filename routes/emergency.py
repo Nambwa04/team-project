@@ -20,6 +20,11 @@ def view_cases():
     # Get filter parameters
     status = request.args.get('status', 'all')
     responder_id = request.args.get('responder_id', None)
+    responder_name = None
+    if responder_id:
+        responder = mongo.db.responders.find_one({"_id": ObjectId(responder_id)})
+        if responder:
+            responder_name = responder.get("responder_name", "Unknown")
     
     # Get cases based on filters
     if status != 'all' and responder_id:
@@ -55,22 +60,12 @@ def view_cases():
     for case in cases:
         # Add victim info
         if case.get("victim_id"):
-            victim = mongo.db.victims.find_one({"_id": case["victim_id"]})
+            victim = mongo.db.victims.find_one({"_id": ObjectId(case["victim_id"])})
             if victim:
-                victim_user = User.find_by_id(victim.get("user_id"))
-                case["victim"] = {
-                    "name": victim_user.get("username") if victim_user else "Unknown",
-                    "id": str(victim["_id"])
-                }
-        
+                case["victim_name"] = victim.get("username", "Unknown")
+
         # Add responder info
-        if case.get("responder_id"):
-            responder = mongo.db.responders.find_one({"_id": case["responder_id"]})
-            if responder:
-                case["responder"] = {
-                    "name": responder.get("name", "Unknown"),
-                    "id": str(responder["_id"])
-                }
+        case["responder_name"] = case.get("responder_name", "Unassigned")  # Fetch responder_name directly
     
     return render_template('case.html', 
                           cases=cases, 

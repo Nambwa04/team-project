@@ -348,6 +348,7 @@ def respond_to_emergency(case_id):
                 {"_id": ObjectId(case_id)},
                 {
                     "$set": {
+                        "responder_name": session.get('username', 'Unknown'),
                         "responder_id": ObjectId(user_id),
                         "status": "IN_PROGRESS",
                         "updated_at": datetime.utcnow(),

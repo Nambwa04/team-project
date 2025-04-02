@@ -137,8 +137,8 @@
                     {% endif %}
                 </td>
                 <td>
-                    {% if case.responder %}
-                        {{ case.responder.name }}
+                    {% if case.responder_name %}
+                        {{ case.responder_name }}
                     {% elif case.status == 'PENDING' %}
                         <span class="text-warning">Unassigned</span>
                     {% else %}

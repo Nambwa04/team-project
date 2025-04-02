@@ -187,7 +187,8 @@ def trigger_sos():
             "updated_at": datetime.utcnow(),
             "description": description,
             "location": location,
-            "responder_id": None  # Must be None (Python None), not a string
+            "responder_id": None,  # Must be None (Python None), not a string
+            "responder_name": None
         }
         
         # Insert the emergency case
