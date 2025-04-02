@@ -76,7 +76,7 @@
             
         {% if case.notes %}
         <div class="manage-sector" style="margin-left: 3.5rem;">
-            <h3>Case Notes</h3>
+            <!-- <h3>Case Notes</h3> -->
         </div>
 
         {% for note in case.notes %}
@@ -84,9 +84,9 @@
         <div style="margin-top: -1rem;">
         <div status-{{ note.status|lower }}>
             <h6>
-                Status changed to {{ note.status }}
+                <!-- Status changed to {{ note.status }} -->
                 <small>
-                    {{ note.timestamp.strftime('%Y-%m-%d %H:%M') if note.timestamp else 'No timestamp available' }}
+                    <!-- {{ note.timestamp.strftime('%Y-%m-%d %H:%M') if note.timestamp else 'No timestamp available' }} -->
                 </small>
             </h6>
 
@@ -189,9 +189,9 @@
                     
             {% if session.role == 'admin' %}
 
-            <a href="{{ url_for('admin.emergency_cases', case_id=case._id) }}" class="btn btn-warning btn-block mb-3">
+            <!-- <a href="{{ url_for('admin.emergency_cases', case_id=case._id) }}" class="btn btn-warning btn-block mb-3">
                 <i class="fas fa-edit"></i> Edit Case
-            </a>
+            </a> -->
                     
             <button style="position: relative ; margin-left: 3rem; margin-bottom: 2rem;" type="button" data-toggle="modal" data-target="#deleteCaseModal">
                 <i class="fas fa-trash"></i> Delete Case

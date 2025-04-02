@@ -253,14 +253,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const tabs = document.querySelectorAll('.tab-btn');
     const contents = document.querySelectorAll('.tab-content');
 
+    // Load the active tab from localStorage
+    const savedTab = localStorage.getItem('activeTab');
+    if (savedTab) {
+        tabs.forEach(tab => tab.classList.remove('active'));
+        contents.forEach(content => content.classList.remove('active'));
+
+        const activeTab = document.querySelector(`.tab-btn[data-tab="${savedTab}"]`);
+        const activeContent = document.getElementById(savedTab);
+
+        if (activeTab && activeContent) {
+            activeTab.classList.add('active');
+            activeContent.classList.add('active');
+        }
+    }
+
+    // Save the active tab to localStorage on click
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
             const target = tab.dataset.tab;
-            
+
             // Update active tab
             tabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
-            
+
             // Show corresponding content
             contents.forEach(content => {
                 content.classList.remove('active');
@@ -268,6 +284,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     content.classList.add('active');
                 }
             });
+
+            // Save the active tab to localStorage
+            localStorage.setItem('activeTab', target);
         });
     });
 
