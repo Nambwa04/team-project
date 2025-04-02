@@ -30,19 +30,19 @@
 
         <form id="reportForm" action="{{ url_for('report.submit_report') }}" method="POST">
             <div class="form-group">
-                <label for="reporter_name">Your Name</label>
+                <label for="reporter_name" style="color: white;">Your Name</label>
                 <input type="text" id="reporter_name" name="reporter_name" class="form-control" required>
             </div>
             <div class="form-group">
-                <label for="reporter_contact">Your Contact</label>
+                <label for="reporter_contact" style="color: white;">Your Contact</label>
                 <input type="text" id="reporter_contact" name="reporter_contact" class="form-control" required>
             </div>
             <div class="form-group">
-                <label for="case_description">Case Description</label>
+                <label for="case_description" style="color: white;">Case Description</label>
                 <textarea id="case_description" name="case_description" class="form-control" rows="4" required></textarea>
             </div>
             <div class="form-group">
-                <label for="case_location">Case Location</label>
+                <label for="case_location" style="color: white;">Case Location</label>
                 <input type="text" id="case_location" name="case_location" class="form-control" required>
             </div>
             <button type="submit" class="btn btn-primary">Submit Report</button>
