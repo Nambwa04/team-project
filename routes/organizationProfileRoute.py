@@ -50,7 +50,9 @@ def update_profile():
     }
 
     organization_update = {
-        'category': request.form.get('category'),
+        'username':request.form.get('username'),
+        'contact':request.form.get('contact'),
+        'services': request.form.get('services'),
         'location': request.form.get('location')
     }
     

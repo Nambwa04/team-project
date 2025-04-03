@@ -36,12 +36,12 @@
         <form action="{{ url_for('organizationProfile.update_profile') }}" method="POST">
             <div class="form-group">
                 <label for="name">Name:</label>
-                <input type="text" id="name" name="name" value="{{ profile.username }}" required>
+                <input type="text" id="name" name="username" value="{{ profile.username }}" required>
             </div>
 
             <div class="form-group">
                 <label for="type">Type:</label>
-                <input type="text" id="type" name="type" value="{{ profile.services }}" required>
+                <input type="text" id="type" name="services" value="{{ profile.services }}" required>
             </div>
 
             <div class="form-group">
@@ -49,19 +49,9 @@
                 <input type="text" id="contact" name="contact" value="{{ profile.contact }}" required>
             </div>
 
-            <div class="form-group">                    
-                <label for="service_hours">Service Hours:</label>
-                <input type="text" id="service_hours" name="service_hours" value="{{ profile.service_hours }}" required>
-            </div>
-
-            <div class="form-group">
-                <label for="desreadonly">Description:</label>
-                <textarea id="description" name="description" required>{{ profile.description }}</textarea>
-            </div>
-
             <div class="form-group">
                 <label for="geographic_area">Geographic Area Served:</label>
-                <input type="text" id="geographic_area" name="geographic_area" value="{{ profile.location }}" required>
+                <input type="text" id="geographic_area" name="location" value="{{ profile.location }}" required>
             </div>
 
             <button type="submit" class="btn btn-primary">Update Profile</button>
